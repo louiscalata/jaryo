@@ -25,7 +25,7 @@ const famIds = await (async () => { const { ctx, page } = await open(); const f 
 // 1) Count + click every option (mouse), at 1280 and 260
 for (const width of [1280, 260]) {
   const { ctx, page } = await open({ width, tag: "click-" + width });
-  const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), mono: d.families.filter(f=>f.id!=="F17").reduce((n,f)=>n+f.options.length,0), color: d.families.find(f=>f.id==="F17").options.length }; });
+  const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), monoBase: d.families.filter(f=>/^F(0[1-9]|1[0-6])$/.test(f.id)).reduce((n,f)=>n+f.options.length,0), color: (d.families.find(f=>f.id==="F17")||{options:[]}).options.length, legacy: (d.families.find(f=>f.id==="F18")||{options:[]}).options.length, red: (d.families.find(f=>f.id==="F19")||{options:[]}).options.length }; });
   let domTotal = 0, clicked = 0, fails = [];
   for (const fam of famIds) {
     await page.click(`[data-fam="${fam}"]`);
@@ -49,12 +49,16 @@ for (const width of [1280, 260]) {
     await b.click();
   }
   const summary = await (async () => { await page.click('.tab[data-tab="summary"]'); return page.textContent("#summary-count"); })();
-  check(`options-count data (w=${width})`, data.opts === 85 && data.fams === 17 && data.mono === 80 && data.color === 5, data);
-  check(`options-count DOM rendered (w=${width})`, domTotal === 85, domTotal);
-  const groups = await page.evaluate(() => ({ mono: document.querySelectorAll('#family-nav [data-fam]:not([data-fam="F17"])').length, color: document.querySelectorAll('#family-nav [data-fam="F17"]').length, labels: [...document.querySelectorAll("#family-nav .navgroup")].map(e => e.textContent) }));
-  check(`nav groups: monochrome set (16 families) + color batch (F17) both present (w=${width})`, groups.mono === 16 && groups.color === 1 && groups.labels.length === 2, groups);
-  check(`all options selectable by click (w=${width})`, clicked === 85 && fails.length === 0, { clicked, fails });
-  check(`summary shows 17/17 (w=${width})`, /^17 \/ 17/.test(summary), summary);
+  const expectedOpts = data.fams >= 19 ? 97 : 85;
+  const expectedFams = data.fams >= 19 ? 19 : 17;
+  check(`options-count data (w=${width})`, data.opts === expectedOpts && data.fams === expectedFams && data.color === 5 && data.legacy === (expectedFams>=19?8:0) && data.red === (expectedFams>=19?4:0), data);
+  check(`original-85 still present (w=${width})`, data.monoBase === 80, data);
+  check(`options-count DOM rendered (w=${width})`, domTotal === expectedOpts, domTotal);
+  const groups = await page.evaluate(() => ({ monoBase: [...document.querySelectorAll("#family-nav [data-fam]")].filter(e=>/^F(0[1-9]|1[0-6])$/.test(e.dataset.fam)).length, color: document.querySelectorAll('#family-nav [data-fam="F17"]').length, legacy: document.querySelectorAll('#family-nav [data-fam="F18"]').length, red: document.querySelectorAll('#family-nav [data-fam="F19"]').length, labels: [...document.querySelectorAll("#family-nav .navgroup")].map(e => e.textContent) }));
+  const labelOk = groups.labels.some(t=>/Monochrome set/.test(t)) && groups.labels.some(t=>/Color batch/.test(t)) && (expectedFams<19 || (groups.labels.some(t=>/Legacy studies/.test(t)) && groups.labels.some(t=>/Red interactive UI/.test(t))));
+  check(`nav groups present (w=${width})`, groups.monoBase === 16 && groups.color === 1 && labelOk, groups);
+  check(`all options selectable by click (w=${width})`, clicked === expectedOpts && fails.length === 0, { clicked, fails, expectedOpts });
+  const sumN = expectedFams; check(`summary shows ${sumN}/${sumN} (w=${width})`, new RegExp(`^${sumN} / ${sumN}`).test(summary), summary);
   const hs = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(`no horizontal overflow after click-through (w=${width})`, hs <= 0, hs);
   await ctx.close();
