@@ -68,3 +68,50 @@ The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-ide
 - `smoke.mjs`: live smoke test.
 - `shots.mjs`: screenshots.
 - Results are in `verification/`.
+
+
+# CHANGES — 2026-11-09 legacy UI/UX + Red interactive UI
+
+Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). Worked in a **new** folder; Bot 1's tree was not modified.
+
+## Additive catalog (original 85 untouched)
+- `data/curated-85.json`, `curated-85.min.json`, and `f17-color-systems-v2.json` remain **byte-identical** to the grok-bot-1 ZIP.
+- New: `data/legacy-studies.json` (**F18 Legacy studies**, 8 mono options from Mendacity / Plague / Brawler / Contrails 2.0).
+- New: `data/red-interactive-ui.json` (**F19 Red interactive UI**, 4 optional red-accent options from Typography 1; Louis named this set).
+- `data/curated-extended.json` + regenerated `data/embedded-data.js` expose 19 families / **97** options to the lab.
+- Each F18/F19 option carries `provenance` (source project + what was improved).
+
+## UI
+- Sidebar groups: Monochrome set (80) · Color batch optional (5) · **Legacy studies (8)** · **Red interactive UI optional (4)**.
+- F19 uses the color preview path; red tokens AA-checked (light accent `#9B1B1B` on white ≥8:1; dark accent `#FF6B6B` on `#0C0C0C` ≥7:1; chip fill/ink pairs ≥7:1).
+- Provenance line on F18/F19 cards.
+
+## Tests
+- `scripts/validate_lab.py` asserts original 85 intact and F18/F19 present with provenance.
+- `scripts/browser/smoke.mjs` and `audit.mjs` updated for 97 options and F18/F19 views.
+- Rerun smoke + axe (light/dark/reduced-motion × 260/375/768/1280); results under `verification/`.
+
+## Not done
+- Nothing published.
+- Real screen readers / phones / Firefox / Safari still not claimed.
+
+
+# CHANGES — 2026-11-09 typography-1 reference (lab-wide)
+
+Louis directed Typography 1 (`louiscalata.myportfolio.com/typography-1`) as the reference Jaryo learns typography from, across the lab — not only F19.
+
+## Principles
+- Written to `docs/TYPOGRAPHY-PRINCIPLES.md` from what the booklet pages actually show (Baskerville 8/12, Antique Olive, All Around Gothic; unidentified TOC sans marked; red = meta/identity).
+
+## Shared tokens (`lab.css`)
+- Roles: `--font-machine`, `--font-reading`, `--font-display`, `--font-serif-study` (Baskerville stack for study only).
+- Scale: 11 / 12 / 13 / **14** / **16** / 20 / 24 / 32 (body and titles stepped up; no 10px text).
+- Leading: `--lh-body: 1.5` from print **8/12**.
+- Tracking tokens: body / meta / display / display-tight / open.
+- Weights: 400 / 600 / 700.
+- Spec-sheet `.provenance` styling (uppercase machine meta + left rule).
+- Default chrome stays mono+sans; red remains F19-only for accent.
+
+## Untouched
+- `data/curated-85.json`, `curated-85.min.json`, `f17-color-systems-v2.json` byte-identical.
+- F18/F19 option IDs and provenance content unchanged this pass.

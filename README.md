@@ -6,6 +6,8 @@ This repository is the interactive design lab: a static local page for comparing
 
 Site: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
 
+All projects in this repository are work in progress.
+
 ## Open the lab
 
 ```bash
@@ -19,12 +21,22 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 
 ## What’s in the lab
 
-- 17 families, 85 curated options (80 monochrome, 5 optional color)
+- 19 families, 97 curated options (original 85 unchanged: 80 monochrome F01–F16 + 5 color F17; plus F18 Legacy studies 8 options; plus F19 Red interactive UI 4 options)
 - Theme: System / Light / Dark (persisted separately from choices)
+- Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md))
 - Layouts from about 260px wide to desktop
 - Keyboard support for option groups and tabs (arrow keys, Home/End, Space)
 - Reduced-motion support via `prefers-reduced-motion`
 - Import / export of choice JSON; reset; recovery download when storage is malformed
+
+### Families
+
+| ID | Title | Options |
+|---|---|---|
+| F01–F16 | Monochrome set | 80 |
+| F17 | Color systems | 5 (optional) |
+| F18 | Legacy studies | 8 |
+| F19 | Red interactive UI | 4 |
 
 ![Lab light, 1280px](docs/screenshots/lab-light-1280.png)
 
@@ -44,14 +56,12 @@ Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
 
 ## Tested
 
-Verified 2026-11-09 in headless Chromium (Playwright) against a local HTTP server. Details: [VERIFICATION.md](VERIFICATION.md).
+Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
 
-- Smoke: 32/32 passed, 0 console errors
-- axe-core: 0 violations in light, dark, reduced motion, and dark + reduced motion at 260, 375, 768, and 1280 px
-- All 85 options selectable at 1280 and 260 px; no horizontal overflow
-- Option radiogroups and tabs: one Tab stop each; arrow keys and Home/End; Space selects
-- Focus ring contrast ≥ 3:1 in light and dark
-- Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `test_lab_dom.mjs`, `node --check lab.js`
+- Original 85 options remain byte-stable in `data/curated-85.json`
+- Extended catalog: 19 families / 97 options in `data/curated-extended.json` and `data/embedded-data.js`
+- Smoke: 34/34 for legacy+typography passes; axe: 0 violations in reported modes/widths
+- Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `node --check lab.js`
 
 ## Not yet tested
 

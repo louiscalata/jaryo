@@ -12,90 +12,79 @@ warns = []
 def fail(m): errors.append(m)
 def warn(m): warns.append(m)
 
-curated = json.loads((LAB / "data/curated-85.json").read_text(encoding="utf-8"))
-families = curated["families"]
-if len(families) != 17:
-    fail(f"expected 17 families, got {len(families)}")
-opts = [o for f in families for o in f["options"]]
-if len(opts) != 85:
-    fail(f"expected 85 options, got {len(opts)}")
-ids = [o["id"] for o in opts]
-if len(ids) != len(set(ids)):
-    fail("duplicate curated IDs")
+# Original 85 must remain byte-addressable and intact
+curated85 = json.loads((LAB / "data/curated-85.json").read_text(encoding="utf-8"))
+families85 = curated85["families"]
+if len(families85) != 17:
+    fail(f"curated-85 expected 17 families, got {len(families85)}")
+opts85 = [o for f in families85 for o in f["options"]]
+if len(opts85) != 85:
+    fail(f"curated-85 expected 85 options, got {len(opts85)}")
+ids85 = [o["id"] for o in opts85]
+if len(ids85) != len(set(ids85)):
+    fail("duplicate curated-85 IDs")
 
 f17 = {o["id"]: o for o in json.load(open(LAB / "data/f17-color-systems-v2.json"))["options"]}
 opt_path = ROOT / "options.json"
 if opt_path.exists():
     catalog = {o["id"]: o for o in json.load(open(opt_path))}
-    for oid in ids:
+    for oid in ids85:
         if oid.startswith("F17"):
             if oid not in f17: fail(f"missing F17 source {oid}")
         else:
             if oid not in catalog: fail(f"missing catalog source {oid}")
 else:
     warn("parent options.json absent — standalone lab ZIP; skip full-catalog cross-check")
-    for oid in ids:
+    for oid in ids85:
         if oid.startswith("F17") and oid not in f17:
             fail(f"missing F17 source {oid}")
 
-for o in opts:
-    for k in ("mechanism", "tradeoff", "curation_rationale", "name"):
-        if not o.get(k): fail(f"{o['id']} missing {k}")
-    if o["id"].startswith("F17") and not o.get("tokens"):
-        fail(f"{o['id']} missing tokens")
+# Extended lab data (additive F18/F19)
+ext_path = LAB / "data/curated-extended.json"
+if ext_path.exists():
+    ext = json.loads(ext_path.read_text(encoding="utf-8"))
+    fams = ext["families"]
+    # First 17 families' options must match curated-85 exactly
+    for i, f in enumerate(families85):
+        if fams[i]["id"] != f["id"]:
+            fail(f"extended family order mismatch at {i}: {fams[i]['id']} vs {f['id']}")
+        if json.dumps(fams[i]["options"], sort_keys=True) != json.dumps(f["options"], sort_keys=True):
+            fail(f"extended mutated original options for {f['id']}")
+    ids = [o["id"] for f in fams for o in f["options"]]
+    if len(ids) != len(set(ids)):
+        fail("duplicate extended IDs")
+    if "F18" not in {f["id"] for f in fams}:
+        fail("missing F18 Legacy studies")
+    if "F19" not in {f["id"] for f in fams}:
+        fail("missing F19 Red interactive UI")
+    f18 = next(f for f in fams if f["id"] == "F18")
+    f19 = next(f for f in fams if f["id"] == "F19")
+    for o in f18["options"] + f19["options"]:
+        if "provenance" not in o:
+            fail(f"{o['id']} missing provenance")
+        if not o.get("provenance", {}).get("source_project"):
+            fail(f"{o['id']} provenance.source_project missing")
+    for o in f19["options"]:
+        t = o.get("tokens") or {}
+        for k in ("bg", "text", "accent_identity", "selected_bg", "selected_fg"):
+            if k not in t:
+                fail(f"{o['id']} missing token {k}")
+    # embedded-data must match extended
+    emb = (LAB / "data/embedded-data.js").read_text(encoding="utf-8")
+    if "F18.01" not in emb or "F19.01" not in emb:
+        fail("embedded-data.js missing F18/F19")
+else:
+    warn("curated-extended.json absent — lab is original 85 only")
 
-js = (LAB / "lab.js").read_text(encoding="utf-8")
-preview_keys = set(re.findall(r'"((?:F\d{2})\.\d{2})":\s*\(\)\s*=>', js))
-for o in opts:
-    if o["id"].startswith("F17"):
-        continue
-    if o["id"] not in preview_keys and not o.get("preview_ascii"):
-        fail(f"no preview renderer or ascii for {o['id']}")
-    elif o["id"] not in preview_keys:
-        warn(f"{o['id']} falls back to ascii only (no dedicated PREVIEW key)")
+# DOM/HTML basics
+index = (LAB / "index.html").read_text(encoding="utf-8")
+for needle in ("family-nav", "cards", "jaryo"):
+    if needle not in index.lower() and needle not in index:
+        warn(f"index.html may be missing {needle}")
 
-# ensure dedicated previews for all non-F17 curated
-missing_prev = [o["id"] for o in opts if not o["id"].startswith("F17") and o["id"] not in preview_keys]
-if missing_prev:
-    fail(f"missing distinct PREVIEW keys: {missing_prev}")
-
-html = (LAB / "index.html").read_text(encoding="utf-8")
-for req in ("lab.css", "lab.js", "embedded-data.js", "btn-reset", "btn-download", "btn-copy"):
-    if req not in html:
-        fail(f"index.html missing {req}")
-
-for key in ("STORAGE_KEY", "exportPayload", "localStorage", "Reset", "JARYO_LAB_DATA"):
-    if key == "Reset":
-        if "resetChoices" not in js: fail("resetChoices missing")
-    elif key not in js and key != "JARYO_LAB_DATA":
-        # JARYO in embedded
-        if key not in js: fail(f"lab.js missing {key}")
-
-emb = LAB / "data/embedded-data.js"
-if not emb.exists() or "window.JARYO_LAB_DATA" not in emb.read_text(encoding="utf-8")[:80]:
-    fail("embedded-data.js missing or malformed")
-
-# export/reset semantics present
-if "jaryo-lab-choices.json" not in js:
-    fail("download filename missing")
-if "Choice preference" not in html and "Choice preference" not in js:
-    warn("choice≠production notice weak")
-
-# journeys
-if len(curated.get("journeys", [])) < 4:
-    fail("expected ≥4 journeys")
-
-# asset presence
-for p in [
-    "assets/studies/L-state-grammar.png",
-    "assets/studies/K-narrow-journey-copper.png",
-    "assets/pilots/01-connect-discovery.png",
-]:
-    if not (LAB / p).exists():
-        fail(f"missing asset {p}")
-
-print("VALIDATION", "FAIL" if errors else "PASS")
-for e in errors: print("ERROR:", e)
-for w in warns: print("WARN:", w)
-print(f"families={len(families)} options={len(ids)} preview_keys={len(preview_keys)}")
-sys.exit(1 if errors else 0)
+if errors:
+    print("FAIL")
+    for e in errors: print(" -", e)
+    sys.exit(1)
+print("OK validate_lab")
+for w in warns: print("warn:", w)

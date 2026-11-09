@@ -1,0 +1,249 @@
+{
+  "family": "F18 Legacy studies",
+  "id": "F18",
+  "slug": "legacy-studies",
+  "title": "Legacy studies",
+  "version": "legacy-uiux-20261109",
+  "created": "2026-11-09",
+  "note": "Additive. Derived from louiscalata.myportfolio.com/mobile-uiux (Mendacity, Plague, Brawler, Contrails 2.0). Monochrome by default. Does not modify F01–F17.",
+  "screen_contexts": [
+    "archive modernization",
+    "game HUD → ops chrome",
+    "pause / dialogue overlays",
+    "tactical select",
+    "narrow cover 260px"
+  ],
+  "catalog_size": 8,
+  "curated_count": 8,
+  "options": [
+    {
+      "id": "F18.01",
+      "name": "Mendacity Void Cue",
+      "mechanism": "Near-empty black stage; one focal actor; a single hard directional mark (arrow/plate) carries wayfinding. No ornamental chrome.",
+      "job": "Focus attention when the system is waiting or the user must move once",
+      "website": "Empty-state hero / product tour beat",
+      "app": "Empty / loading / 'next step' gate (pairs with F10)",
+      "narrow": "Cue becomes a 44px bottom plate; stage crops, never letterboxes with dead side gutters that scroll",
+      "tradeoff": "Too little chrome can hide system status; pair with a one-line status strip",
+      "preview_ascii": [
+        "################",
+        "#              #",
+        "#      ↑ STEP  #",
+        "#    [ACTOR]   #",
+        "#  -->         #",
+        "################"
+      ],
+      "curation_rationale": "Keeps Mendacity's strongest idea — extreme negative space + one directional cue — inside Jaryo mono grammar.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Mendacity",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Action Game",
+        "improved": [
+          "Replaced mixed atmospheric art with machine-plate mono",
+          "Made the directional cue a first-class control (≥44px on narrow)",
+          "Added explicit pairing with a status strip so emptiness ≠ silence",
+          "Dark/light via lab theme tokens; reduced-motion: no particle reliance"
+        ]
+      }
+    },
+    {
+      "id": "F18.02",
+      "name": "Mendacity Combat Ledger",
+      "mechanism": "Portrait disc + mono ledger rows (HP/MP or RUN/OK) + weapon/key legend as a hatched plate. Serif mix removed; hierarchy by weight and caps only.",
+      "job": "Read vitals and bindings at a glance during a live session",
+      "website": "Live demo HUD strip",
+      "app": "Inference-monitor vitals / keybinding cheatsheet",
+      "narrow": "Portrait 40px; ledger stacks under it; legend collapses behind a [KEYS] disclosure (≥44px)",
+      "tradeoff": "Portrait costs width on 260px; disclosure hides bindings until opened",
+      "preview_ascii": [
+        "(P) HP 95%  MP 44%",
+        "    BOW x3",
+        "[KEYS] WASD MOVE"
+      ],
+      "curation_rationale": "Modernizes Mendacity's portrait+percentage HUD into a Jaryo mono ledger with adaptive disclosure.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Mendacity",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Action Game",
+        "improved": [
+          "Unified type to mono ledger (no mixed serif/sans)",
+          "Percent rows become aligned tokens",
+          "Control legend is disclosed on narrow instead of floating raw text",
+          "Contrast locked to lab light/dark tokens"
+        ]
+      }
+    },
+    {
+      "id": "F18.03",
+      "name": "Plague Journal Overlay",
+      "mechanism": "Pause/settings as a two-pane plate (nav list | detail) with ribbon-like tab chips. Quest/objective persists as a top chip outside the plate.",
+      "job": "Interrupt work without losing place; keep the active objective visible",
+      "website": "Docs 'on this page' + section nav",
+      "app": "Run pause / Nisi journal review overlay",
+      "narrow": "Panes stack; tabs become a 2×2 segmented control; quest chip sticky under header",
+      "tradeoff": "Diegetic 'book' metaphor dropped — less charm, more scan speed",
+      "preview_ascii": [
+        "[QUEST] find pope bird",
+        "+------+--------+",
+        "|RESUME|  MAP   |",
+        "|SAVE  |  ....  |",
+        "|QUIT  |        |",
+        "+------+--------+"
+      ],
+      "curation_rationale": "Keeps Plague's journal IA and persistent quest chip; drops parchment ornament for factory plates.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Plague",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Adventure Game, Visual Novel",
+        "improved": [
+          "Replaced parchment/pink book with mono plates and tab chips",
+          "Quest tracker stays color-independent (prefix glyph + word)",
+          "Touch targets ≥44px; works 260→1280",
+          "Ornate gothic frame removed for hairline rules"
+        ]
+      }
+    },
+    {
+      "id": "F18.04",
+      "name": "Plague Dialogue Advance",
+      "mechanism": "Speaker portrait + NAME plate + body line + explicit advance control with Idle/Hover/Pressed as outline → thick outline → inverted fill (no yellow-only signal).",
+      "job": "Advance narrative or step logs without ambiguity",
+      "website": "Product tour step copy",
+      "app": "Step log / agent utterance stream",
+      "narrow": "Portrait inline left; advance is a full-width 44px bar",
+      "tradeoff": "Portrait optional; without it the name plate must carry identity alone",
+      "preview_ascii": [
+        "(D) DOC",
+        "| holy bird, the bird is the word |",
+        "[ ADVANCE ▷ ]"
+      ],
+      "curation_rationale": "Preserves Plague's dialogue anatomy and three-state advance control using color-independent signals.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Plague",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Adventure Game, Visual Novel",
+        "improved": [
+          "Hover/pressed no longer rely on yellow glow alone",
+          "Advance control meets 44px; keyboard activatable",
+          "Gold ornate frame → 2px mono rule",
+          "Dark mode + reduced-motion static pressed state"
+        ]
+      }
+    },
+    {
+      "id": "F18.05",
+      "name": "Brawler Focus Stack",
+      "mechanism": "Vertical pause/menu stack. Focused item = solid inverted fill; idle = outline only. Size hierarchy kept; neon glow removed.",
+      "job": "Choose one primary action under interruption",
+      "website": "Modal confirm stack",
+      "app": "Pause / dangerous action confirm",
+      "narrow": "Full-width rows 48px; outline thickness stays ≥2px for AA",
+      "tradeoff": "Loses synthwave energy; gains AA and reduced-motion safety",
+      "preview_ascii": [
+        "[  PAUSED  ]",
+        "████ RESUME ████",
+        "[   QUIT   ]"
+      ],
+      "curation_rationale": "Brawler's strongest grammar was outline-vs-fill focus — kept, neon discarded.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Brawler (Brawler Neon City)",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Beat 'em up",
+        "improved": [
+          "Neon pink glow → inverted mono fill for focus",
+          "Hover-scale removed under reduced motion",
+          "Contrast AA in light and dark",
+          "44px rows on narrow; cityscape photo not required"
+        ]
+      }
+    },
+    {
+      "id": "F18.06",
+      "name": "Brawler Character Rail",
+      "mechanism": "Horizontal chooser: ◂ avatar ▸ with nameplate and P1/P2 markers as bracket tags, not colored triangles alone.",
+      "job": "Pick among peers / models / profiles",
+      "website": "Team / model picker",
+      "app": "Agent or model selector",
+      "narrow": "One avatar visible; swipe or buttons ≥44px; name truncates with full value on focus",
+      "tradeoff": "Multi-avatar preview deferred to wide widths",
+      "preview_ascii": [
+        "◂ (P1 ●) NAME (P2) ▸",
+        "   CHARACTER SELECT"
+      ],
+      "curation_rationale": "Keeps Brawler's character carousel; replaces neon ring with mono disc + bracket player tags.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Brawler (Brawler Neon City)",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "Beat 'em up",
+        "improved": [
+          "P1/P2 no longer color-only (bracket tags + glyph)",
+          "Chevron hit areas ≥44px",
+          "Works at 260px with single-avatar rail",
+          "Mono default; optional color left to F17/F19"
+        ]
+      }
+    },
+    {
+      "id": "F18.07",
+      "name": "Contrails Tactical Select",
+      "mechanism": "Carousel subject in a double-ruled frame; mono segmented meters; firmware/id plate; (B) Back affordance. Grain becomes subtle hatch, not noise mush.",
+      "job": "Compare one tactical subject with readable stats",
+      "website": "Hardware / plan picker",
+      "app": "Model or machine selector with meters",
+      "narrow": "Meters stack; carousel arrows dock under frame at 44px",
+      "tradeoff": "Dense stats still tall on 260px",
+      "preview_ascii": [
+        "   < [ MQ-9 ] >",
+        "SP-120  fw US.x.3.6",
+        "SPD ▓▓▓░░  CYB ▓▓▓▓░",
+        "(B) Back"
+      ],
+      "curation_rationale": "Contrails was already near Jaryo; this locks it to factory mono + adaptive meters.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Contrails 2.0",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "SCIFI Console Game",
+        "improved": [
+          "Chartreuse accent → black/white segments",
+          "Signal noise → controlled hatch token",
+          "Touch/keyboard carousel; 260–1280 layout",
+          "Segmented bars expose values to AT as text, not color alone"
+        ]
+      }
+    },
+    {
+      "id": "F18.08",
+      "name": "Contrails Status Diamonds",
+      "mechanism": "Diamond/circle icon grammar for help, mute, ok, blocked, locked. Color optional; every state has shape + word + border style.",
+      "job": "Status and toolbar actions that survive mono and color-blind modes",
+      "website": "Docs toolbar",
+      "app": "Monitor toolbar / toast icons",
+      "narrow": "Icons 44px; labels appear as tooltips/SR text, visible text on focus",
+      "tradeoff": "Diamond packing is wider than circle-only toolbars",
+      "preview_ascii": [
+        "◇?  ◇♪  ◆OK  ◇X  ○🔒",
+        "[OK] [MUTE] [BLOCKED]"
+      ],
+      "curation_rationale": "Promotes Contrails HUD icon sheet into Jaryo's color-independent status language.",
+      "status": "proposed-design",
+      "provenance": {
+        "source_project": "Contrails 2.0",
+        "source_url": "https://louiscalata.myportfolio.com/mobile-uiux",
+        "source_genre": "SCIFI Console Game",
+        "improved": [
+          "Green/red outlines no longer sole signal",
+          "Each state has glyph + word + border",
+          "AA in light/dark; forced-colors friendly",
+          "44px targets; SR names included"
+        ]
+      }
+    }
+  ]
+}

@@ -25,6 +25,8 @@ const views = [
   { name: "F01", tab: "compare", fam: "F01" },
   { name: "F13", tab: "compare", fam: "F13" },
   { name: "F17", tab: "compare", fam: "F17" },
+  { name: "F18", tab: "compare", fam: "F18" },
+  { name: "F19", tab: "compare", fam: "F19" },
   { name: "journeys", tab: "journeys" },
   { name: "summary", tab: "summary" },
   { name: "docs", tab: "docs" },

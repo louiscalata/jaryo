@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "catalogVersion": "lab-v1",
   "writerId": "fixture-sample-not-louis",
-  "notice": "FICTIONAL SAMPLE fixture for import regression. Not Louis preferences. Choice \u2260 validation.",
+  "notice": "FICTIONAL SAMPLE fixture for import regression. Not user preferences. Choice \u2260 validation.",
   "exported_at_utc": "2026-11-06T21:58:00Z",
   "persistenceStatus": "valid",
   "acceptedCount": 3,
