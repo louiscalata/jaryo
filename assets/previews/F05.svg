@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F05 FORMS / INPUTS · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F05.01 SCHEMA FORM</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">model: [____]</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">temp:  [0.7 ]</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">*required</text>
+<text x="24" y="226" font-size="10" fill="#000">Configure inputs</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F05.02 PORT SOCKET</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">[parse]o-- rows</text>
+<text x="324" y="226" font-size="10" fill="#000">Wire data between steps</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F05.03 LEDGER EDIT</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">k  | v   </text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">n  | [3]</text>
+<text x="624" y="226" font-size="10" fill="#000">Bulk params</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F05.04 STEPPER WIZARD</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">1 ## 2 -- 3 --</text>
+<text x="924" y="226" font-size="10" fill="#000">First connection</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F05.05 RAW/VISUAL TWIN</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">FORM | JSON</text>
+<text x="1224" y="226" font-size="10" fill="#000">Trust what&#x27;s sent</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F05.06 CONSTRAINT HINT</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">[0.7]</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">0|---#-----|2</text>
+<text x="24" y="416" font-size="10" fill="#000">Pick valid values</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F05.07 SECRET FIELD</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">key: ******** [ref]</text>
+<text x="324" y="416" font-size="10" fill="#000">Handle credentials safely</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F05.08 INFERRED DEFAULTS</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">batch [32] INFERRED</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">budget [$] INFERRED CONFIRM</text>
+<text x="624" y="416" font-size="10" fill="#000">Fast setup, honest</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F05.09 VALIDATION LEDGER</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">! model required</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">! temp &gt;2</text>
+<text x="924" y="416" font-size="10" fill="#000">Fix many errors</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F05.10 NATURAL TEXT ASK</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">&#x27;fast cheap run&#x27;</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">→ temp .2 [ACCEPT]</text>
+<text x="1224" y="416" font-size="10" fill="#000">Non-technical users</text>
+</svg>

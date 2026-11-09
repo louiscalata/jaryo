@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "lab-v1",
+  "writerId": "fixture-invalid",
+  "notice": "FICTIONAL all-invalid import; must not wipe existing selections.",
+  "choices": {
+    "F99": "F99.01",
+    "bad": true,
+    "F01": 12
+  },
+  "purpose": "all-invalid-no-wipe"
+}

@@ -1,0 +1,667 @@
+{
+  "family": "F17 Color systems",
+  "version": "color-batch-v2",
+  "created": "2026-11-05T20:25:06-08:00",
+  "note": "Additive. Supersedes v1 only inside F17. Monochrome F01-F16 / v0.3 / v0.4 untouched. v1 files preserved.",
+  "distinctness_axes": [
+    "ground (dark/light/paired)",
+    "where colour lives (fills/lines/cursor/quantity/lane-type/references)",
+    "how status is carried (uncoloured vs tinted)"
+  ],
+  "options": [
+    {
+      "id": "F17.01",
+      "name": "Copper Workshop",
+      "architecture": "dark / warm single identity (fills only on brand+primary CTA) / cool-desaturated status tints",
+      "tokens": {
+        "bg": "#0B1012",
+        "surface": "#141A1C",
+        "text": "#F4F1EA",
+        "muted": "#9AA3A8",
+        "border": "#5A676C",
+        "focus_ring": "#E8D7A8",
+        "selected_bg": "#F4F1EA",
+        "selected_fg": "#0B1012",
+        "accent_identity": "#C47A3A",
+        "accent_ink": "#0B1012",
+        "status_ok": "#8FC4A0",
+        "status_run": "#8FB4D6",
+        "status_blocked": "#FFD2C8",
+        "status_blocked_bg": "#3A2020",
+        "status_unknown": "#9AA3A8"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Copper = brand mark + the one primary CTA per view. Status tints come from a separate cool/desaturated family so copper never reads as 'running' or 'warning'.",
+      "v1_change": "v1 reused copper as `run`; v2 gives run its own steel-blue tint so identity\u2260status.",
+      "tradeoff": "Warm accent can still read 'warning' next to a salmon blocked tint; blocked is always a filled panel with [BLOCKED] + \u2715 + reason line.",
+      "mono_fallback": "Copper\u2192#fff fill, tints\u2192#fff text; \u2715 hatch retained; invert selection + dashed focus.",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "Interpretive of the earlier FTLO Living Factory warm-workshop mood (copper connections); not measured from reference images.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 3.27,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": {
+        "compared": "status tints",
+        "normal": {
+          "min_deltaE76": 18.4,
+          "closest": [
+            "run",
+            "unknown"
+          ]
+        },
+        "protan": {
+          "min_deltaE76": 12.6,
+          "closest": [
+            "ok",
+            "blocked"
+          ]
+        },
+        "deutan": {
+          "min_deltaE76": 15.2,
+          "closest": [
+            "ok",
+            "blocked"
+          ]
+        },
+        "tritan": {
+          "min_deltaE76": 7.1,
+          "closest": [
+            "ok",
+            "run"
+          ]
+        }
+      },
+      "studies": [],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.02",
+      "name": "Heat Ramp Foundry",
+      "architecture": "dark / color encodes QUANTITY (sequential ramp), never state; identity = single salmon rule",
+      "tokens": {
+        "bg": "#0A0710",
+        "surface": "#14101C",
+        "text": "#F7F0F5",
+        "muted": "#A79BB0",
+        "border": "#7A6A8A",
+        "focus_ring": "#FFE9B0",
+        "selected_bg": "#F7F0F5",
+        "selected_fg": "#0A0710",
+        "accent_identity": "#F1805D",
+        "accent_ink": "#0A0710",
+        "status_ok": "#A9D4BE",
+        "status_run": "#B7C3FF",
+        "status_blocked": "#FFC2B8",
+        "status_blocked_bg": "#3B1420",
+        "status_unknown": "#A79BB0"
+      },
+      "extra_tokens": {
+        "ramp": [
+          "#3B1F6B",
+          "#7A2A86",
+          "#B5346F",
+          "#F1805D",
+          "#FFD59A"
+        ],
+        "ramp_labels": [
+          "0-19%",
+          "20-39%",
+          "40-59%",
+          "60-79%",
+          "80-100%"
+        ]
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Ramp is for throughput/load/queue-depth cells only and every cell prints its number; ramp is monotonic in luminance so it survives greyscale. Identity = one salmon rule; status uses separate pastel tints.",
+      "v1_change": "v1 'Lava Foundry' was Copper with a hotter orange (near-duplicate). v2 repurposes the hue family as a data ramp \u2014 a different job.",
+      "tradeoff": "Ramp invites reading hot=bad; label as LOAD not HEALTH, and print numerals + hatch density in each cell.",
+      "mono_fallback": "Ramp\u21925 hatch densities + numerals on #000/#fff.",
+      "verdict_vs_v1": "REPLACE (concept changed)",
+      "source_inspiration": "Interpretive of Vulcanus/lava mood and of Factorio heat/production overlays; the ramp itself is a standard sequential-ramp idea, not extracted from a screenshot.",
+      "contrast": {
+        "pairs_checked": 21,
+        "pairs_failed": 0,
+        "min_ratio": 4.05,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": {
+        "compared": "ramp stops",
+        "normal": {
+          "min_deltaE76": 20.9,
+          "closest": [
+            "ramp0",
+            "ramp1"
+          ]
+        },
+        "protan": {
+          "min_deltaE76": 10.2,
+          "closest": [
+            "ramp0",
+            "ramp1"
+          ]
+        },
+        "deutan": {
+          "min_deltaE76": 16.3,
+          "closest": [
+            "ramp0",
+            "ramp1"
+          ]
+        },
+        "tritan": {
+          "min_deltaE76": 21.7,
+          "closest": [
+            "ramp2",
+            "ramp3"
+          ]
+        }
+      },
+      "studies": [
+        "v2/studies/F-heat-ramp-load.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.03",
+      "name": "Deck Cyan Hairline",
+      "architecture": "dark / cool / color lives ONLY in lines, ports, focus (never fills); status is uncolored text",
+      "tokens": {
+        "bg": "#070A0D",
+        "surface": "#0E141A",
+        "text": "#E8EEF2",
+        "muted": "#8795A0",
+        "border": "#5F7484",
+        "focus_ring": "#9ED9FF",
+        "selected_bg": "#E8EEF2",
+        "selected_fg": "#070A0D",
+        "accent_identity": "#5EB1D6",
+        "accent_ink": "#070A0D",
+        "status_ok": "#E8EEF2",
+        "status_run": "#E8EEF2",
+        "status_blocked": "#FFD0D8",
+        "status_blocked_bg": "#2A1520",
+        "status_unknown": "#8795A0"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Cyan = 1-3px connection lines, port squares, top rule. Status words/glyphs stay text-colored; only BLOCKED gets a (rose-tinted) fill.",
+      "v1_change": "v1 let cyan double as `run`; v2 removes it (status uncolored) so cyan is purely wiring identity.",
+      "tradeoff": "Sterile; relies on typography and spacing. Hairlines at 1px can vanish at low DPI \u2014 use 2px minimum for connection lines.",
+      "mono_fallback": "Cyan lines\u2192#fff lines; fills unchanged (already none).",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "Interpretive of Space-Platform graphite deck + connection lines; not measured.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 4.08,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [
+        "v2/studies/B-runs-command.png",
+        "v2/studies/B2-runs-table.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.04",
+      "name": "Blueprint Paper",
+      "architecture": "light / cool white / blue = REFERENCES only (ids, coordinates, links, focus)",
+      "tokens": {
+        "bg": "#F7F5EF",
+        "surface": "#FFFFFF",
+        "text": "#121212",
+        "muted": "#55524C",
+        "border": "#121212",
+        "focus_ring": "#1B4DFF",
+        "selected_bg": "#121212",
+        "selected_fg": "#F7F5EF",
+        "accent_identity": "#1B4DFF",
+        "accent_ink": "#FFFFFF",
+        "status_ok": "#121212",
+        "status_run": "#121212",
+        "status_blocked": "#FFFFFF",
+        "status_blocked_bg": "#121212",
+        "status_unknown": "#55524C"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Blue marks things you can point at: step ids, schema paths, links, the focus ring. Body and status are ink. Blocked = inverted ink panel.",
+      "v1_change": "v1 painted OK marks blue (traffic-light/identity collision); v2 removes blue from every status.",
+      "tradeoff": "Looks like docs more than an app; add a real surface hierarchy via rules, not tint.",
+      "mono_fallback": "Blue\u2192#000 underline for refs; paper\u2192#fff.",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "Interpretive of blueprint/plan-sheet convention (coordinates as references); not measured.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 5.42,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.05",
+      "name": "Wire Triad",
+      "architecture": "dark / THREE lane-type hues (blue/violet/sand) each paired with a line pattern; status neutral",
+      "tokens": {
+        "bg": "#0A0A0E",
+        "surface": "#14141A",
+        "text": "#F2F2F4",
+        "muted": "#9A9AA6",
+        "border": "#707088",
+        "focus_ring": "#FFFFFF",
+        "selected_bg": "#F2F2F4",
+        "selected_fg": "#0A0A0E",
+        "accent_identity": "#6AA2FF",
+        "accent_ink": "#0A0A0E",
+        "status_ok": "#F2F2F4",
+        "status_run": "#F2F2F4",
+        "status_blocked": "#FFD0D0",
+        "status_blocked_bg": "#3A1418",
+        "status_unknown": "#9A9AA6"
+      },
+      "extra_tokens": {
+        "lane_in": "#6AA2FF",
+        "lane_xf": "#8A5CFF",
+        "lane_out": "#D9C08A",
+        "lane_patterns": [
+          "solid 2px [IN]",
+          "dashed 2px [XF]",
+          "dotted 3px [OUT]"
+        ]
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Lane hues label DECLARED lane kinds (input/transform/output), each also carries a pattern and a 2-letter tag. Focus is white (not a lane hue). Status is neutral glyph+word.",
+      "v1_change": "v1 used green/red/blue \u2014 a literal traffic light for identity. v2 removes red/green from identity entirely.",
+      "tradeoff": "Violet vs blue is the weakest pair (see CVD sim); patterns+tags are mandatory not decorative. Violet sits near F17.06 magenta \u2014 never combine those.",
+      "mono_fallback": "Lanes \u2192 solid/dashed/dotted white lines + [IN]/[XF]/[OUT] tags.",
+      "verdict_vs_v1": "REPLACE hues (kept mechanism)",
+      "source_inspiration": "Interpretive of Factorio circuit-wire identity colours (red/green wires) deliberately NOT copied because red/green collides with status; lanes use blue/violet/sand + patterns.",
+      "contrast": {
+        "pairs_checked": 19,
+        "pairs_failed": 0,
+        "min_ratio": 4.1,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": {
+        "compared": "lane identity hues",
+        "normal": {
+          "min_deltaE76": 54.1,
+          "closest": [
+            "lane_in",
+            "lane_xf"
+          ]
+        },
+        "protan": {
+          "min_deltaE76": 30.7,
+          "closest": [
+            "lane_in",
+            "lane_xf"
+          ]
+        },
+        "deutan": {
+          "min_deltaE76": 24.9,
+          "closest": [
+            "lane_in",
+            "lane_xf"
+          ]
+        },
+        "tritan": {
+          "min_deltaE76": 34.9,
+          "closest": [
+            "lane_in",
+            "lane_xf"
+          ]
+        }
+      },
+      "studies": [
+        "v2/studies/E-wire-triad-graph.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.06",
+      "name": "Cursor Signal",
+      "architecture": "dark / near-mono / ONE hot hue (magenta) reserved for 'where you are' (focus, cursor, selection pointer)",
+      "tokens": {
+        "bg": "#000000",
+        "surface": "#0A0A0A",
+        "text": "#FFFFFF",
+        "muted": "#A0A0A0",
+        "border": "#6E6E6E",
+        "focus_ring": "#FF3EA5",
+        "selected_bg": "#FFFFFF",
+        "selected_fg": "#000000",
+        "accent_identity": "#FF3EA5",
+        "accent_ink": "#000000",
+        "status_ok": "#FFFFFF",
+        "status_run": "#FFFFFF",
+        "status_blocked": "#000000",
+        "status_blocked_bg": "#FFFFFF",
+        "status_unknown": "#A0A0A0"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Magenta appears exactly once per screen: the focus/cursor. Everything else is Jaryo ink. Running uses an animated chevron whose reduced-motion form is static [RUN].",
+      "v1_change": "v1 'Ink & Signal' used yellow for BOTH focus and running (collision) and duplicated Hazard's hue; v2 = magenta, focus-only.",
+      "tradeoff": "Almost no brand color; marketing may find it austere. Magenta ring on white panels needs \u22653:1 (checked).",
+      "mono_fallback": "Magenta ring\u21922px dashed white ring; nothing else changes.",
+      "verdict_vs_v1": "REPLACE hue + role",
+      "source_inspiration": "No Factorio source; a UI-craft idea (single reserved cursor hue). Magenta chosen because it is rarely used for status.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 4.12,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.07",
+      "name": "Field Notes Ochre",
+      "architecture": "light / warm cream / ochre rules + pull-quotes (editorial register)",
+      "tokens": {
+        "bg": "#F3EBD8",
+        "surface": "#FFF8EA",
+        "text": "#1A1208",
+        "muted": "#4A4030",
+        "border": "#5C4A2A",
+        "focus_ring": "#8B5A00",
+        "selected_bg": "#1A1208",
+        "selected_fg": "#FFF8EA",
+        "accent_identity": "#8B5A00",
+        "accent_ink": "#FFF8EA",
+        "status_ok": "#1A1208",
+        "status_run": "#1A1208",
+        "status_blocked": "#FFF8EA",
+        "status_blocked_bg": "#1A1208",
+        "status_unknown": "#5C5240"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Ochre = masthead rule, pull-quotes, links. Body ink on cream. Best for docs/marketing/editorial surfaces of Jaryo, not dense app chrome.",
+      "v1_change": "Muted/unknown raised to pass AA on cream; OK/run no longer ochre.",
+      "tradeoff": "Cream lowers ceiling contrast vs paper white; ochre as focus ring on cream is only ~5:1 \u2014 acceptable but near the limit on surface2.",
+      "mono_fallback": "Cream\u2192#fff; ochre\u2192#000 double rule.",
+      "verdict_vs_v1": "KEEP (minor fixes)",
+      "source_inspiration": "Interpretive of FTLO Field Notes paper dialect; not measured.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 4.97,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [
+        "v2/studies/A-editorial-hero.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.08",
+      "name": "Dual Surface Day/Night",
+      "architecture": "paired light+dark / one teal identity / MODE-CONSTANT mid-luminance status tints (3:1 on both grounds, words in text colour)",
+      "tokens": {
+        "bg": "#FFFFFF",
+        "surface": "#F4F4F4",
+        "text": "#0A0C0E",
+        "muted": "#555B61",
+        "border": "#0A0C0E",
+        "focus_ring": "#0A7A70",
+        "selected_bg": "#0A0C0E",
+        "selected_fg": "#FFFFFF",
+        "accent_identity": "#0A7A70",
+        "accent_ink": "#FFFFFF",
+        "status_ok": "#2E9E6B",
+        "status_run": "#3B82C4",
+        "status_blocked": "#FFFFFF",
+        "status_blocked_glyph": "#E5484D",
+        "status_blocked_bg": "#0A0C0E",
+        "status_unknown": "#6B7177"
+      },
+      "tokens_night": {
+        "bg": "#0A0C0E",
+        "surface": "#14181C",
+        "text": "#F2F4F6",
+        "muted": "#9CA3AA",
+        "border": "#F2F4F6",
+        "focus_ring": "#3DD6C6",
+        "selected_bg": "#F2F4F6",
+        "selected_fg": "#0A0C0E",
+        "accent_identity": "#3DD6C6",
+        "accent_ink": "#0A0C0E",
+        "status_ok": "#2E9E6B",
+        "status_run": "#3B82C4",
+        "status_blocked": "#0A0C0E",
+        "status_blocked_glyph": "#E5484D",
+        "status_blocked_bg": "#F2F4F6",
+        "status_unknown": "#6B7177"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Status glyph tints are the SAME in day and night (mid luminance passes 3:1 on both); labels use text colour. Teal identity is darkened for day and lightened for night.",
+      "v1_change": "v1 checked only night text/bg (not night focus, border, status or selection); v2 computes both modes in full and picks status tints that work on both grounds.",
+      "tradeoff": "The only system with coloured status glyphs: traffic-light semantics return, so glyph SHAPE + word remain mandatory; two matrices to maintain.",
+      "mono_fallback": "Tints\u2192text colour; teal\u2192text colour.",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "No Factorio source; day/night pairing is a product need.",
+      "contrast": {
+        "pairs_checked": 36,
+        "pairs_failed": 0,
+        "min_ratio": 3.07,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": {
+        "compared": "status glyph tints",
+        "normal": {
+          "min_deltaE76": 37.1,
+          "closest": [
+            "run",
+            "unknown"
+          ]
+        },
+        "protan": {
+          "min_deltaE76": 15.9,
+          "closest": [
+            "ok",
+            "blocked"
+          ]
+        },
+        "deutan": {
+          "min_deltaE76": 21.1,
+          "closest": [
+            "ok",
+            "unknown"
+          ]
+        },
+        "tritan": {
+          "min_deltaE76": 13.7,
+          "closest": [
+            "ok",
+            "run"
+          ]
+        }
+      },
+      "studies": [
+        "v2/studies/C-mobile-day-night.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.09",
+      "name": "Hazard Stripe",
+      "architecture": "dark / yellow hatch reserved for CONSEQUENTIAL chrome (review gate, destructive confirm) only",
+      "tokens": {
+        "bg": "#0E0E0E",
+        "surface": "#161616",
+        "text": "#F5F5F5",
+        "muted": "#9A9A9A",
+        "border": "#6A6A6A",
+        "focus_ring": "#F5F5F5",
+        "selected_bg": "#F5F5F5",
+        "selected_fg": "#0E0E0E",
+        "accent_identity": "#E6B800",
+        "accent_ink": "#0E0E0E",
+        "status_ok": "#F5F5F5",
+        "status_run": "#F5F5F5",
+        "status_blocked": "#F5F5F5",
+        "status_blocked_bg": "#2A2A2A",
+        "status_unknown": "#9A9A9A"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "Yellow/black diagonal hatch appears only on Review Gate headers, destructive confirms and irreversible-step markers. BLOCKED is NOT hazard: it is a grey panel with \u2715 and a hard border so 'needs a human' (hazard) \u2260 'cannot proceed' (blocked).",
+      "v1_change": "v1 let blocked be a solid hazard-yellow panel (conflated 'review needed' with 'blocked'); v2 separates them.",
+      "tradeoff": "Overuse trains alarm blindness: hazard on idle chrome is forbidden. Hatch is visually loud at small sizes \u2014 min 24px band.",
+      "mono_fallback": "Hatch\u2192black/white diagonal slash band + [REVIEW] word.",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "Interpretive of Factorio hazard-concrete/yellow-black stripes (real in-game motif, not measured here).",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 3.57,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [
+        "v2/studies/D-states-hazard.png"
+      ],
+      "machine_critique": "none received for this option"
+    },
+    {
+      "id": "F17.10",
+      "name": "Terminal Phosphor",
+      "architecture": "dark / single-hue LUMINANCE LADDER (green) / amber cursor; hierarchy by brightness steps",
+      "tokens": {
+        "bg": "#020803",
+        "surface": "#07120A",
+        "text": "#B8FFC8",
+        "muted": "#4DBF6A",
+        "border": "#2F8A49",
+        "focus_ring": "#FFB000",
+        "selected_bg": "#33FF66",
+        "selected_fg": "#020803",
+        "accent_identity": "#33FF66",
+        "accent_ink": "#020803",
+        "status_ok": "#B8FFC8",
+        "status_run": "#B8FFC8",
+        "status_blocked": "#020803",
+        "status_blocked_bg": "#33FF66",
+        "status_unknown": "#4DBF6A"
+      },
+      "color_independent_signals": {
+        "status": {
+          "ok": "\u25cf + word [OK] + solid chip",
+          "run": "\u25b6 + word [RUNNING] + inverted row (static equivalent for reduced-motion)",
+          "blocked": "\u2715 + word [BLOCKED] + filled panel + reason line",
+          "unknown": "? + word [UNKNOWN] + dashed outline",
+          "review": "\u25c6 + word [REVIEW] + hard border (human gate)"
+        },
+        "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
+      },
+      "hierarchy": "One hue, 4 brightness steps: text #B8FFC8 > accent #33FF66 > muted #4DBF6A > border #2F8A49. Selection inverts to bright green. Amber is the cursor only.",
+      "v1_change": "v1 had text\u2248muted (#33FF66 vs #2ECC5A) \u2014 no hierarchy; v2 splits into an explicit ladder.",
+      "tradeoff": "Green-on-black is the classic CRT look but long reading is tiring; offer F17.06 as the 'calm' alternative.",
+      "mono_fallback": "\u2192 F17.06 (Cursor Signal).",
+      "verdict_vs_v1": "REVISE",
+      "source_inspiration": "Interpretive of CRT phosphor/terminal vibe from Louis's ASCII/TUI direction; not measured.",
+      "contrast": {
+        "pairs_checked": 16,
+        "pairs_failed": 0,
+        "min_ratio": 4.67,
+        "detail": "contrast-results-v2.json"
+      },
+      "cvd_sim": null,
+      "studies": [],
+      "machine_critique": "none received for this option"
+    }
+  ],
+  "authorship": {
+    "v1": "Grok Bot synthesis (no machine critique shaped v1)",
+    "v2_critique_dedupe_fixes_tokens_studies": "Grok Bot executor synthesis (this run); contrast + CVD numbers computed by scripts in v2/",
+    "machine_critique": "NO Mac/PC critique received (v1 opencode runs timed out; v2 direct-request attempts 2 per lane all failed) \u2014 see critique/LANES.md. Zero machine contribution.",
+    "codex": "not called"
+  }
+}

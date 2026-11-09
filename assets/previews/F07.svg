@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F07 TABLES / DENSE DATA · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F07.01 MONO LEDGER TABLE</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">step  ms  rows</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">parse 120 1240</text>
+<text x="24" y="226" font-size="10" fill="#000">Read metrics</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F07.02 BAR-IN-CELL</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">parse #### 120ms</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">load  ##   40ms</text>
+<text x="324" y="226" font-size="10" fill="#000">Compare quickly</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F07.03 STATUS COLUMN FIRST</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">! FAIL load</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">&gt; OK   parse</text>
+<text x="624" y="226" font-size="10" fill="#000">Triage</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F07.04 GROUPED BAYS</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">##EXTRACT##</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">row</text>
+<text x="924" y="148" font-size="14" fill="#000" xml:space="preserve">row</text>
+<text x="924" y="226" font-size="10" fill="#000">Group by stage</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F07.05 DIFF TABLE</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">k  plan act Δ</text>
+<text x="1224" y="226" font-size="10" fill="#000">Review changes</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F07.06 NUMERIC OVER LEDGER</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">step   ms</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">parse  120</text>
+<text x="24" y="338" font-size="14" fill="#000" xml:space="preserve">load   980 OVER</text>
+<text x="24" y="416" font-size="10" fill="#000">Spot hotspots and budget violations with</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F07.07 EXPANDABLE ROW</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">&gt; run 42 [open log]</text>
+<text x="324" y="318" font-size="14" fill="#000" xml:space="preserve">[panel] log... [Esc]</text>
+<text x="324" y="416" font-size="10" fill="#000">Drill into errors</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F07.08 COLUMN SET SWITCH</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">[TIME|COST|IO]</text>
+<text x="624" y="416" font-size="10" fill="#000">Avoid overflow</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F07.09 MAPPING TABLE</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">field   control  ev</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">model   select   schema</text>
+<text x="924" y="338" font-size="14" fill="#000" xml:space="preserve">[CONFIRM ROW]</text>
+<text x="924" y="416" font-size="10" fill="#000">Confirm schema→UI mapping</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F07.10 SPARKSTRIP ROW</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">parse ▁▂▅▇</text>
+<text x="1224" y="416" font-size="10" fill="#000">Trend per step</text>
+</svg>

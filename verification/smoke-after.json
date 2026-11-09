@@ -1,0 +1,377 @@
+{
+  "checks": [
+    {
+      "name": "options-count data (w=1280)",
+      "pass": true,
+      "detail": {
+        "fams": 17,
+        "opts": 85,
+        "mono": 80,
+        "color": 5
+      }
+    },
+    {
+      "name": "options-count DOM rendered (w=1280)",
+      "pass": true,
+      "detail": 85
+    },
+    {
+      "name": "nav groups: monochrome set (16 families) + color batch (F17) both present (w=1280)",
+      "pass": true,
+      "detail": {
+        "mono": 16,
+        "color": 1,
+        "labels": [
+          "Monochrome set · 80 options",
+          "Color batch · 5 options · optional"
+        ]
+      }
+    },
+    {
+      "name": "all options selectable by click (w=1280)",
+      "pass": true,
+      "detail": {
+        "clicked": 85,
+        "fails": []
+      }
+    },
+    {
+      "name": "summary shows 17/17 (w=1280)",
+      "pass": true,
+      "detail": "17 / 17 families chosen (validated)"
+    },
+    {
+      "name": "no horizontal overflow after click-through (w=1280)",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "options-count data (w=260)",
+      "pass": true,
+      "detail": {
+        "fams": 17,
+        "opts": 85,
+        "mono": 80,
+        "color": 5
+      }
+    },
+    {
+      "name": "options-count DOM rendered (w=260)",
+      "pass": true,
+      "detail": 85
+    },
+    {
+      "name": "nav groups: monochrome set (16 families) + color batch (F17) both present (w=260)",
+      "pass": true,
+      "detail": {
+        "mono": 16,
+        "color": 1,
+        "labels": [
+          "Monochrome set · 80 options",
+          "Color batch · 5 options · optional"
+        ]
+      }
+    },
+    {
+      "name": "all options selectable by click (w=260)",
+      "pass": true,
+      "detail": {
+        "clicked": 85,
+        "fails": []
+      }
+    },
+    {
+      "name": "summary shows 17/17 (w=260)",
+      "pass": true,
+      "detail": "17 / 17 families chosen (validated)"
+    },
+    {
+      "name": "no horizontal overflow after click-through (w=260)",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "radiogroup role + label + single tab stop",
+      "pass": true,
+      "detail": {
+        "role": "radiogroup",
+        "name": "F02 — Typography / hierarchy",
+        "radios": 5,
+        "tabbable": [
+          "F02.01"
+        ]
+      }
+    },
+    {
+      "name": "Tab lands on first radio when none chosen",
+      "pass": true,
+      "detail": "F02.01"
+    },
+    {
+      "name": "radio focus ring visible (label outline dashed 3px)",
+      "pass": true,
+      "detail": {
+        "style": "dashed",
+        "width": "3px",
+        "color": "rgb(0, 0, 0)",
+        "matches": true
+      }
+    },
+    {
+      "name": "arrow/Home/End/Space move+select, roving tabindex follows, persisted",
+      "pass": true,
+      "detail": [
+        [
+          "Space",
+          {
+            "focus": "F02.01",
+            "checked": "F02.01",
+            "stored": "F02.01",
+            "tabbable": "F02.01"
+          }
+        ],
+        [
+          "ArrowRight",
+          {
+            "focus": "F02.03",
+            "checked": "F02.03",
+            "stored": "F02.03",
+            "tabbable": "F02.03"
+          }
+        ],
+        [
+          "ArrowDown",
+          {
+            "focus": "F02.04",
+            "checked": "F02.04",
+            "stored": "F02.04",
+            "tabbable": "F02.04"
+          }
+        ],
+        [
+          "End",
+          {
+            "focus": "F02.09",
+            "checked": "F02.09",
+            "stored": "F02.09",
+            "tabbable": "F02.09"
+          }
+        ],
+        [
+          "ArrowRight(wrap)",
+          {
+            "focus": "F02.01",
+            "checked": "F02.01",
+            "stored": "F02.01",
+            "tabbable": "F02.01"
+          }
+        ],
+        [
+          "ArrowLeft(wrap)",
+          {
+            "focus": "F02.09",
+            "checked": "F02.09",
+            "stored": "F02.09",
+            "tabbable": "F02.09"
+          }
+        ],
+        [
+          "Home",
+          {
+            "focus": "F02.01",
+            "checked": "F02.01",
+            "stored": "F02.01",
+            "tabbable": "F02.01"
+          }
+        ],
+        [
+          "ArrowUp(wrap)",
+          {
+            "focus": "F02.09",
+            "checked": "F02.09",
+            "stored": "F02.09",
+            "tabbable": "F02.09"
+          }
+        ]
+      ]
+    },
+    {
+      "name": "Tab leaves group (one stop), Shift+Tab returns to checked radio",
+      "pass": true,
+      "detail": {
+        "afterTab": "btn expand-btn|F02.09",
+        "back": "F02.09"
+      }
+    },
+    {
+      "name": "Expand button keyboard (Space) toggles aria-expanded",
+      "pass": true,
+      "detail": "true"
+    },
+    {
+      "name": "tablist arrows/Home/End with roving tabindex",
+      "pass": true,
+      "detail": {
+        "t": {
+          "f": "journeys",
+          "sel": "journeys",
+          "vis": true
+        },
+        "t2": "docs",
+        "t3": {
+          "f": "compare",
+          "tabbable": 1
+        }
+      }
+    },
+    {
+      "name": "theme toggle dark persists across reload, choices untouched",
+      "pass": true,
+      "detail": {
+        "th": {
+          "attr": "dark",
+          "bg": "rgb(12, 12, 12)",
+          "stored": "dark"
+        },
+        "th2": {
+          "attr": "dark",
+          "sel": "dark",
+          "choiceKept": "F02.09"
+        }
+      }
+    },
+    {
+      "name": "focus-visible ring on all tabbed element types (light, w=1280)",
+      "pass": true,
+      "detail": {
+        "types": [
+          "A.skip",
+          "SELECT.btn",
+          "BUTTON.btn",
+          "BUTTON.navbtn",
+          "BUTTON.tab",
+          "INPUT.radio",
+          "BUTTON.btn expand-btn"
+        ],
+        "bad": []
+      }
+    },
+    {
+      "name": "focus ring contrast >= 3:1 vs page (light, w=1280)",
+      "pass": true,
+      "detail": {
+        "ring": "rgb(0, 0, 0)",
+        "bodyBg": "rgb(255, 255, 255)",
+        "ratio": 21
+      }
+    },
+    {
+      "name": "focus-visible ring on all tabbed element types (light, w=260)",
+      "pass": true,
+      "detail": {
+        "types": [
+          "A.skip",
+          "SELECT.btn",
+          "BUTTON.btn",
+          "BUTTON.navbtn",
+          "BUTTON.tab",
+          "INPUT.radio",
+          "BUTTON.btn expand-btn"
+        ],
+        "bad": []
+      }
+    },
+    {
+      "name": "focus ring contrast >= 3:1 vs page (light, w=260)",
+      "pass": true,
+      "detail": {
+        "ring": "rgb(0, 0, 0)",
+        "bodyBg": "rgb(255, 255, 255)",
+        "ratio": 21
+      }
+    },
+    {
+      "name": "focus-visible ring on all tabbed element types (dark, w=1280)",
+      "pass": true,
+      "detail": {
+        "types": [
+          "A.skip",
+          "SELECT.btn",
+          "BUTTON.btn",
+          "BUTTON.navbtn",
+          "BUTTON.tab",
+          "INPUT.radio",
+          "BUTTON.btn expand-btn"
+        ],
+        "bad": []
+      }
+    },
+    {
+      "name": "focus ring contrast >= 3:1 vs page (dark, w=1280)",
+      "pass": true,
+      "detail": {
+        "ring": "rgb(255, 215, 94)",
+        "bodyBg": "rgb(12, 12, 12)",
+        "ratio": 14.1
+      }
+    },
+    {
+      "name": "focus-visible ring on all tabbed element types (dark, w=260)",
+      "pass": true,
+      "detail": {
+        "types": [
+          "A.skip",
+          "SELECT.btn",
+          "BUTTON.btn",
+          "BUTTON.navbtn",
+          "BUTTON.tab",
+          "INPUT.radio",
+          "BUTTON.btn expand-btn"
+        ],
+        "bad": []
+      }
+    },
+    {
+      "name": "focus ring contrast >= 3:1 vs page (dark, w=260)",
+      "pass": true,
+      "detail": {
+        "ring": "rgb(255, 215, 94)",
+        "bodyBg": "rgb(12, 12, 12)",
+        "ratio": 14.1
+      }
+    },
+    {
+      "name": "default motion: dash animates, transitions on",
+      "pass": true,
+      "detail": {
+        "anim": "dashmove",
+        "dur": "1.2s",
+        "btnTransition": "0.12s, 0.12s",
+        "scroll": "smooth",
+        "noteShown": false
+      }
+    },
+    {
+      "name": "reduced-motion: dash animation off, transitions ~0, smooth scroll off, note shown",
+      "pass": true,
+      "detail": {
+        "anim": "none",
+        "dur": "0s",
+        "btnTransition": "1e-06s",
+        "scroll": "auto",
+        "noteShown": true
+      }
+    },
+    {
+      "name": "w=260: all visible controls >=44x44 and inside viewport",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "no console errors across smoke run",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

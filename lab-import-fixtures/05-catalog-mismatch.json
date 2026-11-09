@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "lab-v0-NOT-CURRENT",
+  "writerId": "fixture-catalog-mismatch",
+  "notice": "FICTIONAL catalogVersion mismatch; valid entries may merge but must be flagged.",
+  "choices": {
+    "F01": "F01.01"
+  },
+  "purpose": "catalog-mismatch-flag"
+}

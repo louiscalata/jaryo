@@ -1,0 +1,14 @@
+built_at_utc=2026-11-06T22:00:59Z
+purpose=fictional-import-regression-fixtures
+not_user_preferences=true
+curated_ids=85
+full_catalog_option_count=170
+5e385f95d8a81b3bf3c4d7af3abd393d4e3e1bfc6929866651716fe951228c54  README.md
+2ec83f81cc0f90434c068475e1e6e22c3160ddb11643ea19634e0f6c07ea42ab  01-valid-partial-sample.json
+fa181377bd0d23856b854eed552494143b12b5ffad55aa55864cb8cd83d8940f  02-all-invalid.json
+38cedb27398ae6bae1ce1e00156b2c23a434f9b73a05172f72b695822d2b8bfc  03-empty-object.json
+d93971900246163f83102e400b85a783ed6ffdd98a8e9c0e47607ad832a9fd8e  04-mismatched-ids.json
+90e69247a74a1d075100e70a2a69623b5233f0d6c911128d99cfdfe1d034950c  05-catalog-mismatch.json
+c9b2a16ed12358f306de9481becaea2bece527927d5e21a0c1dfb04cc4f602dc  06-duplicate-same-as-sample.json
+2d3e1c4d7eb626182431b7fe9e654d4d9b3efe1acf265fc96f12fb65fa7ccfd1  07-bare-map-valid.json
+0b2b4ec876f102dd384a76fd4395764139b430f022ec6803bd07818f11877a6c  08-malformed.txt

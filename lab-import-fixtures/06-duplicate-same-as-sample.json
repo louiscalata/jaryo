@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "lab-v1",
+  "writerId": "fixture-duplicate",
+  "notice": "FICTIONAL re-import of same SAMPLE F01 choice; must not fabricate extras or erase siblings.",
+  "choices": {
+    "F01": "F01.01"
+  },
+  "purpose": "duplicate-noop-merge"
+}

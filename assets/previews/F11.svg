@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F11 OVERLAYS / PROGRESSIVE DISCLOSURE · 10 OPTIONS · ASCII WIREFRAME PREVIEWS</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F11.01 SIDE INSPECTOR</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">GRAPH | DETAIL</text>
+<text x="24" y="226" font-size="10" fill="#000">Inspect w/o losing place</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F11.02 REVIEW MODAL</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">+ REVIEW +</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">| diff   |</text>
+<text x="324" y="148" font-size="14" fill="#000" xml:space="preserve">+[OK][NO]+</text>
+<text x="324" y="226" font-size="10" fill="#000">Approve safely</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F11.03 INLINE EXPAND</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">▶ step</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">▼ step</text>
+<text x="624" y="148" font-size="14" fill="#000" xml:space="preserve">  more</text>
+<text x="624" y="226" font-size="10" fill="#000">Light detail</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F11.04 ERROR TRACE STRIP</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">TRACE · load</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">! empty rows</text>
+<text x="924" y="148" font-size="14" fill="#000" xml:space="preserve">evidence: log 4112</text>
+<text x="924" y="168" font-size="14" fill="#000" xml:space="preserve">[JUMP TO PARSE]</text>
+<text x="924" y="226" font-size="10" fill="#000">Read quick facts / failure context witho</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F11.05 LAYER TOGGLE</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">[DATA][TIME][ERR]</text>
+<text x="1224" y="226" font-size="10" fill="#000">Reduce clutter</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F11.06 SIDE INSPECTOR FULL-SHEET</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">========</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">INSPECTOR</text>
+<text x="24" y="338" font-size="14" fill="#000" xml:space="preserve">step detail</text>
+<text x="24" y="358" font-size="14" fill="#000" xml:space="preserve">[CLOSE]</text>
+<text x="24" y="416" font-size="10" fill="#000">Touch/detail without a separate bottom-s</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F11.07 RAW DISCLOSURE</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[show raw]</text>
+<text x="324" y="416" font-size="10" fill="#000">Trust</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F11.08 CAPABILITY LEDGER</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">RUN     YES  manifest</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">PAUSE   NO   manifest</text>
+<text x="624" y="338" font-size="14" fill="#000" xml:space="preserve">SCHEDULE UNKNOWN</text>
+<text x="624" y="416" font-size="10" fill="#000">Show what this pipeline can do immediate</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F11.09 SPLIT COMPARE OVERLAY</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">PLAN/RUN</text>
+<text x="924" y="416" font-size="10" fill="#000">Review changes</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F11.10 CONTEXT MENU</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">copy</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">retry</text>
+<text x="1224" y="338" font-size="14" fill="#000" xml:space="preserve">inspect</text>
+<text x="1224" y="416" font-size="10" fill="#000">Power actions</text>
+</svg>

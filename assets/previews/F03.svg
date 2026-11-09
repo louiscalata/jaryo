@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F03 NAVIGATION / WAYFINDING · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F03.01 BUS INDEX</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">  ingest</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">##PARSE##</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">  load</text>
+<text x="24" y="226" font-size="10" fill="#000">Jump between steps</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F03.02 DEPENDENCY SPINE</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">UP  [parse] [validate]</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">## CURRENT: load ##</text>
+<text x="324" y="148" font-size="14" fill="#000" xml:space="preserve">DOWN [warehouse]</text>
+<text x="324" y="226" font-size="10" fill="#000">Orient in large DAGs without a visual-on</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F03.03 STEP PAGER</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">&lt; parse | load &gt;</text>
+<text x="624" y="226" font-size="10" fill="#000">Walk the flow linearly</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F03.04 BRANCH SELECTOR</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">fork: [A] B C</text>
+<text x="924" y="226" font-size="10" fill="#000">Follow branches</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F03.05 BREADCRUMB RAIL</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">p1 / etl / parse</text>
+<text x="1224" y="226" font-size="10" fill="#000">Return upward</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F03.06 PORT HOP</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">in:rows &lt;- [parse]</text>
+<text x="24" y="416" font-size="10" fill="#000">Trace data origin</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F03.07 DISTRICT TABS</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">CONNECT|MAP|##RUN##|OUT</text>
+<text x="324" y="416" font-size="10" fill="#000">Follow the lifecycle</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F03.08 STEP INDEX PALETTE</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">[FIND STEP] k</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">&gt; par_</text>
+<text x="624" y="338" font-size="14" fill="#000" xml:space="preserve">parse · orders-etl</text>
+<text x="624" y="358" font-size="14" fill="#000" xml:space="preserve">partition · metrics</text>
+<text x="624" y="416" font-size="10" fill="#000">Jump to a named step without learning gr</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F03.09 RECENT STEPS LIST</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">RECENT</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">1 load</text>
+<text x="924" y="338" font-size="14" fill="#000" xml:space="preserve">2 parse</text>
+<text x="924" y="358" font-size="14" fill="#000" xml:space="preserve">3 ingest</text>
+<text x="924" y="416" font-size="10" fill="#000">Return to recently visited steps after h</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F03.10 ISLAND SWITCHER</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">[P1] [P2]</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">[P3]</text>
+<text x="1224" y="416" font-size="10" fill="#000">Switch pipelines</text>
+</svg>

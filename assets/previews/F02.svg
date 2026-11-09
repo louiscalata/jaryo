@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F02 TYPOGRAPHY / HIERARCHY · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F02.01 MONO LEDGER</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">STEP  STATE</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">fetch [OK]</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">parse [--]</text>
+<text x="24" y="226" font-size="10" fill="#000">Align values &amp; IDs</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F02.02 STAGE DIFF BLOCK</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">BEFORE</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">line 14  x</text>
+<text x="324" y="148" font-size="14" fill="#000" xml:space="preserve">AFTER</text>
+<text x="324" y="168" font-size="14" fill="#000" xml:space="preserve">line 14  y  ←</text>
+<text x="324" y="188" font-size="14" fill="#000" xml:space="preserve">change 1 of 5</text>
+<text x="324" y="226" font-size="10" fill="#000">Review stage-4 polish (or any consequent</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F02.03 BRACKET TAGS</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">[MODEL] llama</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">[ROUTE] main</text>
+<text x="624" y="148" font-size="14" fill="#000" xml:space="preserve">[UNKNOWN] eta</text>
+<text x="624" y="226" font-size="10" fill="#000">Recognise entities</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F02.04 HUMAN LABEL + TECHNICAL SUBLIN</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">Clean customer rows</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">  step_id: dedupe_v2</text>
+<text x="924" y="148" font-size="14" fill="#000" xml:space="preserve">Load to warehouse</text>
+<text x="924" y="226" font-size="10" fill="#000">Use pipelines without terminal knowledge</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F02.05 INVERTED HEADERS</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">#### STEPS ####</text>
+<text x="1224" y="128" font-size="14" fill="#000" xml:space="preserve">row</text>
+<text x="1224" y="148" font-size="14" fill="#000" xml:space="preserve">row</text>
+<text x="1224" y="226" font-size="10" fill="#000">Find sections fast</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F02.06 COORDINATE LABELS</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">A1 fetch</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">A2 parse</text>
+<text x="24" y="338" font-size="14" fill="#000" xml:space="preserve">B1 load</text>
+<text x="24" y="416" font-size="10" fill="#000">Refer to parts verbally</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F02.07 NUMERIC EMPHASIS</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">1240</text>
+<text x="324" y="318" font-size="14" fill="#000" xml:space="preserve">ROWS</text>
+<text x="324" y="338" font-size="14" fill="#000" xml:space="preserve">3 ERR</text>
+<text x="324" y="416" font-size="10" fill="#000">Read results at glance</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F02.08 PATH BREADCRUMB TYPE</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">etl / parse / schema</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">--</text>
+<text x="624" y="416" font-size="10" fill="#000">Know where you are</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F02.09 GLYPH PREFIX</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">&gt; parse ok</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">! load failed</text>
+<text x="924" y="338" font-size="14" fill="#000" xml:space="preserve">? eta unknown</text>
+<text x="924" y="416" font-size="10" fill="#000">State without color</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F02.10 QUIET/LOUD PAIR</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">...</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">REVIEW 2 CHANGES</text>
+<text x="1224" y="338" font-size="14" fill="#000" xml:space="preserve">...</text>
+<text x="1224" y="416" font-size="10" fill="#000">Point to next action</text>
+</svg>

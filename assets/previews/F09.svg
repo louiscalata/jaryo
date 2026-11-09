@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F09 STATUS / FEEDBACK · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F09.01 WORD+GLYPH STATE</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">[OK] [BLOCKED]</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">[UNKNOWN]</text>
+<text x="24" y="226" font-size="10" fill="#000">Read state w/o color</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F09.02 EVIDENCE STAMP</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">[OK] from log 11:52</text>
+<text x="324" y="226" font-size="10" fill="#000">Trust status</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F09.03 CAPABILITY CHECK GRID</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">RUN    YES  manifest</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">PAUSE  NO   manifest</text>
+<text x="624" y="148" font-size="14" fill="#000" xml:space="preserve">LOGS   ?    not declared</text>
+<text x="624" y="226" font-size="10" fill="#000">Know what this pipeline can do</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F09.04 TOAST LEDGER</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">11:52 saved</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">11:53 run start</text>
+<text x="924" y="226" font-size="10" fill="#000">Not miss messages</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F09.05 BLOCKED REASON</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">[BLOCKED]</text>
+<text x="1224" y="128" font-size="14" fill="#000" xml:space="preserve">needs: api key</text>
+<text x="1224" y="148" font-size="14" fill="#000" xml:space="preserve">(or: reason not provided)</text>
+<text x="1224" y="226" font-size="10" fill="#000">Fix blockers</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F09.06 PROGRESS TEETH</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">##########____ 10/14</text>
+<text x="24" y="416" font-size="10" fill="#000">Progress honestly</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F09.07 CAPABILITY BADGE</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[RUN][LOGS][no PAUSE]</text>
+<text x="324" y="416" font-size="10" fill="#000">Know limits</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F09.08 FRESHNESS STAMP</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">[OK] 4s ago</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">[OK] STALE 9m</text>
+<text x="624" y="416" font-size="10" fill="#000">Avoid stale trust</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F09.09 INLINE FIELD FEEDBACK</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">temp [3]</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">! max 2</text>
+<text x="924" y="416" font-size="10" fill="#000">Fix input</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F09.10 SUMMARY BANNER</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">RUN 42: 2 FAILED of 9</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">&gt; load, parse</text>
+<text x="1224" y="416" font-size="10" fill="#000">Know outcome</text>
+</svg>

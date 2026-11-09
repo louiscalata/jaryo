@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844" font-family="DejaVu Sans Mono,Menlo,ui-monospace,monospace">
+<rect x="0" y="0" width="390" height="844" fill="#0B1012"/>
+<rect x="0" y="0" width="390" height="36" fill="#C47A3A"/>
+<text x="12" y="23" font-size="12" fill="#0B1012" font-weight="700" xml:space="preserve">JARYO · NARROW JOURNEY</text>
+<text x="378" y="23" font-size="11" fill="#0B1012" font-weight="700" text-anchor="end" xml:space="preserve">F17.01</text>
+<text x="12" y="52" font-size="9" fill="#9AA3A8" xml:space="preserve">EXAMPLE palette (not a chosen default) · fictional</text>
+<rect x="12" y="64" width="366" height="22" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="79" font-size="11" fill="#F4F1EA" font-weight="700" xml:space="preserve">1 / 3  CONNECT</text>
+<text x="20" y="108" font-size="11" fill="#9AA3A8" xml:space="preserve">Adaptor</text>
+<rect x="12" y="116" width="366" height="40" fill="#141A1C" stroke="#5A676C" stroke-width="2"/>
+<text x="20" y="140" font-size="12" fill="#F4F1EA" xml:space="preserve">cli: sample-etl 0.4 (fictional)</text>
+<text x="20" y="178" font-size="11" fill="#9AA3A8" xml:space="preserve">Pipeline</text>
+<rect x="12" y="186" width="366" height="40" fill="#F4F1EA"/>
+<text x="20" y="210" font-size="12" fill="#0B1012" font-weight="700" xml:space="preserve">▶ customer-sync</text>
+<rect x="12" y="236" width="366" height="44" fill="#C47A3A"/>
+<text x="195.0" y="264" font-size="13" fill="#0B1012" font-weight="700" text-anchor="middle" xml:space="preserve">CONTINUE TO DISCOVER</text>
+<text x="20" y="296" font-size="9" fill="#9AA3A8" xml:space="preserve">selection = invert · primary = identity fill</text>
+<rect x="12" y="320" width="366" height="22" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="335" font-size="11" fill="#F4F1EA" font-weight="700" xml:space="preserve">2 / 3  CAPABILITIES (declared only)</text>
+<rect x="12" y="348" width="366" height="32" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="368" font-size="12" fill="#F4F1EA" font-weight="700" xml:space="preserve">● RUN</text>
+<text x="370" y="368" font-size="12" fill="#8FC4A0" font-weight="700" text-anchor="end" xml:space="preserve">[YES]</text>
+<rect x="12" y="384" width="366" height="32" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="404" font-size="12" fill="#F4F1EA" font-weight="700" xml:space="preserve">● CANCEL</text>
+<text x="370" y="404" font-size="12" fill="#8FC4A0" font-weight="700" text-anchor="end" xml:space="preserve">[YES]</text>
+<rect x="12" y="420" width="366" height="32" fill="#141A1C" stroke="#5A676C" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="20" y="440" font-size="12" fill="#9AA3A8" font-weight="700" xml:space="preserve">○ PAUSE</text>
+<text x="370" y="440" font-size="11" fill="#9AA3A8" font-weight="700" text-anchor="end" xml:space="preserve">[NO] not declared</text>
+<rect x="12" y="456" width="366" height="32" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="476" font-size="12" fill="#F4F1EA" font-weight="700" xml:space="preserve">● LOGS</text>
+<text x="370" y="476" font-size="12" fill="#8FC4A0" font-weight="700" text-anchor="end" xml:space="preserve">[YES]</text>
+<rect x="12" y="492" width="366" height="32" fill="#141A1C" stroke="#9AA3A8" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="20" y="512" font-size="12" fill="#9AA3A8" font-weight="700" xml:space="preserve">? SKIP</text>
+<text x="370" y="512" font-size="11" fill="#9AA3A8" font-weight="700" text-anchor="end" xml:space="preserve">[UNKNOWN]</text>
+<rect x="12" y="536" width="366" height="44" fill="#141A1C" stroke="#E8D7A8" stroke-width="3" stroke-dasharray="5 3"/>
+<text x="195.0" y="564" font-size="13" fill="#F4F1EA" font-weight="700" text-anchor="middle" xml:space="preserve">OPEN RUN VIEW</text>
+<rect x="12" y="560" width="366" height="22" fill="#141A1C" stroke="#5A676C" stroke-width="1"/>
+<text x="20" y="575" font-size="11" fill="#F4F1EA" font-weight="700" xml:space="preserve">3 / 3  RUN 0411 · results</text>
+<rect x="12" y="588" width="366" height="48" fill="#F4F1EA"/>
+<text x="20" y="608" font-size="13" fill="#0B1012" font-weight="700" xml:space="preserve">▶ review_merge</text>
+<text x="20" y="626" font-size="11" fill="#0B1012" xml:space="preserve">◆ REVIEW · 482 pairs · glyph+word</text>
+<rect x="12" y="644" width="366" height="56" fill="#3A2020" stroke="#FFD2C8" stroke-width="3"/>
+<rect x="16" y="648" width="358" height="48" fill="none" stroke="#FFD2C8" stroke-width="1"/>
+<g stroke="#FFD2C8" stroke-width="1">
+<line x1="-44" y1="644" x2="12" y2="700"/>
+<line x1="-39" y1="644" x2="17" y2="700"/>
+<line x1="-34" y1="644" x2="22" y2="700"/>
+<line x1="-29" y1="644" x2="27" y2="700"/>
+<line x1="-24" y1="644" x2="32" y2="700"/>
+<line x1="-19" y1="644" x2="37" y2="700"/>
+<line x1="-14" y1="644" x2="42" y2="700"/>
+<line x1="-9" y1="644" x2="47" y2="700"/>
+<line x1="-4" y1="644" x2="52" y2="700"/>
+<line x1="1" y1="644" x2="57" y2="700"/>
+<line x1="6" y1="644" x2="62" y2="700"/>
+<line x1="11" y1="644" x2="67" y2="700"/>
+<line x1="16" y1="644" x2="72" y2="700"/>
+<line x1="21" y1="644" x2="77" y2="700"/>
+<line x1="26" y1="644" x2="82" y2="700"/>
+<line x1="31" y1="644" x2="87" y2="700"/>
+<line x1="36" y1="644" x2="92" y2="700"/>
+<line x1="41" y1="644" x2="97" y2="700"/>
+<line x1="46" y1="644" x2="102" y2="700"/>
+<line x1="51" y1="644" x2="107" y2="700"/>
+<line x1="56" y1="644" x2="112" y2="700"/>
+<line x1="61" y1="644" x2="117" y2="700"/>
+<line x1="66" y1="644" x2="122" y2="700"/>
+<line x1="71" y1="644" x2="127" y2="700"/>
+<line x1="76" y1="644" x2="132" y2="700"/>
+<line x1="81" y1="644" x2="137" y2="700"/>
+</g>
+<rect x="12" y="644" width="14" height="56" fill="none" stroke="#FFD2C8" stroke-width="2"/>
+<text x="34" y="666" font-size="12" fill="#FFD2C8" font-weight="700" xml:space="preserve">× BLOCKED · load_warehouse</text>
+<text x="34" y="686" font-size="10" fill="#FFD2C8" xml:space="preserve">needs step 4 approval · nothing written</text>
+<rect x="12" y="708" width="366" height="40" fill="#141A1C" stroke="#9AA3A8" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="20" y="732" font-size="11" fill="#9AA3A8" xml:space="preserve">? UNKNOWN · notify_owner · no heartbeat</text>
+<rect x="12" y="756" width="366" height="44" fill="#C47A3A"/>
+<text x="195.0" y="784" font-size="13" fill="#0B1012" font-weight="700" text-anchor="middle" xml:space="preserve">APPROVE 482 PAIRS</text>
+<text x="12" y="808" font-size="9" fill="#9AA3A8" xml:space="preserve">STATE: select=invert · focus=ring · blocked=hatch+</text>
+<text x="12" y="822" font-size="9" fill="#9AA3A8" xml:space="preserve">double rule · unknown=dashed · status≠identity</text>
+<text x="12" y="836" font-size="9" fill="#9AA3A8" xml:space="preserve">SAMPLE · fictional · no secrets · v4 consistency</text>
+<text x="12" y="850" font-size="9" fill="#9AA3A8" xml:space="preserve">K · narrow connect→capabilities→run · F17.01 Cop</text>
+</svg>

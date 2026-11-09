@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F06 CONTENT CONTAINERS · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F06.01 HARD PANEL</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">##TITLE##</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">|body    |</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">+-------+</text>
+<text x="24" y="226" font-size="10" fill="#000">Group a step&#x27;s info</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F06.02 PORTED BOX</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">IN&gt; +--  --+ &gt;OUT</text>
+<text x="324" y="226" font-size="10" fill="#000">Show I/O</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F06.03 RULED SECTION</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">--------</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">text</text>
+<text x="624" y="226" font-size="10" fill="#000">Calm reading</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F06.04 ACCORDION DECK</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">▶ deck 1</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">▼ deck 2</text>
+<text x="924" y="148" font-size="14" fill="#000" xml:space="preserve">  ...</text>
+<text x="924" y="226" font-size="10" fill="#000">Progressive detail</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F06.05 FOCUS STRIP</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">## FOCUS: orders-etl ##</text>
+<text x="1224" y="128" font-size="14" fill="#000" xml:space="preserve">status [RUNNING]</text>
+<text x="1224" y="226" font-size="10" fill="#000">Feature one thing without floating low-d</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F06.06 LEDGER STRIP</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">run#42 | ok | 3m</text>
+<text x="24" y="416" font-size="10" fill="#000">Dense lists</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F06.07 SPLIT CARD</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">MODEL | llama</text>
+<text x="324" y="416" font-size="10" fill="#000">Key-value detail</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F06.08 HATCHED PLACEHOLDER</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">////////</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">/ n/a  /</text>
+<text x="624" y="416" font-size="10" fill="#000">Show unsupported area</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F06.09 TABBED CONTAINER</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">[LOG]##OUT##[CFG]</text>
+<text x="924" y="416" font-size="10" fill="#000">Switch facets</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F06.10 NESTED BAY</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">+------+</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">|+----+|</text>
+<text x="1224" y="338" font-size="14" fill="#000" xml:space="preserve">|+----+|</text>
+<text x="1224" y="416" font-size="10" fill="#000">Hierarchy</text>
+</svg>

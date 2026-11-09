@@ -1,0 +1,16 @@
+name=jaryo
+path=.
+build=lab-20261109-public
+built_at_local=2026-11-09T11:00:00-0800
+built_at_utc=2026-11-09T19:00:00Z
+curated_ids=85
+full_catalog_option_count=170
+families=17
+checks=validate_lab.py; test_persistence_rules.mjs; test_lab_dom.mjs; node --check lab.js
+fixtures=lab-import-fixtures/
+multi_tab=NOT implemented (honest limit)
+agiw_native=not this package
+no_fabricated_user_preferences=true
+polish_20261109=mono-factory-visual; type-scale; spacing-rhythm; dark-theme; radiogroup-roving-home-end-space; tabs-pattern; focus-visible; aa-contrast; responsive-260; reduced-motion; color-batch-grouped
+verification=VERIFICATION.md; verification/*.json; scripts/browser/*.mjs
+homepage=https://fortheloveof.studio/code/jaryo/

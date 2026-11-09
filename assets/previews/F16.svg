@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F16 SEARCH / FILTER / COMMAND DISCOVERY · 10 OPTIONS · ASCII WIREFRAME PREVIEWS</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F16.01 COMMAND PALETTE</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">&gt; run_</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">run parse</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">run all (n/a)</text>
+<text x="24" y="226" font-size="10" fill="#000">Find actions</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F16.02 FACET RAIL</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">STATE [x]fail</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">STAGE [ ]etl</text>
+<text x="324" y="226" font-size="10" fill="#000">Narrow runs</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F16.03 PLAIN-LANGUAGE FIND</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">&#x27;failed today&#x27;</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">→[FAILED][TODAY]</text>
+<text x="624" y="226" font-size="10" fill="#000">Non-technical</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F16.04 GRAPH HIGHLIGHT SEARCH</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">[A] [#B#] [C]</text>
+<text x="924" y="226" font-size="10" fill="#000">Locate step</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F16.05 ACTION DISCOVERY PANEL</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">RUN yes</text>
+<text x="1224" y="128" font-size="14" fill="#000" xml:space="preserve">PAUSE no</text>
+<text x="1224" y="226" font-size="10" fill="#000">Learn capabilities</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F16.06 RECENT + PINNED</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">★ run parse</text>
+<text x="24" y="416" font-size="10" fill="#000">Repeat work</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F16.07 FILTER CHIPS ROW</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[ALL]##FAIL##[OK]</text>
+<text x="324" y="416" font-size="10" fill="#000">Quick filter</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F16.08 SCOPED SEARCH</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">in: parse ▸ _</text>
+<text x="624" y="416" font-size="10" fill="#000">Precision</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F16.09 KEYBOARD MAP</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">k next  j prev</text>
+<text x="924" y="416" font-size="10" fill="#000">Learn</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F16.10 CLI MIRROR</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">= run --step parse</text>
+<text x="1224" y="416" font-size="10" fill="#000">Bridge to CLI</text>
+</svg>

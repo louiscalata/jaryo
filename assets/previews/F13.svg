@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F13 MOTION / LOOPS / TRANSITIONS · 10 OPTIONS · ASCII WIREFRAME PREVIEWS</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F13.01 DASH CIRCULATION</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">+- - &gt;</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">|    |</text>
+<text x="24" y="226" font-size="10" fill="#000">Show cycle</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F13.02 EVENT TICK</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">=&gt;==== </text>
+<text x="324" y="226" font-size="10" fill="#000">Truthful activity</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F13.03 HARD CUT</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">A | B</text>
+<text x="624" y="226" font-size="10" fill="#000">Clarity</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F13.04 WIPE INVERT</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">#### </text>
+<text x="924" y="226" font-size="10" fill="#000">Feedback</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F13.05 SLIDE ALONG BUS</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">|-&gt; panel</text>
+<text x="1224" y="226" font-size="10" fill="#000">Spatial continuity</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F13.06 STEP REVEAL</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">A</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">A&gt;B</text>
+<text x="24" y="338" font-size="14" fill="#000" xml:space="preserve">A&gt;B&gt;C</text>
+<text x="24" y="416" font-size="10" fill="#000">Explain structure</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F13.07 DEPENDENCY TRACE</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[A]==&gt;[B]==&gt;[C]</text>
+<text x="324" y="318" font-size="14" fill="#000" xml:space="preserve">^^^^ traced</text>
+<text x="324" y="416" font-size="10" fill="#000">Follow where data came from</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F13.08 RECORDED REPLAY SCRUBBER</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">|&lt;  [==#----]  &gt;|</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">event 14/40 11:02</text>
+<text x="624" y="416" font-size="10" fill="#000">Understand what happened</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F13.09 TYPEWRITER LOG</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">&gt; line 1</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">&gt; line 2_</text>
+<text x="924" y="416" font-size="10" fill="#000">Follow output</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F13.10 HARD-CUT DRILLDOWN</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">MAP</text>
+<text x="1224" y="318" font-size="14" fill="#000" xml:space="preserve">[load] → cut</text>
+<text x="1224" y="338" font-size="14" fill="#000" xml:space="preserve">p1 / etl / load</text>
+<text x="1224" y="416" font-size="10" fill="#000">Drill into a step from the map without s</text>
+</svg>

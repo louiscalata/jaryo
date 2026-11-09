@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F08 DIAGRAMS / DATA GRAPHICS · 10 OPTIONS · ASCII WIREFRAME PREVIEWS · v0.4</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F08.01 ORTHOGONAL DAG</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">[A]-+-&gt;[C]</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">[B]-+</text>
+<text x="24" y="226" font-size="10" fill="#000">See dependencies</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F08.02 SWIMLANE BUS</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">GPU =[a]==[c]=</text>
+<text x="324" y="128" font-size="14" fill="#000" xml:space="preserve">CPU ===[b]====</text>
+<text x="324" y="226" font-size="10" fill="#000">Who/what runs where</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F08.03 LOOP DIAGRAM</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">+&gt;[try]-+</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">+--&lt;x3--+</text>
+<text x="624" y="226" font-size="10" fill="#000">Understand loops</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F08.04 GANTT BELT</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">a === 12:01-12:03</text>
+<text x="924" y="128" font-size="14" fill="#000" xml:space="preserve">b ?  [no timestamps]</text>
+<text x="924" y="226" font-size="10" fill="#000">Timing</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F08.05 LINEAGE LEDGER</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">src.field  via     dest.field</text>
+<text x="1224" y="128" font-size="14" fill="#000" xml:space="preserve">email      parse   email_norm</text>
+<text x="1224" y="148" font-size="14" fill="#000" xml:space="preserve">[UNKNOWN]  load    ?</text>
+<text x="1224" y="226" font-size="10" fill="#000">Audit declared data lineage without fabr</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F08.06 COMB FANOUT</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">[map]-+-w</text>
+<text x="24" y="318" font-size="14" fill="#000" xml:space="preserve">      +-w</text>
+<text x="24" y="338" font-size="14" fill="#000" xml:space="preserve">      +-w</text>
+<text x="24" y="416" font-size="10" fill="#000">See parallelism</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F08.07 ISLAND TOPOLOGY</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[CLI] -- [MCP] CONNECTED</text>
+<text x="324" y="318" font-size="14" fill="#000" xml:space="preserve">[CLI] - - [SDK] PROPOSED</text>
+<text x="324" y="416" font-size="10" fill="#000">Integration overview</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F08.08 PORT MATRIX</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">   a  b</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">x  IN .</text>
+<text x="624" y="338" font-size="14" fill="#000" xml:space="preserve">y  .  OUT</text>
+<text x="624" y="416" font-size="10" fill="#000">Audit wiring</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F08.09 FUNNEL LEDGER</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">######### 1000</text>
+<text x="924" y="318" font-size="14" fill="#000" xml:space="preserve">######   590</text>
+<text x="924" y="338" font-size="14" fill="#000" xml:space="preserve">###      240</text>
+<text x="924" y="416" font-size="10" fill="#000">Where data drops</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F08.10 UNKNOWN-AWARE GRAPH</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">[A]-&gt;[?]-&gt;[C]</text>
+<text x="1224" y="416" font-size="10" fill="#000">Honest partial map</text>
+</svg>

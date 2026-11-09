@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "lab-v1",
+  "writerId": "fixture-mismatch",
+  "notice": "FICTIONAL cross-family / retired IDs mixed with one valid sibling.",
+  "choices": {
+    "F01": "F02.01",
+    "F02": "F02.99",
+    "F03": "F03.01",
+    "F88": "F88.01"
+  },
+  "purpose": "mismatched-partial-merge"
+}

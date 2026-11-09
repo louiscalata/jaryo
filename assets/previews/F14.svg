@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1520" height="450" viewBox="0 0 1520 450" font-family="Menlo,DejaVu Sans Mono,monospace">
+<rect width="1520" height="450" fill="#fff"/>
+<rect x="0" y="0" width="1520" height="44" fill="#000"/><text x="12" y="29" fill="#fff" font-size="18" font-weight="700">F14 RESPONSIVE / TOUCH · 10 OPTIONS · ASCII WIREFRAME PREVIEWS</text>
+<rect x="14" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="56" width="292" height="26" fill="#000"/><text x="22" y="74" fill="#fff" font-size="12" font-weight="700">F14.01 SPINE COLLAPSE</text>
+<text x="24" y="108" font-size="14" fill="#000" xml:space="preserve">1 fetch</text>
+<text x="24" y="128" font-size="14" fill="#000" xml:space="preserve">2 parse  ← fetch</text>
+<text x="24" y="148" font-size="14" fill="#000" xml:space="preserve">  ├ validate 1/2</text>
+<text x="24" y="168" font-size="14" fill="#000" xml:space="preserve">  └ enrich   0/2</text>
+<text x="24" y="188" font-size="14" fill="#000" xml:space="preserve">3 publish</text>
+<text x="24" y="226" font-size="10" fill="#000">Mobile graph</text>
+<rect x="314" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="56" width="292" height="26" fill="#000"/><text x="322" y="74" fill="#fff" font-size="12" font-weight="700">F14.02 THUMB BAR</text>
+<text x="324" y="108" font-size="14" fill="#000" xml:space="preserve">[RUN][LOG][MORE]</text>
+<text x="324" y="226" font-size="10" fill="#000">Act one-handed</text>
+<rect x="614" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="56" width="292" height="26" fill="#000"/><text x="622" y="74" fill="#fff" font-size="12" font-weight="700">F14.03 RUN LEDGER (PHONE)</text>
+<text x="624" y="108" font-size="14" fill="#000" xml:space="preserve">&gt; parse  12s</text>
+<text x="624" y="128" font-size="14" fill="#000" xml:space="preserve">! load   fail</text>
+<text x="624" y="148" font-size="14" fill="#000" xml:space="preserve">  log…</text>
+<text x="624" y="168" font-size="14" fill="#000" xml:space="preserve">  match  2/3</text>
+<text x="624" y="226" font-size="10" fill="#000">Walk a run on phone with all siblings vi</text>
+<rect x="914" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="56" width="292" height="26" fill="#000"/><text x="922" y="74" fill="#fff" font-size="12" font-weight="700">F14.04 TAB DISTRICTS</text>
+<text x="924" y="108" font-size="14" fill="#000" xml:space="preserve">CONNECT|RUN|OUT</text>
+<text x="924" y="226" font-size="10" fill="#000">Lifecycle</text>
+<rect x="1214" y="56" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="56" width="292" height="26" fill="#000"/><text x="1222" y="74" fill="#fff" font-size="12" font-weight="700">F14.05 BIG HIT ROWS</text>
+<text x="1224" y="108" font-size="14" fill="#000" xml:space="preserve">[ row          ]</text>
+<text x="1224" y="226" font-size="10" fill="#000">Touch accuracy</text>
+<rect x="14" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="14" y="246" width="292" height="26" fill="#000"/><text x="22" y="264" fill="#fff" font-size="12" font-weight="700">F14.06 ADAPTIVE RAILS</text>
+<text x="24" y="298" font-size="14" fill="#000" xml:space="preserve">≡ GRAPH ≡</text>
+<text x="24" y="416" font-size="10" fill="#000">Keep workbench</text>
+<rect x="314" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="314" y="246" width="292" height="26" fill="#000"/><text x="322" y="264" fill="#fff" font-size="12" font-weight="700">F14.07 PINCH MAP + BUTTONS</text>
+<text x="324" y="298" font-size="14" fill="#000" xml:space="preserve">[+][-] map</text>
+<text x="324" y="416" font-size="10" fill="#000">Big graphs</text>
+<rect x="614" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="614" y="246" width="292" height="26" fill="#000"/><text x="622" y="264" fill="#fff" font-size="12" font-weight="700">F14.08 REVIEW FULLSCREEN</text>
+<text x="624" y="298" font-size="14" fill="#000" xml:space="preserve">REVIEW</text>
+<text x="624" y="318" font-size="14" fill="#000" xml:space="preserve">[CONFIRM]</text>
+<text x="624" y="416" font-size="10" fill="#000">Safe approve</text>
+<rect x="914" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="914" y="246" width="292" height="26" fill="#000"/><text x="922" y="264" fill="#fff" font-size="12" font-weight="700">F14.09 LANDSCAPE LEDGER</text>
+<text x="924" y="298" font-size="14" fill="#000" xml:space="preserve">↻ wide</text>
+<text x="924" y="416" font-size="10" fill="#000">Dense data</text>
+<rect x="1214" y="246" width="292" height="180" fill="#fff" stroke="#000" stroke-width="2"/>
+<rect x="1214" y="246" width="292" height="26" fill="#000"/><text x="1222" y="264" fill="#fff" font-size="12" font-weight="700">F14.10 DESKTOP HANDOFF</text>
+<text x="1224" y="298" font-size="14" fill="#000" xml:space="preserve">edit graph →desktop</text>
+<text x="1224" y="416" font-size="10" fill="#000">Complex config</text>
+</svg>

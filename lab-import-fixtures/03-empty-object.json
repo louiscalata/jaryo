@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "lab-v1",
+  "writerId": "fixture-empty",
+  "notice": "FICTIONAL empty choices; must not wipe (use Reset for intentional clear).",
+  "choices": {},
+  "purpose": "empty-reject"
+}

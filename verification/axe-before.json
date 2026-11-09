@@ -1,0 +1,1042 @@
+[
+  {
+    "mode": "light",
+    "width": 260,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 260
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "light",
+    "width": 375,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 375
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "light",
+    "width": 768,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "light",
+    "width": 1280,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "dark",
+    "width": 260,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 260
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "dark",
+    "width": 375,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 375
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "dark",
+    "width": 768,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "dark",
+    "width": 1280,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "reduced-motion",
+    "width": 260,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 260
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "reduced-motion",
+    "width": 375,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 375
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "reduced-motion",
+    "width": 768,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "reduced-motion",
+    "width": 1280,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "dark-reduced-motion",
+    "width": 260,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 260,
+        "clientWidth": 260
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 260
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "dark-reduced-motion",
+    "width": 375,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "summary": {
+        "violations": [
+          {
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "nodes": 1,
+            "sample": [
+              "#export-box :: Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 375,
+        "clientWidth": 375
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": true,
+        "scrollWidth": 468,
+        "clientWidth": 375
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3,
+      "scrollable-region-focusable": 1
+    },
+    "violationRules": 2,
+    "violationNodes": 4,
+    "anyHscroll": true
+  },
+  {
+    "mode": "dark-reduced-motion",
+    "width": 768,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 768,
+        "clientWidth": 768
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  },
+  {
+    "mode": "dark-reduced-motion",
+    "width": 1280,
+    "views": {
+      "F01": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F13": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "F17": {
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "nodes": 3,
+            "sample": [
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(1) :: Fix any of the following:\n  Element has insufficient color contrast of 1.76 (foreground color: #f4f1ea, background color: #8fc4a0, font size: 8.3pt (11px), font",
+              "div:nth-child(2) > div:nth-child(2) > span:nth-child(2) :: Fix any of the following:\n  Element has insufficient color contrast of 1.92 (foreground color: #f4f1ea, background color: #8fb4d6, font size: 8.3pt (11px), font",
+              "div[data-preview=\"F17.10\"] > .color-preview > div:nth-child(1) > div:nth-child(2) > span:nth-child(3) :: Fix any of the following:\n  Element has insufficient color contrast of 1.16 (foreground color: #b8ffc8, background color: #33ff66, font size: 8.3pt (11px), font"
+            ]
+          }
+        ],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "journeys": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "summary": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      },
+      "docs": {
+        "violations": [],
+        "hscroll": false,
+        "scrollWidth": 1280,
+        "clientWidth": 1280
+      }
+    },
+    "errors": [],
+    "ruleTotals": {
+      "color-contrast": 3
+    },
+    "violationRules": 1,
+    "violationNodes": 3,
+    "anyHscroll": false
+  }
+]
