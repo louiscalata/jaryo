@@ -1,0 +1,405 @@
+<title>Jaryo Adaptive Interface</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one column of short sections on a hard-edged graphite ground; a working miniature in the middle. Copper Workshop tokens (spec F17.01): copper only on the mark and the one primary action. */
+:root {
+  --bg: #0B1012; --surface: #141A1C; --text: #F4F1EA; --muted: #9AA3A8; --border: #5A676C;
+  --focus: #E8D7A8; --copper: #C47A3A; --copper-ink: #0B1012;
+  --ok: #8FC4A0; --run: #8FB4D6; --blocked-fg: #FFD2C8; --blocked-bg: #3A2020; --ink-soft: #3B4448; --blocked-sel: #6B2A1E;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --hit: 44px; --max: 1080px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; border-radius: 0 !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+a { color: var(--text); }
+:focus-visible { outline: 3px dashed var(--focus); outline-offset: 3px; }
+.wrap { max-width: var(--max); margin: 0 auto; }
+h1, h2, h3 { font-family: var(--mono); line-height: 1.12; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(34px, 7vw, 60px); letter-spacing: -.015em; }
+h2 { font-size: clamp(22px, 3.4vw, 30px); letter-spacing: -.005em; }
+h3 { font-size: 15px; letter-spacing: .01em; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); }
+.muted { color: var(--muted); }
+
+/* top bar */
+.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 14px; border-bottom: 2px solid var(--border); }
+.mark { font-family: var(--mono); font-weight: 700; letter-spacing: .12em; background: var(--copper); color: var(--copper-ink); padding: 6px 10px; }
+.top nav { display: flex; gap: 4px 14px; flex-wrap: wrap; font-family: var(--mono); font-size: 13px; margin-left: auto; }
+.top nav a { min-height: var(--hit); min-width: var(--hit); display: inline-flex; align-items: center; justify-content: center; padding: 0 4px; }
+.stage { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px solid var(--border); padding: 4px 8px; }
+
+/* hero */
+.hero { padding-block: 48px 40px; display: grid; gap: 28px; }
+.lede { font-size: clamp(17px, 2.2vw, 20px); max-width: 38em; }
+.where { border: 2px solid var(--border); background: var(--surface); padding: 14px 16px; max-width: 46em; font-size: 15px; }
+.where b { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 4px; color: var(--muted); }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { min-height: var(--hit); padding: 10px 16px; background: var(--surface); border: 2px solid var(--border); color: var(--text); font: 13px/1.2 var(--mono); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+.btn.primary { background: var(--copper); border-color: var(--copper); color: var(--copper-ink); font-weight: 700; }
+.btn[aria-disabled="true"] { border-style: dashed; color: var(--muted); cursor: not-allowed; }
+.ba { display: grid; grid-template-columns: minmax(0,1fr) 28px minmax(0,1fr); gap: 12px; align-items: center; font-family: var(--mono); font-size: 12.5px; }
+.ba pre { margin: 0; background: var(--surface); border: 1px solid var(--border); padding: 14px; overflow-x: auto; line-height: 1.55; }
+.ba .arrow { text-align: center; color: var(--muted); }
+.ba .cap { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+.ba .lbl { margin-bottom: 6px; display: block; }
+th[scope="row"] { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--border); font-family: var(--sans); font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--text); background: transparent; font-weight: 600; white-space: nowrap; position: static; }
+.tw caption { position: absolute; left: -9999px; }
+
+/* sections */
+section.s { padding-block: 44px; border-top: 2px solid var(--border); display: grid; gap: 22px; }
+.sub { color: var(--muted); max-width: 44em; }
+.cols3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+.cols2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.box { border: 2px solid var(--border); background: var(--surface); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.box p, .box li { font-size: 15px; }
+.box ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+/* state chips: word + glyph, never colour alone */
+.chip { font-family: var(--mono); font-size: 12px; font-weight: 700; display: inline-block; padding: 2px 7px; border: 1px solid currentColor; white-space: nowrap; }
+.chip.ok { color: var(--ok); } .chip.run { color: var(--run); }
+.chip.blocked { background: var(--blocked-bg); color: var(--blocked-fg); border-color: var(--blocked-fg); }
+.chip.unk { color: var(--muted); border-style: dashed; }
+.chip.rev { color: var(--text); border: 2px solid var(--text); }
+
+/* demo */
+.demo { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 16px; align-items: start; }
+.bus { position: relative; display: grid; gap: 14px; padding-left: 22px; }
+.bus::before { content: ""; position: absolute; left: 6px; top: 10px; bottom: 10px; border-left: 3px solid var(--border); }
+.step { text-align: left; width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 12px 14px; font: inherit; cursor: pointer; min-height: 64px; display: grid; gap: 2px; position: relative; }
+.step::before { content: ""; position: absolute; left: -22px; top: 50%; width: 22px; border-top: 3px solid var(--border); }
+.step .nm { font-weight: 600; display: flex; gap: 10px; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+.step .id { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.step .rel { font-family: var(--mono); font-size: 11.5px; min-height: 0; }
+.step.nb { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.step[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.step[aria-pressed="true"] .id { color: var(--ink-soft); }
+.step[aria-pressed="true"] .chip { color: var(--bg); background: transparent; border-color: var(--bg); }
+.step.blocked[aria-pressed="true"] .chip { color: var(--blocked-sel); border-color: var(--blocked-sel); }
+.step.blocked { background: var(--blocked-bg); border-left: 6px double var(--blocked-fg); }
+.step.blocked[aria-pressed="true"] { background: var(--text); border-left-color: var(--blocked-sel); }
+.step.unk { border-style: dashed; background-image: repeating-linear-gradient(135deg, var(--border) 0 1px, transparent 1px 6px); background-size: 12px 100%; background-repeat: no-repeat; padding-left: 26px; }
+.step.unk[aria-pressed="true"] { background-image: none; }
+.fork { font-family: var(--mono); font-size: 12px; color: var(--muted); padding-left: 2px; }
+.insp { border: 2px solid var(--border); background: var(--surface); padding: 16px; min-height: 330px; display: grid; gap: 10px; align-content: start; }
+.insp h3 { font-size: 17px; }
+.insp .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.insp ul { margin: 0; padding-left: 18px; font-size: 14px; }
+.insp .acts { display: grid; gap: 8px; margin-top: 4px; }
+.reason { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.review { border: 2px solid var(--text); padding: 14px; display: grid; gap: 10px; background: var(--bg); }
+.review[hidden] { display: none; }
+.review h3 { font-size: 16px; }
+.live { font-family: var(--mono); font-size: 12px; color: var(--muted); min-height: 18px; }
+
+/* tables */
+.tw { overflow-x: auto; border: 1px solid var(--border); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 640px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+th { font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--surface); position: sticky; top: 0; }
+td.n { font-weight: 600; white-space: nowrap; }
+.st td:first-child { white-space: nowrap; }
+
+/* shots */
+.shots { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.shots figure { margin: 0; width: min(100%, 250px); display: grid; gap: 6px; }
+.shots img { width: 100%; height: auto; border: 2px solid var(--border); display: block; }
+.shots figcaption { font-size: 12.5px; color: var(--muted); }
+
+/* plan */
+.plan { display: grid; gap: 14px; counter-reset: stage; }
+.stg { border: 2px solid var(--border); background: var(--surface); padding: 16px; display: grid; gap: 8px; grid-template-columns: 56px minmax(0,1fr); }
+.stg .num { font-family: var(--mono); font-size: 28px; font-weight: 700; line-height: 1; }
+.stg .body { display: grid; gap: 6px; min-width: 0; }
+.stg .exit { font-size: 14px; border-top: 1px solid var(--border); padding-top: 8px; }
+.stg .exit b, .lbl { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.stg.done { border-style: dashed; }
+
+.foot { font-size: 13px; color: var(--muted); display: grid; gap: 8px; max-width: 52em; }
+.foot a { color: var(--muted); }
+ul.src { margin: 0; padding-left: 18px; display: grid; gap: 0; }
+ul.src a { display: inline-block; padding-block: 15px; }
+
+@media (max-width: 800px) {
+  .cols3, .cols2, .demo { grid-template-columns: minmax(0,1fr); }
+  .ba { grid-template-columns: minmax(0,1fr); }
+  .ba .arrow { transform: rotate(90deg); }
+  .top nav { display: none; }
+  .stg { grid-template-columns: minmax(0,1fr); }
+  .hero { padding-top: 32px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="mark">JARYO</span>
+    <span class="stage">DESIGN STAGE · v0.5e · checked 2026-11-07</span>
+    <nav aria-label="Sections">
+      <a href="#try">Try it</a><a href="#status">What works</a><a href="#why">Why Jaryo</a><a href="#landscape">Landscape</a><a href="#plan">Plan</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div style="display:grid;gap:14px">
+        <p class="eyebrow">Adaptive interface for pipelines</p>
+        <h1>Your pipeline,<br>visual.</h1>
+        <p class="lede">Jaryo is designed to read what a pipeline already exposes (steps, inputs, runs, logs) and give it a graphical interface. The design shows only what the pipeline declares, draws everything else as unknown, and puts every consequential action behind a review.</p>
+      </div>
+      <div class="where" role="note"><b>Where it stands</b>A design spec and two reference screens, built on a fictional pipeline, plus a read-only adaptor spike on a sample pipeline written alongside it. No independent pipeline is connected, nobody outside the design process has used it, and nothing installs yet. This page says what is proven, what is not, and what happens next.</div>
+      <div class="cta">
+        <a class="btn primary" href="#plan">See the plan</a>
+        <a class="btn" href="#try">Try the miniature</a>
+        <a class="btn" href="#status">What works and what doesn't</a>
+      </div>
+      <div class="ba" role="group" aria-label="Before and after">
+<div><span class="lbl">Before: the log</span><pre>$ run orders_nightly
+fetch_orders   ok   1.9s
+dedupe_v2      ok   4.4s
+score_risk     ...
+load_wh        ERR  no credential</pre></div>
+        <span class="arrow" aria-hidden="true">→</span>
+<div><span class="lbl">After: Jaryo's view</span><pre>│ Fetch today's orders   ● [OK]
+│ Clean customer rows    ● [OK]
+│ Score order risk       ▶ [RUNNING]
+│ Load to warehouse      ✕ [BLOCKED]
+│   needs: warehouse credential</pre></div>
+        <p class="cap">Sample from the website reference screen. The command and results are placeholders.</p>
+      </div>
+    </div>
+
+    <section class="s" id="what" aria-labelledby="what-h">
+      <h2 id="what-h">The idea in three lines</h2>
+      <div class="cols3">
+        <div class="box"><h3>The hypothesis</h3><p>Pipelines live in terminals and log files, so people who work visually may not be able to see steps, tell what failed, or act safely. This has not been tested with users.</p></div>
+        <div class="box"><h3>The approach</h3><p>In the design, an adaptor reports what the pipeline can do and Jaryo draws exactly that: no invented status, no buttons for actions the pipeline doesn't declare.</p></div>
+        <div class="box"><h3>The design rule</h3><p>Anything undiscovered is drawn as <span class="chip unk">? [UNKNOWN]</span>. Run, deploy, delete and overwrite are meant to open a <span class="chip rev">◆ [REVIEW]</span> first, with Cancel focused. Only Run is shown so far, on a fictional pipeline.</p></div>
+      </div>
+    </section>
+
+    <section class="s" id="try" aria-labelledby="try-h">
+      <div style="display:grid;gap:8px"><h2 id="try-h">Try the miniature</h2>
+      <p class="sub">A simplified sketch of the reference screen, written for this page. Its sample pipeline is a shortened version of the reference's and is not covered by the tests. Pick a step, open the review, try Pause.</p></div>
+      <div class="demo">
+        <div>
+          <div class="bus" id="bus" role="group" aria-label="Pipeline: Nightly orders to warehouse (sample)"></div>
+        </div>
+        <div class="insp" id="insp"></div>
+      </div>
+      <div class="live" id="live" aria-live="polite"></div>
+      <p class="sub" style="font-size:13px">On the reference screen, selection inverts the step and labels its declared neighbours. The others keep a hairline frame and a muted title, never reduced opacity, so contrast holds. This sketch inverts and labels but does not mute.</p>
+    </section>
+
+    <section class="s" id="status" aria-labelledby="status-h">
+      <div style="display:grid;gap:8px"><h2 id="status-h">What works and what doesn't</h2>
+      <p class="sub">The working rows were re-checked on 2026-11-07 against the files, the tests and the running screens. The open rows come from the lab's own lists of what is not covered. The check also found two faults, both now fixed.</p></div>
+      <div class="cols2">
+        <div class="box">
+          <h3><span class="chip ok">● [VERIFIED]</span> Working today</h3>
+          <ul>
+            <li><b>Files intact.</b> All five hashed files (spec, both screens, test file, safe-area diff) match their recorded hashes.</li>
+            <li><b>Behaviour tests.</b> 21 of 21 jsdom tests pass (stubbed dialog; no layout or safe-area coverage): hidden groups auto-open on a problem, the phone fork never guesses, the activity tick resets per run.</li>
+            <li><b>Screens behave.</b> Selection, the command palette (unavailable actions listed with a reason) and the review gate were driven at desktop width. The phone sheet, thumb bar and fork chooser were driven at 375px. Not every path ran at both widths.</li>
+            <li><b>Contrast is real.</b> 23 colour pairs recomputed; none off by more than 0.01. Every colour in the app comes from the token table.</li>
+            <li><b>Reviewed.</b> 15 rounds by one reviewer model (Codex) reading the source. Nine returned findings, all fixed; rounds 5, 8, 9, 12, 13 and 15 returned none. This is advice, not user validation.</li>
+            <li><b>Adaptor spike.</b> It copies every status from a pipeline's own run record and shows anything else as unknown. 63 adaptor checks (14 deliberately broken versions must each fail) and 21 renderer checks pass. It also showed the spec has no "failed" state.</li>
+            <li><b>Phone.</b> Checked in real mobile Safari inside an iPhone 17 Pro simulator: thumb bar, full-sheet detail, fork chooser.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3><span class="chip blocked">✕ [NOT YET]</span> Not working or not done</h3>
+          <ul>
+            <li><b>No independent pipeline.</b> A read-only adaptor spike exists, but only on a sample pipeline written alongside it. The two reference screens run a fictional sample.</li>
+            <li><b>No user testing.</b> The only human input so far is the owner's 17 design picks and five behaviour decisions.</li>
+            <li><b>Install route undecided.</b> CLI, MCP or another way is open. MCP alone doesn't draw a UI.</li>
+            <li><b>Install line is a placeholder.</b> Nothing installs; the website is a reference screen.</li>
+            <li><b>Accessibility is partly proven.</b> Contrast and keyboard paths are measured. No screen reader has been used, and the border contrast margin is thin (3.007:1 against a 3:1 minimum).</li>
+            <li><b>No physical iPhone.</b> The home-screen (standalone) launch has not been run; its safe-area padding rests on a code review.</li>
+            <li><b>Rule not met everywhere.</b> The reference screen still shows a few inert placeholder buttons (Change, Set credential) that its sample adaptor does not declare.</li>
+            <li><b>Open lab items.</b> No repository yet. The native file-picker Esc check is still by hand. Two lab-tool candidates (accessibility, multi-tab) await adoption by the canonical lab's writer; they are not Jaryo features.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box">
+        <h3><span class="chip run">▶ [FIXED TODAY]</span> Found by the re-check</h3>
+        <ul>
+          <li>The website reference overflowed by 48px at phone width. Fixed; page width now measures 375px with no overflow. Codex reviewed the change (round 13, KEEP, source only). The fixed file is now the one in Notion.</li>
+          <li>The spec and receipt still quoted the previous version, an old file hash and "5 review rounds". Corrected.</li>
+        </ul>
+      </div>
+      <div class="shots" aria-label="Phone evidence">
+        <figure><img alt="iPhone simulator: full-sheet detail for Score order risk with the fork notice and the 56 pixel thumb bar" src="data:image/png;base64,@@IMG_A@@"><figcaption>Real mobile Safari in the iPhone 17 Pro simulator (build v0.5b): detail sheet at a fork, thumb bar below. Not a physical device.</figcaption></figure>
+        <figure><img alt="iPhone simulator: Choose the next step dialog listing two branches with an offset dashed focus ring" src="data:image/png;base64,@@IMG_B@@"><figcaption>"Next" at a fork opens a chooser instead of guessing a branch (build v0.5b).</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="s" id="why" aria-labelledby="why-h">
+      <div style="display:grid;gap:8px"><h2 id="why-h">Why choose Jaryo</h2>
+      <p class="sub">Six points. Each is a design rule or a recorded decision, backed by what has been shown on the reference screens. None has been shown on a real pipeline yet.</p></div>
+      <div class="cols3">
+        <div class="box"><h3>Designed never to invent status</h3><p>Only declared steps and actions are meant to appear. Missing ones are drawn as unknown. Unavailable actions are listed as <span class="mono">(n/a)</span> with the pipeline's own reason.</p></div>
+        <div class="box"><h3>Consequential actions get a review</h3><p>The design requires run, deploy, delete and overwrite to pass a summary that states what will happen and what is blocked, with Cancel focused. Only Run is shown so far.</p></div>
+        <div class="box"><h3>A layer, not a platform</h3><p>The intent is an interface over the pipeline you already run, not a canvas where you rebuild it. This is the claim most in need of proof.</p></div>
+        <div class="box"><h3>Built for hands and eyes</h3><p>44px targets, a 56px one-handed thumb bar, full keyboard paths, visible focus, state as word plus glyph, and a pure black-and-white mode.</p></div>
+        <div class="box"><h3>Design picks are made</h3><p>17 design picks and 5 owner decisions are recorded, with 15 review rounds and 21 passing jsdom tests. Install route, repository and first pipeline are still open.</p></div>
+        <div class="box"><h3>Gaps are written down</h3><p>The spec lists what it has not covered, and so does this page. Reviewer approval is recorded as advice, not as proof that users want it.</p></div>
+      </div>
+      <div class="cols2">
+        <div class="box"><h3>Choose Jaryo if</h3><ul><li>You want an interface that cannot overstate what a pipeline can do.</li><li>Your users work visually and on phones, and you will help test accessibility. No screen-reader or physical-phone test has been done yet.</li><li>You can back a first real pipeline and a round of testing.</li></ul></div>
+        <div class="box"><h3>Choose something else if</h3><ul><li>You need a working product now. Windmill, Dagster and n8n ship today.</li><li>You want to build the pipeline itself in a canvas.</li><li>You need proof of user demand before investing.</li></ul></div>
+      </div>
+    </section>
+
+    <section class="s" id="landscape" aria-labelledby="land-h">
+      <div style="display:grid;gap:8px"><h2 id="land-h">What's out there</h2>
+      <p class="sub">Researched on 2026-11-07 from vendor docs and repositories, then re-checked by a second pass that corrected 16 of 38 claims and could not support one more. "Not documented" means not found on the pages read, not "absent". These products ship; Jaryo does not.</p></div>
+
+      <div class="eyebrow">Closest neighbours</div>
+      <div class="tw" tabindex="0" role="region" aria-label="Closest neighbours table, scrolls sideways">
+        <table>
+          <caption>Closest neighbours to Jaryo, by product</caption><thead><tr><th scope="col">Product</th><th scope="col">Why it's close</th><th scope="col">How Jaryo's design differs (intent, not built)</th><th scope="col">Where they're ahead</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" class="n"><a href="https://www.windmill.dev/docs/flows/flow_approval" target="_blank" rel="noopener">Windmill</a></th><td>Generates input forms from code and has approval steps with a review page showing what is being decided.</td><td>Work is authored inside Windmill. No adaptor over a foreign pipeline and no unknown-state rule documented.</td><td>Ships. Approval page, Slack and Teams, desktop and mobile app layouts. Login, no-self-approval and group controls are Cloud or Enterprise features.</td></tr>
+            <tr><th scope="row" class="n"><a href="https://dagster.io/docs/guides/operate/webserver" target="_blank" rel="noopener">Dagster</a> external assets</th><td>Shows work that runs elsewhere next to native assets.</td><td>Declare-then-report inside Dagster; the UI comes from Dagster definitions.</td><td>Lineage, partitions, backfills.</td></tr>
+            <tr><th scope="row" class="n"><a href="https://docs.ag-ui.com/concepts/capabilities" target="_blank" rel="noopener">AG-UI</a> (<a href="https://docs.ag-ui.com/concepts/interrupts" target="_blank" rel="noopener">interrupts</a>), <a href="https://a2ui.org/specification/v1.0-a2ui/" target="_blank" rel="noopener">A2UI</a>, <a href="https://blog.modelcontextprotocol.io/posts/2025-11-21-mcp-apps" target="_blank" rel="noopener">MCP Apps</a></th><td>Protocols for agent-driven UI. AG-UI states "absent = unknown" for capabilities and defines approval interrupts. A2UI renders only from an approved catalog.</td><td>They carry events and components, not a pipeline view. How to show an undeclared item is left to the integrator.</td><td>Versioned specs, SDKs, several hosts. Our inference: Jaryo could ride on these instead of competing with them.</td></tr>
+            <tr><th scope="row" class="n"><a href="https://backstage.io/docs/accessibility/" target="_blank" rel="noopener">Backstage</a> templates</th><td>Runs with inputs, steps, logs, history and a review screen before "Create".</td><td>Assembled by platform engineers from catalog YAML. Its review is a self-check, and Jaryo's designed gate is also a self-confirmation.</td><td>Large plugin ecosystem; accessibility checks in CI with candid limits.</td></tr>
+            <tr><th scope="row" class="n"><a href="https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/" target="_blank" rel="noopener">Swagger UI</a>, Scalar, MCP Inspector</th><td>A UI built from what a backend declares (an OpenAPI file, or the capabilities an MCP server reports).</td><td>Developer tools for APIs, not for pipeline runs. Execution is on or off, not reviewed per action.</td><td>Everywhere, mature, well supported.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="eyebrow">By category</div>
+      <div class="cols2">
+        <div class="box"><h3>Orchestrator UIs</h3><p>Airflow, Dagster, Prefect, Temporal, Argo, Kestra, Flyte, GitHub Actions.</p><p class="muted"><b>Ahead:</b> real run history, logs, lineage, actions on live work. <b>Gap:</b> each UI is tied to its own engine. Argo documents an "Unknown" value only for a workflow's phase before it starts, not for individual steps; the others read don't mention one.</p></div>
+        <div class="box"><h3>Visual automation builders</h3><p>n8n, Make, Zapier, Node-RED, Retool Workflows, Windmill.</p><p class="muted"><b>Ahead:</b> large integration sets and, in most, a pause-for-approval step. <b>Gap:</b> the canvas is where the pipeline is built, so they don't sit over one that exists. Accessibility is thinly documented.</p></div>
+        <div class="box"><h3>LLM and agent tooling</h3><p>LangSmith Studio, Langflow, Dify, Flowise, Langfuse.</p><p class="muted"><b>Ahead:</b> traces, durable pause-and-resume, approve, edit or reject on a tool call. <b>Gap:</b> most are tied to one framework. Langfuse and LangSmith tracing take traces from several; no real-time gating was found on the pages read. LangSmith Studio targets the Agent Server API.</p></div>
+        <div class="box"><h3>Internal-tool builders</h3><p>Retool, Appsmith, Superblocks, Budibase, Streamlit, Gradio, Grafana.</p><p class="muted"><b>Ahead:</b> speed to a custom UI, connectors, mobile clients, permissions. <b>Gap:</b> the UI is built by hand or from a prompt, not read from a pipeline's declaration. None of the pages read describes reading a pipeline's declared steps.</p></div>
+      </div>
+
+      <div class="box" style="border-color:var(--text)">
+        <h3>The honest read</h3>
+        <ul>
+          <li><b>Approval gates are common.</b> n8n, Zapier, Windmill, Langflow, Dify, LangGraph, AG-UI and the OpenAI Apps SDK document one. Make's is an Enterprise closed beta, and Retool's user tasks were a private beta closed to new participants in May 2025. A review gate alone is not a reason to pick Jaryo.</li>
+          <li><b>The open space is the combination.</b> In the documentation read, no product puts one interface over a pipeline someone else already runs, shows undeclared parts as unknown, and gates every consequential action the same way. Absence of evidence is not proof, and it needs a real test. Not read: Kestra's human-task step, Power Automate, Tines, Rundeck, Activepieces and json-render; any of them could close this gap.</li>
+          <li><b>Competitors win on everything that needs a running system.</b> That is the gap the plan below closes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="s" id="plan" aria-labelledby="plan-h">
+      <div style="display:grid;gap:8px"><h2 id="plan-h">The plan</h2>
+      <p class="sub">A proposal, in order, with an exit test for each stage. There are no dates: each stage starts when the one before it passes.</p></div>
+      <div class="plan">
+        <div class="stg"><div class="num">0</div><div class="body"><h3>Tidy the base <span class="chip run">▶ [IN PROGRESS]</span></h3><p>Claims re-checked, stale text fixed, phone overflow fixed and reviewed. Left: the owner naming a repository.</p><p class="exit"><b>Exit</b> The spec, screens and tests live in a named repository.</p></div></div>
+        <div class="stg"><div class="num">1</div><div class="body"><h3>Close the checks that need no backend</h3><p>Use the reference screens with VoiceOver and NVDA. Run them on a physical iPhone, including the home-screen launch. Do the native file-picker Esc check by hand.</p><p class="exit"><b>Exit</b> Each check has a written pass or fail, and every failure is fixed or listed.</p></div></div>
+        <div class="stg"><div class="num">2</div><div class="body"><h3>One real pipeline, read-only</h3><p>Write down the host, adaptor and state boundaries, and choose the install route. Define what an adaptor must declare: steps, links between them, inputs, runs, logs, actions and the reason for any it lacks. Connect one real pipeline and render it. Started: a spike on a self-authored sample pipeline already holds the rule in code. Not yet done: a pipeline written independently.</p><p class="exit"><b>Exit</b> For a named real pipeline, a fixture that omits one referenced step and one status from the adaptor output renders them as UNKNOWN. Every step and state shown matches the pipeline's own run record, and a deliberate guess-a-status change makes a test fail.</p></div></div>
+        <div class="stg"><div class="num">3</div><div class="body"><h3>Test with people</h3><p>Proposed: five visually oriented users who don't use a terminal. Five is a starting number, not a sample size. Give each a fixed set of tasks, such as finding why a run is blocked and cancelling a review.</p><p class="exit"><b>Exit</b> Each task has a pass rule written beforehand (for example, 4 of 5 complete it unaided). Failures are fixed before stage 4.</p></div></div>
+        <div class="stg"><div class="num">4</div><div class="body"><h3>Gated actions</h3><p>Enable one declared action, such as retry, behind the review gate against a sandbox pipeline. Decide who may run actions. Repeat the stage 2 test on a second, different pipeline.</p><p class="exit"><b>Exit</b> A gated run completes, and a cancelled or refused one leaves the pipeline untouched on both pipelines.</p></div></div>
+        <div class="stg"><div class="num">5</div><div class="body"><h3>Make it installable</h3><p>Turn the placeholder install line and connect path into real ones, publish the website, and cut a versioned release.</p><p class="exit"><b>Exit</b> Three people who did not build it install it on their own pipeline and reach a first view without help.</p></div></div>
+      </div>
+      <div class="box">
+        <h3>Decisions needed from the owner</h3>
+        <ul>
+          <li><b>Repository and owner</b> for the spec, screens and tests.</li>
+          <li><b>Install route:</b> CLI, MCP, or an MCP-Apps-style host. The landscape suggests riding an existing protocol.</li>
+          <li><b>First pipeline: not chosen.</b> Spec decision 5 keeps the lab separate from AGIW Suite, so a pipeline outside it is the default. The AGIW inference monitor fits only if that separation is lifted, and the lab notes disagree on it.</li>
+          <li><b>Lab-tool candidates:</b> the canonical lab's writer adopts or rejects the accessibility and multi-tab candidates. They belong to the design-picking lab, not to Jaryo.</li>
+          <li><b>Go or hold.</b> Recommended: go to stage 1 and then stage 2, and build no more screens before a real pipeline is connected.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><b>How this was checked.</b> Files were hashed and tests re-run on 2026-11-07. The screens were driven in a browser pane at 1280 and 375px (rendered as a static snapshot, not a file origin). Competitor facts come mainly from vendor documentation, with some forum posts, issue trackers and source code. A second pass re-checked 38 of them; Kestra, Flyte, Flowise, Budibase, Gradio and Scalar were not re-checked. Design reviews and automated analysis are advice, not user validation.</p>
+    <ul class="src">
+      <li><a href="https://www.windmill.dev/docs/flows/flow_approval" target="_blank" rel="noopener">Windmill flow approval</a></li>
+      <li><a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/" target="_blank" rel="noopener">n8n send-and-wait</a></li>
+      <li><a href="https://apps.make.com/human-in-the-loop-enterprise" target="_blank" rel="noopener">Make human in the loop</a></li>
+      <li><a href="https://community.retool.com/t/early-access-add-user-driven-steps-tasks-and-approvals-to-automations-in-retool/44541" target="_blank" rel="noopener">Retool user tasks (forum post)</a></li>
+      <li><a href="https://docs.langchain.com/langsmith/studio" target="_blank" rel="noopener">LangSmith Studio</a>, <a href="https://docs.langflow.org/traces" target="_blank" rel="noopener">Langflow traces</a></li>
+      <li><a href="https://argo-workflows.readthedocs.io/en/latest/fields/" target="_blank" rel="noopener">Argo field reference</a>, <a href="https://docs.temporal.io/web-ui" target="_blank" rel="noopener">Temporal Web UI</a>, <a href="https://airflow.apache.org/docs/apache-airflow/stable/ui.html" target="_blank" rel="noopener">Airflow UI</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var S = [
+    { id: 'fetch_orders', name: "Fetch today's orders", st: 'OK', g: '●', cls: 'ok', next: ['dedupe_v2'], d: 'Finished in 1.9 s.' },
+    { id: 'dedupe_v2', name: 'Clean customer rows', st: 'OK', g: '●', cls: 'ok', next: ['score_risk'], d: 'Finished in 4.4 s.' },
+    { id: 'score_risk', name: 'Score order risk', st: 'RUNNING', g: '▶', cls: 'run', next: ['load_wh', 'undeclared'], d: 'Running. Two steps can follow it.' },
+    { id: 'load_wh', name: 'Load to warehouse', st: 'BLOCKED', g: '✕', cls: 'blocked', next: [], d: 'Blocked: warehouse credential is not set.' },
+    { id: 'undeclared', name: 'Undiscovered step', st: 'UNKNOWN', g: '?', cls: 'unk', next: [], d: 'Not declared by the adaptor. A run log implies it exists, so Jaryo will not invent a name or a status.' }
+  ];
+  var byId = {}; S.forEach(function (s) { byId[s.id] = s; });
+  S.forEach(function (s) { s.prev = S.filter(function (p) { return p.next.indexOf(s.id) > -1; }).map(function (p) { return p.id; }); });
+  var bus = document.getElementById('bus'), insp = document.getElementById('insp'), live = document.getElementById('live');
+  var sel = null, reviewOpen = false, note = '';
+  function chip(s) { return '<span class="chip ' + s.cls + '">' + s.g + ' [' + s.st + ']</span>'; }
+  function say(t) { live.textContent = ''; setTimeout(function () { live.textContent = t; }, 30); }
+  function renderBus(focusId) {
+    bus.innerHTML = '';
+    S.forEach(function (s) {
+      if (s.id === 'load_wh') { var f = document.createElement('div'); f.className = 'fork'; f.textContent = 'fork: 2 next steps'; bus.appendChild(f); }
+      var b = document.createElement('button');
+      var isSel = sel === s.id, nb = sel && !isSel && (byId[sel].prev.indexOf(s.id) > -1 || byId[sel].next.indexOf(s.id) > -1);
+      var rel = '';
+      if (nb) rel = byId[sel].prev.indexOf(s.id) > -1 ? '← input' : 'output →';
+      b.className = 'step ' + (s.cls === 'blocked' ? 'blocked ' : '') + (s.cls === 'unk' ? 'unk ' : '') + (nb ? 'nb' : '');
+      b.setAttribute('data-id', s.id);
+      b.setAttribute('aria-pressed', isSel ? 'true' : 'false');
+      b.setAttribute('aria-label', s.name + ', ' + s.st.toLowerCase() + (nb ? ', ' + (rel === '← input' ? 'input of' : 'output of') + ' selected step' : ''));
+      b.innerHTML = '<span class="nm"><span>' + (isSel ? '▶ ' : '') + s.name + '</span>' + chip(s) + '</span><span class="id">' + (s.cls === 'unk' ? 'not declared' : 'step_id: ' + s.id) + '</span>' + (rel ? '<span class="rel">' + rel + '</span>' : '');
+      b.addEventListener('click', function () { pick(s.id); });
+      bus.appendChild(b);
+      if (focusId === s.id) { b.focus(); }
+    });
+  }
+  function renderInsp() {
+    if (reviewOpen) { return; }
+    if (!sel) {
+      insp.innerHTML = '<h3>No step selected</h3><p class="muted">Pick a step on the left to see its neighbours, state and the actions its pipeline declares.</p>' + actions();
+      wire(); return;
+    }
+    var s = byId[sel];
+    var li = function (ids) { return ids.length ? '<ul>' + ids.map(function (i) { return '<li>' + byId[i].name + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="font-size:14px">none declared</p>'; };
+    var fork = s.next.length > 1 ? '<p class="reason" id="forklbl">fork: ' + s.next.length + ' next steps — choose one</p><div class="row" role="group" aria-labelledby="forklbl">' + s.next.map(function (n) { return '<button class="btn" data-go="' + n + '" aria-label="' + byId[n].name + ', ' + byId[n].st.toLowerCase() + '">' + byId[n].name + '</button>'; }).join('') + '</div>' : '';
+    insp.innerHTML = '<h3>' + s.name + '</h3><div class="row">' + chip(s) + '<span class="reason">' + (s.cls === 'unk' ? 'not declared by adaptor' : 'step_id: ' + s.id) + '</span></div><p style="font-size:14px">' + s.d + '</p><div class="lbl">Inputs</div>' + li(s.prev) + '<div class="lbl">Outputs</div>' + li(s.next) + fork + actions();
+    wire();
+  }
+  function actions() {
+    return '<div class="acts"><button class="btn" id="runbtn">Review run…</button><button class="btn" id="pausebtn" aria-disabled="true" aria-describedby="pausewhy">Pause run (n/a)</button><p class="reason" id="pausewhy" role="status">' + (note || 'Actions are limited to what the sample adaptor declares.') + '</p></div>';
+  }
+  function wire() {
+    var r = document.getElementById('runbtn'); if (r) r.addEventListener('click', openReview);
+    var p = document.getElementById('pausebtn'); if (p) p.addEventListener('click', function () { note = 'n/a: sample-cli adaptor does not declare pause'; document.getElementById('pausewhy').textContent = note; });
+    var g = insp.querySelectorAll('[data-go]'); for (var k = 0; k < g.length; k++) g[k].addEventListener('click', function (e) { pick(e.currentTarget.getAttribute('data-go')); });
+  }
+  function pick(id) {
+    var wasOpen = reviewOpen;
+    reviewOpen = false; sel = id; renderBus(id); renderInsp();
+    say((wasOpen ? 'Review closed. ' : '') + 'Selected ' + byId[id].name + ', ' + byId[id].st.toLowerCase() + '.');
+  }
+  function openReview() {
+    reviewOpen = true;
+    insp.innerHTML = '<div class="review" role="dialog" aria-modal="false" aria-labelledby="rv-h"><span class="chip rev" aria-hidden="true">◆ [REVIEW]</span><h3 id="rv-h">Review: run “Nightly orders → warehouse”?</h3><p style="font-size:14px">1 step is blocked (Load to warehouse) and 1 step is undiscovered. The run will stop at the blocked step.</p><div class="row"><button class="btn" id="rv-cancel">Cancel</button><button class="btn" id="rv-ok">Confirm run</button></div><p class="reason" id="rv-msg" role="status"></p></div>';
+    document.getElementById('rv-cancel').focus();
+    document.getElementById('rv-cancel').addEventListener('click', closeReview);
+    document.getElementById('rv-ok').addEventListener('click', function () { document.getElementById('rv-msg').textContent = 'SAMPLE: confirming does nothing.'; });
+    say('Review opened. Cancel is focused.');
+  }
+  function closeReview() { reviewOpen = false; renderInsp(); var r = document.getElementById('runbtn'); if (r) r.focus(); say('Review closed.'); }
+  insp.addEventListener('keydown', function (e) { if (e.key === 'Escape' && reviewOpen) { closeReview(); } });
+  renderBus(); renderInsp();
+})();
+</script>

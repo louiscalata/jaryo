@@ -1,0 +1,117 @@
+{
+  "schema": "jaryo-pipeline-manifest/0",
+  "id": "jaryo-verify",
+  "name": "Verify the Jaryo reference files",
+  "declares": {
+    "actions": [
+      "run",
+      "logs",
+      "retry"
+    ],
+    "events": false
+  },
+  "steps": [
+    {
+      "id": "check_hashes",
+      "name": "Check file hashes",
+      "needs": [],
+      "cmd": [
+        "shasum",
+        "-a",
+        "256",
+        "-c",
+        "HASHES.txt"
+      ]
+    },
+    {
+      "id": "run_decision_tests",
+      "name": "Run decision tests",
+      "needs": [
+        "check_hashes"
+      ],
+      "requiresEnv": [
+        "JSDOM"
+      ],
+      "cmd": [
+        "node",
+        "tests/decisions.test.mjs",
+        "reference/index.html"
+      ]
+    },
+    {
+      "id": "check_tokens",
+      "name": "Check colour tokens",
+      "needs": [
+        "check_hashes"
+      ],
+      "cmd": [
+        "node",
+        "pipeline/check-tokens.mjs"
+      ]
+    },
+    {
+      "id": "check_contrast",
+      "name": "Check contrast ratios",
+      "needs": [
+        "check_hashes"
+      ],
+      "cmd": [
+        "node",
+        "pipeline/check-contrast.mjs"
+      ]
+    },
+    {
+      "id": "run_adaptor_tests",
+      "name": "Run adaptor tests",
+      "needs": [
+        "check_hashes"
+      ],
+      "cmd": [
+        "node",
+        "tests/adaptor.test.mjs"
+      ]
+    },
+    {
+      "id": "run_render_tests",
+      "name": "Run renderer tests",
+      "needs": [
+        "check_hashes"
+      ],
+      "requiresEnv": [
+        "JSDOM"
+      ],
+      "cmd": [
+        "node",
+        "tests/render.test.mjs"
+      ]
+    },
+    {
+      "id": "run_reference_a11y_tests",
+      "name": "Run reference accessibility checks",
+      "needs": [
+        "check_hashes"
+      ],
+      "requiresEnv": [
+        "JSDOM"
+      ],
+      "cmd": [
+        "node",
+        "tests/reference-a11y.test.mjs"
+      ]
+    },
+    {
+      "id": "request_codex_review",
+      "name": "Request Codex review",
+      "needs": [
+        "run_decision_tests",
+        "check_tokens",
+        "check_contrast",
+        "run_adaptor_tests",
+        "run_render_tests",
+        "run_reference_a11y_tests"
+      ],
+      "consequential": true,
+      "reason": "starts a paid external review; needs an operator's go-ahead"
+    }
+  ]
+}

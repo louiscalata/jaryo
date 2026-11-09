@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jaryo adaptor view</title>
+<style>
+/* Renders a jaryo-view/0 document. Copper Workshop tokens. Text comes from the document through textContent only. */
+:root { --bg:#0B1012; --surface:#141A1C; --text:#F4F1EA; --muted:#9AA3A8; --border:#5A676C; --focus:#E8D7A8; --copper:#C47A3A; --copper-ink:#0B1012;
+  --ok:#8FC4A0; --run:#8FB4D6; --blocked-fg:#FFD2C8; --blocked-bg:#3A2020; --ink-soft:#3B4448; --blocked-sel:#6B2A1E;
+  --mono: ui-monospace,"SF Mono",Menlo,Consolas,monospace; --sans: ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif; --hit:44px; color-scheme: dark; }
+* { box-sizing:border-box; border-radius:0 !important; }
+html,body { margin:0; background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.45; }
+body { padding: 0 max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); overflow-wrap:anywhere; }
+:focus-visible { outline:3px dashed var(--focus); outline-offset:3px; }
+.wrap { max-width:1000px; margin:0 auto; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; }
+header { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding-block:14px; border-bottom:2px solid var(--border); }
+.mark { font:700 14px var(--mono); letter-spacing:.12em; background:var(--copper); color:var(--copper-ink); padding:6px 10px; }
+.mono { font-family:var(--mono); } .muted { color:var(--muted); }
+h1 { font:700 20px var(--mono); margin:0; }
+.note { font:14px var(--sans); border:1px solid var(--border); background:var(--surface); padding:10px 12px; }
+.caps { font:13px var(--mono); }
+.problem { border:2px solid var(--blocked-fg); background:var(--blocked-bg); color:var(--blocked-fg); padding:10px 12px; font-size:14px; }
+.problem[hidden] { display:none; }
+.layout { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:16px; align-items:start; }
+.bus { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; margin:0; padding:0; list-style:none; }
+.step { width:100%; text-align:left; background:var(--surface); color:var(--text); border:1px solid var(--border); padding:12px 14px; font:inherit; cursor:pointer; min-height:64px; display:grid; grid-template-columns:minmax(0,1fr); gap:3px; }
+.step .nm { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-weight:600; }
+.step .id { font:13px var(--mono); color:var(--muted); }
+.step[aria-pressed="true"] { background:var(--text); color:var(--bg); } .step[aria-pressed="true"] .id { color:var(--ink-soft); }
+.step.bad { background:var(--blocked-bg); border-left:6px double var(--blocked-fg); } .step.bad[aria-pressed="true"] { background:var(--text); border-left-color:var(--blocked-sel); }
+.step.unk { border-style:dashed; padding-left:26px; background-image:repeating-linear-gradient(135deg,var(--border) 0 1px,transparent 1px 6px); background-size:12px 100%; background-repeat:no-repeat; }
+.step.unk[aria-pressed="true"] { background-image:none; }
+.step.gated { border-top:3px solid var(--text); }
+.chip { font:700 12px var(--mono); border:1px solid currentColor; padding:2px 7px; white-space:nowrap; display:inline-block; }
+.chip.ok { color:var(--ok); } .chip.run { color:var(--run); } .chip.bad { color:var(--blocked-fg); background:var(--blocked-bg); } .chip.unk { color:var(--muted); border-style:dashed; } .chip.rev { color:var(--text); border-width:2px; }
+.step[aria-pressed="true"] .chip { color:var(--bg); background:transparent; border-color:var(--bg); } .step.bad[aria-pressed="true"] .chip { color:var(--blocked-sel); border-color:var(--blocked-sel); }
+.insp { border:2px solid var(--border); background:var(--surface); padding:16px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-height:260px; align-content:start; }
+.insp h2 { font:700 17px var(--mono); margin:0; }
+pre { margin:0; background:var(--bg); border:1px solid var(--border); padding:10px; overflow-x:auto; font:12px/1.5 var(--mono); white-space:pre; overflow-wrap:normal; }
+.btn { min-height:var(--hit); padding:10px 16px; background:var(--surface); border:2px solid var(--border); color:var(--text); font:13px var(--mono); cursor:pointer; }
+.btn.primary { border-color:var(--text); font-weight:700; }
+.btn[aria-disabled="true"] { border-style:dashed; color:var(--muted); cursor:not-allowed; }
+.acts { display:flex; gap:8px; flex-wrap:wrap; }
+.why { font:13px var(--mono); color:var(--muted); }
+dialog { background:var(--bg); color:var(--text); border:2px solid var(--text); padding:16px; max-width:min(520px, calc(100vw - 32px)); }
+dialog::backdrop { background:rgba(0,0,0,.72); }
+@media (max-width:760px) { .layout { grid-template-columns:minmax(0,1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><span class="mark">JARYO</span><h1 id="pname"></h1><span class="mono muted" id="pid"></span></header>
+  <main class="wrap" style="padding:0">
+    <p class="note" id="ro" role="note"></p>
+    <div class="note caps" id="caps"></div>
+    <p class="muted" id="runline" style="margin:0"></p>
+    <div class="problem" id="warn" hidden></div>
+    <div class="layout">
+      <ol class="bus" id="bus" aria-label="Pipeline steps"></ol>
+      <div class="insp" id="insp"></div>
+    </div>
+    <div class="why" id="live" role="status" aria-live="polite"></div>
+    <noscript><p class="problem">This page needs JavaScript to show the recorded run. Nothing here is a status.</p></noscript>
+  </main>
+</div>
+<dialog id="rev" aria-labelledby="rev-h">
+  <p class="chip rev">◆ [REVIEW]</p>
+  <h2 id="rev-h" class="mono" style="font-size:16px"></h2>
+  <p id="rev-body"></p>
+  <p id="rev-gated"></p>
+  <p class="why">This page only displays a record. It cannot run anything. To run the pipeline: <span class="mono">node pipeline/run.mjs</span></p>
+  <div class="acts"><button class="btn" id="rev-close" autofocus>Close, nothing will run</button></div>
+</dialog>
+<script type="application/json" id="view">{"schema":"jaryo-view/0","generatedAt":"2026-11-08T03:48:17.132Z","lastEventAt":"2026-11-08T03:48:01.422Z","pipeline":{"id":"jaryo-verify","name":"Verify the Jaryo reference files"},"run":{"id":3,"startedAt":"2026-11-08T03:48:00.235Z","endedAt":"2026-11-08T03:48:01.422Z","state":"ended"},"capabilities":{"declared":["run","logs","retry"],"eventStream":false},"actions":[{"id":"run","available":true,"review":true},{"id":"pause","available":false,"reason":"n/a: manifest does not declare pause"},{"id":"retry","available":true,"review":true},{"id":"cancel","available":false,"reason":"n/a: manifest does not declare cancel"},{"id":"logs","available":true,"review":false},{"id":"deploy","available":false,"reason":"n/a: manifest does not declare deploy"},{"id":"delete","available":false,"reason":"n/a: manifest does not declare delete"},{"id":"overwrite","available":false,"reason":"n/a: manifest does not declare overwrite"}],"steps":[{"id":"check_hashes","name":"Check file hashes","needs":[],"next":["run_decision_tests","check_tokens","check_contrast","run_adaptor_tests","run_render_tests"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":10,"exit":0,"tail":["reference/index.html: OK","reference/hero.html: OK","docs/spec/JARYO-INTERFACE-SPEC.md: OK","tests/decisions.test.mjs: OK","catalog pick export: omitted in public tree","safe-area receipt: omitted in public tree"]}},{"id":"run_decision_tests","name":"Run decision tests","needs":["check_hashes"],"next":["request_codex_review"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":413,"exit":0,"tail":["ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291"]}},{"id":"check_tokens","name":"Check colour tokens","needs":["check_hashes"],"next":["request_codex_review"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":24,"exit":0,"tail":["PASS reference/index.html: 16 hex literals","PASS reference/hero.html: 10 hex literals"]}},{"id":"check_contrast","name":"Check contrast ratios","needs":["check_hashes"],"next":["request_codex_review"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":24,"exit":0,"tail":["PASS ok on surface: 8.85:1 (min 4.5)","PASS run on surface: 8.09:1 (min 4.5)","PASS blocked on blocked bg: 10.87:1 (min 4.5)","PASS ink on selected fill: 16.97:1 (min 4.5)","PASS sel-sub on selected fill: 8.84:1 (min 4.5)","PASS sel-blocked on selected fill: 9.43:1 (min 4.5)"]}},{"id":"run_adaptor_tests","name":"Run adaptor tests","needs":["check_hashes"],"next":["request_codex_review"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":309,"exit":0,"tail":["PASS mutation caught: accept a run-end from another run","PASS mutation caught: drop retry from the review list","PASS mutation caught: sort record files as text","PASS mutation caught: uncapped tail","PASS mutation caught: a duplicate id keeps its state","63/63 passed"]}},{"id":"run_render_tests","name":"Run renderer tests","needs":["check_hashes"],"next":["request_codex_review"],"state":"OK","reason":null,"consequential":false,"lastRun":{"ms":406,"exit":0,"tail":["ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291"]}},{"id":"request_codex_review","name":"Request Codex review","needs":["run_decision_tests","check_tokens","check_contrast","run_adaptor_tests","run_render_tests"],"next":[],"state":"REVIEW","reason":"starts a paid external review; needs an operator's go-ahead","consequential":true,"lastRun":{"ms":null,"exit":null,"tail":[]}}],"undeclared":[{"logId":"ghost_probe","name":null,"state":"UNKNOWN","reason":"not declared by the pipeline's manifest; the run record mentions it"}],"review":{"consequentialSteps":["request_codex_review"],"counts":{"total":7,"blocked":0,"failed":0,"unknown":1,"review":1}},"warnings":[]}</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+  var STALE_MS = 120000;
+  try {
+    var V = JSON.parse($("view").textContent);
+    if (!V || V.schema !== "jaryo-view/0" || !Array.isArray(V.steps) || !Array.isArray(V.actions) || !Array.isArray(V.undeclared) || !V.pipeline || !V.review) throw new Error("not a jaryo-view/0 document");
+    var G = { OK: "●", RUNNING: "▶", BLOCKED: "✕", FAILED: "✕", UNKNOWN: "?", REVIEW: "◆" };
+    var CLS = { OK: "ok", RUNNING: "run", BLOCKED: "bad", FAILED: "bad", UNKNOWN: "unk", REVIEW: "rev" };
+    document.title = "Jaryo adaptor view: " + V.pipeline.name;
+    $("pname").textContent = V.pipeline.name; $("pid").textContent = V.pipeline.id;
+    $("ro").textContent = "Read-only snapshot of a recorded run, generated " + V.generatedAt + (V.lastEventAt ? "; the record's last event was " + V.lastEventAt : "") + ". This page cannot run or change anything.";
+    var na = V.actions.filter(function (a) { return !a.available; }).map(function (a) { return a.id; });
+    $("caps").textContent = "declares: " + (V.capabilities.declared.join(" · ") || "nothing") + (na.length ? " | not declared: " + na.join(", ") : "") + " | event stream: " + (V.capabilities.eventStream === true ? "declared" : V.capabilities.eventStream === false ? "none" : "not declared");
+    $("runline").textContent = V.run ? "Run " + (V.run.id === null ? "(no id)" : "#" + V.run.id) + ": " + V.run.state + (V.run.startedAt ? ", started " + V.run.startedAt : "") : "No run record found. Every step is unknown.";
+    if (V.warnings.length) { var w = $("warn"); w.hidden = false; w.textContent = "Record problem: " + V.warnings.join("; ") + ". The statuses shown may be out of date or incomplete."; }
+    var age = Date.now() - Date.parse(V.generatedAt), oldSnap = !isFinite(age) || age > STALE_MS;
+    var items = V.steps.map(function (s) {
+      var st = s.state, why = s.reason;
+      if (st === "RUNNING" && oldSnap) { st = "UNKNOWN"; why = "this snapshot is older than 2 minutes, so a running state is not trusted"; }
+      return { id: s.id, name: s.name, state: st, reason: why, step: s };
+    }).concat(V.undeclared.map(function (u) { return { id: u.logId, name: "Undiscovered step", state: u.state, reason: u.reason, undeclared: true }; }));
+    var sel = null, buttons = {}, opener = null;
+    var chipText = function (it) { return (G[it.state] || "?") + " [" + it.state + "]"; };
+    var cls = function (it) { return CLS[it.state] || "unk"; };
+    var nameOf = function (it) { return it.name + ", " + (it.undeclared ? "record id " : "step id ") + it.id + ", " + it.state.toLowerCase() + (it.step && it.step.consequential ? ", consequential" : "") + (it.reason ? ", " + it.reason : ""); };
+    items.forEach(function (it) {
+      var li = el("li"), b = el("button", "step " + (cls(it) === "bad" ? "bad " : "") + (it.undeclared || cls(it) === "unk" ? "unk " : "") + (it.step && it.step.consequential ? "gated" : ""));
+      b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-label", nameOf(it));
+      var nm = el("span", "nm"); var t = el("span", "", it.name); nm.appendChild(t); nm.appendChild(el("span", "chip " + cls(it), chipText(it))); b.appendChild(nm);
+      b.appendChild(el("span", "id", it.undeclared ? "not declared (record id: " + it.id + ")" : "step_id: " + it.id + (it.step && it.step.consequential ? "  [consequential]" : "")));
+      if (it.step && it.step.needs.length) b.appendChild(el("span", "id", "needs: " + it.step.needs.join(", ")));
+      if (it.reason) b.appendChild(el("span", "id", it.reason));
+      b.addEventListener("click", function () { pick(it.id); });
+      li.appendChild(b); $("bus").appendChild(li); buttons[it.id] = { b: b, t: t, it: it };
+    });
+    var actions = function () {
+      var wrap = el("div"), box = el("div", "acts");
+      V.actions.forEach(function (a) {
+        if (a.id === "run" && a.available) { var r = el("button", "btn primary", "Preview the run review (does nothing)"); r.addEventListener("click", function () { openReview(r); }); box.appendChild(r); }
+        else if (a.available) { box.appendChild(el("span", "why", a.id + " (declared; not wired in this page)")); }
+        else { var n = el("button", "btn", a.id + " (n/a)"); n.setAttribute("aria-disabled", "true"); n.setAttribute("aria-label", a.id + ", not available. " + a.reason); n.setAttribute("title", a.reason); n.addEventListener("click", function () { $("live").textContent = a.reason; }); box.appendChild(n); }
+      });
+      wrap.appendChild(box);
+      var nas = V.actions.filter(function (a) { return !a.available; });
+      if (nas.length) wrap.appendChild(el("p", "why", "Not available: " + nas.map(function (a) { return a.id; }).join(", ") + ". The manifest does not declare them."));
+      return wrap;
+    };
+    var renderInsp = function () {
+      var p = $("insp"); p.textContent = "";
+      var cur = sel && buttons[sel] ? buttons[sel].it : null;
+      if (!cur) { p.appendChild(el("h2", "", "No step selected")); p.appendChild(el("p", "muted", "Pick a step to see its recorded state, its reason and what it needs.")); p.appendChild(actions()); return; }
+      p.appendChild(el("h2", "", cur.name)); p.appendChild(el("span", "chip " + cls(cur), chipText(cur)));
+      p.appendChild(el("p", "why", cur.undeclared ? "Not declared by the pipeline's manifest. The run record mentions it, so Jaryo shows that it exists and nothing else." : "step_id: " + cur.id));
+      if (cur.reason) p.appendChild(el("p", "", cur.reason));
+      if (cur.step) {
+        p.appendChild(el("p", "why", "needs: " + (cur.step.needs.join(", ") || "nothing") + " | feeds: " + (cur.step.next.join(", ") || "nothing")));
+        if (cur.step.lastRun) { p.appendChild(el("div", "why", "Last recorded: exit " + cur.step.lastRun.exit + ", " + cur.step.lastRun.ms + " ms")); if (cur.step.lastRun.tail.length) var pre = el("pre", "", cur.step.lastRun.tail.join("\n")); pre.setAttribute("role", "region"); pre.setAttribute("tabindex", "0"); pre.setAttribute("aria-label", "Last recorded output of " + cur.name); p.appendChild(pre); }
+      }
+      p.appendChild(actions());
+    };
+    var pick = function (id) {
+      sel = id;
+      Object.keys(buttons).forEach(function (k) { var o = buttons[k]; o.b.setAttribute("aria-pressed", k === id ? "true" : "false"); o.t.textContent = (k === id ? "▶ " : "") + o.it.name; });
+      renderInsp(); $("live").textContent = "Selected " + buttons[id].it.name + ", " + buttons[id].it.state.toLowerCase() + ".";
+    };
+    var openReview = function (from) {
+      opener = from; var c = V.review.counts;
+      $("rev-h").textContent = "Review: run “" + V.pipeline.name + "”?";
+      $("rev-body").textContent = "From the last recorded run: " + c.total + " declared steps; " + c.blocked + " blocked, " + c.failed + " failed, " + c.review + " waiting for a go-ahead, " + c.unknown + " unknown or undiscovered.";
+      var gated = V.review.consequentialSteps.map(function (id) { return buttons[id] ? buttons[id].it.name : id; });
+      $("rev-gated").textContent = gated.length ? "Consequential steps: " + gated.join(", ") + "." : "No step is declared consequential.";
+      var d = $("rev"); if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
+      $("rev-close").focus();
+    };
+    $("rev-close").addEventListener("click", function () { var d = $("rev"); if (typeof d.close === "function") d.close(); else d.removeAttribute("open"); if (opener) opener.focus(); });
+    $("rev").addEventListener("close", function () { if (opener) opener.focus(); });
+    renderInsp();
+  } catch (err) {
+    var m = "Could not display this record: " + (err && err.message ? err.message : "unknown error") + ". Nothing on this page is a status.";
+    var w2 = $("warn"); w2.hidden = false; w2.textContent = m; $("runline").textContent = ""; $("insp").textContent = m;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jaryo Composed Reference</title>
+<style>
+/* Jaryo composed reference — the 17 design picks (2026-11-06 export), Copper Workshop tokens (F17.01).
+   SAMPLE pipeline, fictional data. No network, no storage. */
+:root {
+  --bg:#0B1012; --surface:#141A1C; --text:#F4F1EA; --muted:#9AA3A8; --border:#5A676C;
+  --focus:#E8D7A8; --sel-bg:#F4F1EA; --sel-fg:#0B1012; --copper:#C47A3A; --copper-ink:#0B1012;
+  --ok:#8FC4A0; --run:#8FB4D6; --blocked:#FFD2C8; --blocked-bg:#3A2020; --unknown:#9AA3A8;
+  /* ink on the light selected fill (derived; ≥7:1 on --sel-bg) */
+  --sel-sub:#3B4448; --sel-blocked:#6B2A1E; --sel-run:#1F4A72;
+  --hit:44px; --thumb:56px;
+  /* home-screen (standalone) launch has no browser toolbar: keep the thumb bar off the home indicator */
+  --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px); --safe-l: env(safe-area-inset-left, 0px); --safe-r: env(safe-area-inset-right, 0px);
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+/* Mono fallback (F17.01 mono_fallback): pure #000/#fff, copper → white fill, tints → white text */
+:root[data-skin="mono"] {
+  --bg:#000; --surface:#000; --text:#fff; --muted:#fff; --border:#fff; --focus:#fff;
+  --sel-bg:#fff; --sel-fg:#000; --copper:#fff; --copper-ink:#000;
+  --ok:#fff; --run:#fff; --blocked:#fff; --blocked-bg:#000; --unknown:#fff;
+  --sel-sub:#000; --sel-blocked:#000; --sel-run:#000;
+}
+* { box-sizing: border-box; border-radius: 0 !important; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.4; }
+body { padding: var(--safe-t) var(--safe-r) 0 var(--safe-l); } /* viewport-fit=cover: keep content off the notch and status bar */
+button, input { font: inherit; color: inherit; }
+a { color: inherit; }
+/* Focus: ALWAYS outside the element (offset), so it sits on bg/surface (≥12:1), never on the light
+   selected fill (1.27:1). Distinct from every other dashed meaning: 3px, focus colour, offset. */
+:focus-visible { outline: 3px dashed var(--focus); outline-offset: 3px; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.skip { position:absolute; left:-9999px; }
+.skip:focus { left:calc(8px + var(--safe-l)); top:calc(8px + var(--safe-t)); z-index:99; background:var(--sel-bg); color:var(--sel-fg); padding:10px 14px; min-height: var(--hit); display: inline-flex; align-items: center; }
+
+.sample { font-family: var(--mono); font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--border); padding: 6px 16px; }
+.top { display:flex; align-items:center; gap:12px; padding: 10px 16px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.mark { font-family: var(--mono); font-weight: 700; letter-spacing: .12em; background: var(--copper); color: var(--copper-ink); padding: 6px 10px; }
+.pipe-name { display:flex; flex-direction:column; min-width: 0; }
+.pipe-name h1 { font-size: 15px; font-weight: 700; margin: 0; }
+.sub { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.spacer { flex: 1; }
+.btn { min-height: var(--hit); min-width: var(--hit); padding: 8px 14px; background: var(--surface); border: 2px solid var(--border);
+  font-family: var(--mono); font-size: 12px; cursor: pointer; }
+.btn:hover { border-color: var(--text); }
+/* F17.01: copper fills only the brand mark and the ONE primary CTA per view */
+.btn.primary { background: var(--copper); color: var(--copper-ink); border-color: var(--copper); font-weight: 700; }
+.btn[aria-disabled="true"] { border-style: dashed; color: var(--muted); cursor: not-allowed; }
+.caps { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+.work { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(340px, 420px); min-height: calc(100vh - 120px); }
+/* ---------- F01 Main Bus Spine ---------- */
+.spine-wrap { padding: 18px 16px 40px; border-right: 2px solid var(--border); overflow: auto; }
+.spine { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.spine::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 4px; background: var(--border); }
+.spine > li { position: relative; margin: 0 0 14px; }
+/* tap-off at right angles */
+.spine > li::before { content: ""; position: absolute; left: -18px; top: 26px; width: 18px; height: 2px; background: var(--border); }
+.spine .label-io { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 0 0 6px; }
+.branch { margin: 8px 0 0 28px; position: relative; }
+.branch::before { content: ""; position: absolute; left: -28px; top: 26px; width: 28px; height: 2px; background: var(--border); }
+
+/* ---------- F06 Ported Box (frame broken at IN/OUT ports) + F05 sockets ---------- */
+.step { position: relative; display: block; width: 100%; max-width: 460px; text-align: left; background: var(--surface);
+  border: 2px solid var(--border); padding: 10px 12px 10px 14px; cursor: pointer; min-height: 64px; }
+.step .ports { position: absolute; left: -2px; right: -2px; top: 50%; height: 0; pointer-events: none; }
+.step .port { position: absolute; top: -9px; height: 18px; width: 14px; background: var(--bg); display: grid; place-items: center; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.step .port.in { left: -6px; } .step .port.out { right: -6px; }
+.step .port::after { content: ""; width: 8px; height: 8px; border: 2px solid var(--border); background: var(--bg); }
+/* F02.04: human label first, exact id beneath in mono */
+.step .h { font-size: 15px; font-weight: 600; display: block; padding-right: 110px; }
+.step .t { font-family: var(--mono); font-size: 11px; color: var(--muted); display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step .state { position: absolute; right: 12px; top: 10px; }
+.step .portlabels { display: none; font-family: var(--mono); font-size: 11px; margin-top: 6px; }
+/* ---------- F04.01 Step Focus + Neighbours ---------- */
+/* recede WITHOUT opacity (opacity broke token contrast): hairline frame + muted title; state words keep full contrast */
+.spine.has-sel .step { border-width: 1px; border-color: var(--border); }
+.spine.has-sel .step:not(.nb):not([aria-pressed="true"]) .h { color: var(--muted); }
+/* mono: recede by opacity only (inherited from the rule above), never out-rank selection/neighbour rules */
+:root[data-skin="mono"] .spine.has-sel .step:not(.nb):not([aria-pressed="true"]) { border-color: #fff; }
+.spine.has-sel .step.nb { border: 2px solid var(--text); }
+/* relation label on its own line, so it can never sit on top of the subline at any width */
+.spine.has-sel .step.nb::after { content: attr(data-rel); display: block; text-align: right; margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--text); }
+.step[aria-pressed="true"], .spine.has-sel .step[aria-pressed="true"] { background: var(--sel-bg); color: var(--sel-fg); border: 2px solid var(--sel-bg); }
+.step[aria-pressed="true"] .t { color: var(--sel-sub); }
+.step:focus-visible .t, .step[aria-pressed="true"] .t { white-space: normal; overflow: visible; }
+.step[aria-pressed="true"] .h::before { content: "▶ "; }
+
+/* ---------- F09.01 Word+Glyph state (never colour alone; words never truncate) ---------- */
+.st { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; white-space: nowrap; border: 1px solid currentColor; }
+.st.ok { color: var(--ok); }
+.st.run { color: var(--run); }
+.st.blocked { color: var(--blocked); background: var(--blocked-bg); }
+.st.unknown { color: var(--unknown); border-style: dashed; }
+.st.review { color: var(--text); border-width: 2px; }
+.step[aria-pressed="true"] .st { background: var(--sel-fg); }
+/* blocked step: hatch strip + double rule + reason line (state grammar v4) */
+.step.is-blocked { background: var(--blocked-bg); padding-left: 30px; }
+.step.is-blocked, .spine.has-sel .step.is-blocked { border-left: 6px double var(--blocked); }
+.step.is-blocked::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  background: repeating-linear-gradient(135deg, transparent 0 4px, var(--blocked) 4px 5px); }
+.spine .step.is-blocked[aria-pressed="true"] { border-left: 6px double var(--sel-blocked); }
+.spine .step.is-unknown[aria-pressed="true"] { border: 2px dashed var(--sel-fg); }
+.spine .step.is-unknown[aria-pressed="true"]::before { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--sel-sub) 4px 5px); }
+.step[aria-pressed="true"] .opt-tag { color: var(--sel-sub); }
+.step.is-blocked[aria-pressed="true"]::before { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--sel-blocked) 4px 5px); }
+.reason { display: block; font-family: var(--mono); font-size: 11px; color: var(--blocked); margin-top: 6px; }
+.step[aria-pressed="true"] .reason { color: var(--sel-blocked); }
+
+/* ---------- F08.10 Unknown-aware graph: hatched [?] (1px dashed + hatch + word) ---------- */
+.step.is-unknown { border: 1px dashed var(--unknown); padding-left: 26px; }
+.spine.has-sel .step.is-unknown, .spine.has-sel .step.is-unknown.nb, .step.is-unknown[aria-pressed="true"] { border-style: dashed; }
+/* hatch lives in a left strip only, so the label and subline stay legible in both skins */
+.step.is-unknown::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  background: repeating-linear-gradient(135deg, transparent 0 4px, var(--unknown) 4px 5px); }
+
+/* ---------- F12.10 Underground Dash: a dashed GAP on the spine (a line, never a box) + count ---------- */
+.underground { position: relative; margin: 0 0 14px; }
+.underground::before { content: ""; position: absolute; left: -22px; top: -14px; bottom: -14px; width: 12px; background: var(--bg);
+  background-image: repeating-linear-gradient(180deg, var(--border) 0 6px, transparent 6px 12px); background-size: 4px 100%; background-repeat: no-repeat; background-position: 4px 0; }
+.ug-btn { font-family: var(--mono); font-size: 12px; background: transparent; border: 2px solid var(--border); border-style: dashed solid; min-height: var(--hit); padding: 6px 12px; cursor: pointer; }
+.optional-steps { list-style: none; margin: 10px 0 0; padding: 0; }
+.optional-steps li { margin: 0 0 10px; }
+.opt-tag { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+/* ---------- F13.02 Event Tick: one glyph per REAL event; no decorative motion ---------- */
+.tick { font-family: var(--mono); font-size: 12px; color: var(--run); letter-spacing: 1px; margin-top: 6px; display: block; }
+.step[aria-pressed="true"] .tick { color: var(--sel-run); }
+
+/* ---------- F11.01 Side Inspector ---------- */
+.inspector { background: var(--surface); padding: 16px; overflow: auto; }
+.inspector h2 { margin: 0; font-size: 18px; }
+.inspector h3 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 20px 0 8px; border-top: 1px solid var(--border); padding-top: 12px; }
+.close-sheet { display: none; }
+/* F03.03 Step Pager (dependency order, names) */
+.pager { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.pager .btn { flex: 1 1 140px; text-align: left; }
+.pager .dir { font-family: var(--mono); font-size: 10px; color: var(--muted); display: block; }
+.fork { font-family: var(--mono); font-size: 11px; color: var(--muted); margin: 8px 0 0; }
+/* F05.02 Port Socket: binding list is first-class (editable items), not a fallback */
+.nblist { list-style: none; margin: 0; padding: 0; }
+.nblist li { margin: 0 0 6px; }
+.nblist .btn { width: 100%; text-align: left; }
+.bindings { list-style: none; margin: 0; padding: 0; }
+.bindings li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; border: 1px solid var(--border); padding: 8px 10px; margin-bottom: 6px; }
+.bindings .socket::before { content: "o-- "; font-family: var(--mono); color: var(--muted); }
+/* F07.01 Mono Ledger Table */
+.ledger-wrap { overflow-x: auto; border: 1px solid var(--border); }
+table.ledger { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 12px; min-width: 380px; }
+.ledger th, .ledger td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+.ledger th:first-child, .ledger td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+.ledger td.stc { text-align: left; }
+.ledger th { color: var(--muted); font-weight: 400; }
+.ledger tr.running td { background: var(--sel-bg); color: var(--sel-fg); }
+.ledger tr.running .st { background: var(--sel-fg); }
+/* F10.01 Honest Empty */
+.empty { border: 1px solid var(--border); padding: 12px; font-size: 14px; }
+.empty p { margin: 0 0 10px; }
+
+/* ---------- F16.01 Command Palette ---------- */
+.palette-bg { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none; z-index: 50; }
+.palette-bg.open { display: block; }
+.palette { max-width: 560px; margin: 10vh auto 0; background: var(--surface); border: 2px solid var(--text); padding: 12px; }
+.palette input { width: 100%; min-height: var(--hit); background: var(--bg); border: 2px solid var(--border); padding: 8px 10px; font-family: var(--mono); }
+.palette ul { list-style: none; margin: 10px 0 0; padding: 0; max-height: 50vh; overflow: auto; }
+.palette li { padding: 10px; min-height: var(--hit); border: 1px solid transparent; display: flex; flex-direction: column; cursor: pointer; }
+.palette li[aria-selected="true"] { background: var(--sel-bg); color: var(--sel-fg); }
+.palette li[aria-disabled="true"] { border: 1px dashed var(--border); color: var(--muted); cursor: not-allowed; }
+.palette li[aria-selected="true"][aria-disabled="true"] { color: var(--sel-sub); }
+.palette .why { font-family: var(--mono); font-size: 11px; }
+
+/* review gate (consequential actions always pass a human review) */
+dialog.review { background: var(--surface); color: var(--text); border: 2px solid var(--text); max-width: min(520px, calc(100vw - var(--safe-l) - var(--safe-r) - 32px)); max-height: calc(100vh - var(--safe-t) - var(--safe-b) - 32px); overflow: auto; padding: 16px;
+  /* centre inside the safe rectangle (not the full viewport) so unequal insets cannot push an edge under the notch */
+  inset: var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l); margin: auto; height: fit-content; }
+dialog.review::backdrop { background: rgba(0,0,0,.72); }
+
+/* ---------- F14.02 Thumb Bar (phone) — Step Pager merges into it ---------- */
+.thumb { display: none; }
+@media (max-width: 700px) {
+  .work { grid-template-columns: 1fr; padding-bottom: calc(var(--thumb) + var(--safe-b) + 12px); }
+  .spine-wrap { border-right: 0; }
+  .step .h { padding-right: 0; }
+  .step .state { position: static; display: inline-block; margin-top: 6px; }
+  .step .ports { display: none; }
+  .step .portlabels { display: block; }
+  /* F16.01 narrow: full sheet */
+  .palette { margin: 0; max-width: none; min-height: 100vh; border-width: 0; padding: calc(12px + var(--safe-t)) calc(12px + var(--safe-r)) calc(12px + var(--safe-b)) calc(12px + var(--safe-l)); }
+  .top .desk-only { display: none; }
+  /* F11 narrow: full sheet */
+  .inspector { position: fixed; inset: var(--safe-t) var(--safe-r) calc(var(--thumb) + var(--safe-b)) var(--safe-l); z-index: 30; display: none; }
+  .inspector.sheet-open { display: block; }
+  .close-sheet { display: inline-block; float: right; }
+  .inspector .pager:not(.has-fork) { display: none; } /* linear pager lives in the thumb bar on phones; forks keep their branch choice here */
+  .thumb { display: grid; grid-template-columns: 1fr 1.3fr 1fr 1fr; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--thumb) + var(--safe-b)); padding: 0 var(--safe-r) var(--safe-b) var(--safe-l); z-index: 40; background: var(--bg); border-top: 2px solid var(--border); }
+  .thumb .btn { min-height: calc(var(--thumb) - 2px); /* bar is border-box: 56px outer minus its 2px top border */ border-width: 0 1px 0 0; font-size: 11px; padding: 4px 6px; min-width: 0; }
+  #t-prev, #t-next { display: flex; flex-direction: column; justify-content: center; text-align: left; overflow: hidden; }
+  .thumb .tdir { font-size: 10px; color: var(--muted); }
+  .thumb .tname { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; min-width: 0; }
+  .thumb .trow { display: flex; min-width: 0; max-width: 100%; }
+  .thumb .tcount { flex: none; margin-left: 2px; font-weight: 700; } /* fork count never truncates */
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#spine">Skip to pipeline</a>
+<div class="sample" role="note">SAMPLE — fictional pipeline and data. Composed from the 17 design picks (export 2026-11-06). Not a product build; nothing runs.</div>
+
+<header class="top">
+  <span class="mark">JARYO</span>
+  <div class="pipe-name"><h1>Nightly orders → warehouse</h1><span class="sub">pipeline: orders_nightly · adaptor: sample-cli</span></div>
+  <span class="spacer"></span>
+  <span class="caps desk-only" id="caps">declares: run · logs · retry — no pause</span>
+  <button class="btn desk-only" id="open-palette" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K">⌘K Commands</button>
+  <button class="btn desk-only" id="skin" aria-pressed="false">Mono</button>
+  <button class="btn primary desk-only" id="run-top">Run pipeline</button>
+</header>
+
+<main class="work" id="main">
+  <section class="spine-wrap" aria-labelledby="spine-h">
+    <h2 id="spine-h" class="sr">Pipeline steps</h2>
+    <p class="label-io">IN ═ orders.csv (daily drop)</p>
+    <ol class="spine" id="spine"></ol>
+    <p class="label-io">OUT ═ warehouse.orders</p>
+  </section>
+
+  <aside class="inspector" id="inspector" aria-labelledby="insp-h">
+    <button class="btn close-sheet" id="close-sheet">Close</button>
+    <div id="insp"></div>
+  </aside>
+</main>
+
+<nav class="thumb" aria-label="Step actions">
+  <button class="btn" id="t-prev"><span class="tdir">◀ Prev</span><span class="tname" id="t-prev-name"></span></button>
+  <button class="btn primary" id="t-primary">Run pipeline</button>
+  <button class="btn" id="t-next"><span class="tdir">Next ▶</span><span class="trow"><span class="tname" id="t-next-name"></span><span class="tcount" id="t-next-count"></span></span></button>
+  <button class="btn" id="t-more" aria-haspopup="dialog">⌘ More</button>
+</nav>
+
+<div class="palette-bg" id="palette-bg">
+  <div class="palette" role="dialog" aria-modal="true" aria-labelledby="pal-h">
+    <h2 id="pal-h" class="sr">Commands</h2>
+    <input id="pal-input" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" aria-label="Search commands" placeholder="> type a command" autocomplete="off">
+    <ul id="pal-list" role="listbox" aria-label="Commands"></ul>
+    <p class="sr" id="pal-count" aria-live="polite"></p>
+  </div>
+</div>
+
+<dialog class="review" id="branches" aria-labelledby="br-h">
+  <h2 id="br-h">Choose the next step</h2>
+  <p class="sub" id="br-sub"></p>
+  <ul class="nblist" id="br-list"></ul>
+  <div style="display:flex;justify-content:flex-end"><button class="btn" id="br-cancel">Cancel</button></div>
+</dialog>
+
+<dialog class="review" id="review" aria-labelledby="rev-h">
+  <h2 id="rev-h"><span class="st review">◆ [REVIEW]</span> Run “Nightly orders → warehouse”?</h2>
+  <p id="rev-body"></p>
+  <p class="sub">SAMPLE: confirming does nothing.</p>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn" id="rev-cancel">Cancel</button>
+    <button class="btn" id="rev-ok">Confirm run</button>
+  </div>
+</dialog>
+
+<p class="sr" id="live" aria-live="polite"></p>
+
+<script>
+(() => {
+  // ---------- SAMPLE pipeline (fictional). Edges are "declared" by the sample adaptor. ----------
+  const steps = [
+    { id: "fetch_orders", h: "Fetch today's orders", state: "ok", in: [], out: ["dedupe_v2"], runs: [["#41", "OK", "1.9 s", "12,480"], ["#40", "OK", "2.1 s", "11,902"]], binds: [["source", "orders.csv (daily drop)"]] },
+    { id: "dedupe_v2", h: "Clean customer rows", state: "ok", in: ["fetch_orders"], out: ["score_risk"], runs: [["#41", "OK", "4.4 s", "12,211"], ["#40", "OK", "4.0 s", "11,640"]], binds: [["rows", "fetch_orders.out"]] },
+    { id: "geo_enrich", h: "Add region from address", state: "ok", optional: true, in: ["dedupe_v2"], out: ["score_risk"], runs: [], binds: [["rows", "dedupe_v2.out"]] },
+    { id: "sample_1pct", h: "Keep a 1% sample", state: "ok", optional: true, in: ["dedupe_v2"], out: [], runs: [], binds: [["rows", "dedupe_v2.out"]] },
+    { id: "score_risk", h: "Score order risk", state: "run", in: ["dedupe_v2"], out: ["audit_log", "?u1"], runs: [["#42", "RUNNING", "—", "—"], ["#41", "OK", "31 s", "12,211"]], binds: [["rows", "dedupe_v2.out"], ["model", "risk-v3 (declared)"]], ticks: 3, run: "#42" },
+    { id: "audit_log", h: "Write audit log", state: "ok", branch: true, in: ["score_risk"], out: [], runs: [["#41", "OK", "0.6 s", "12,211"]], binds: [["events", "score_risk.out"]] },
+    { id: "?u1", h: "Undiscovered step", state: "unknown", unknown: true, in: ["score_risk"], out: ["load_wh"], runs: null, binds: [] },
+    { id: "load_wh", h: "Load to warehouse", state: "blocked", reason: "needs: warehouse credential (not set)", in: ["?u1"], out: [], runs: [], binds: [["rows", "?u1.out (unknown)"], ["credential", "— unset —"]] },
+  ];
+  const byId = Object.fromEntries(steps.map(s => [s.id, s]));
+  const STATE = { ok: ["ok", "● [OK]"], run: ["run", "▶ [RUNNING]"], blocked: ["blocked", "✕ [BLOCKED]"], unknown: ["unknown", "? [UNKNOWN]"] };
+  // Screen readers should hear the word, not the glyph and brackets.
+  const stateWord = k => STATE[k][1].slice(STATE[k][1].indexOf("[") + 1, -1).toLowerCase();
+  const caps = { run: true, logs: true, retry: true, pause: false };
+  let selected = null, showOptional = false;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const announce = m => { $("#live").textContent = m; };
+  const narrow = () => matchMedia("(max-width: 700px)").matches;
+
+  function stepButton(s) {
+    const [cls, word] = STATE[s.state];
+    // Owner 2026-11-07: the bar resets per run; it fills to 8 glyphs, the exact count for THIS run is printed beside it
+    const shown = s.ticks == null ? 0 : Math.min(8, s.ticks);
+    const ticks = s.ticks != null ? `<span class="tick"><span aria-hidden="true">${"=".repeat(shown)}&gt;${"·".repeat(8 - shown)}</span> ${s.ticks} this run</span>` : "";
+    const reason = s.reason ? `<span class="reason">${esc(s.reason)}</span>` : "";
+    const opt = s.optional ? `<span class="opt-tag">optional · </span>` : "";
+    return `<button type="button" class="step${s.state === "blocked" ? " is-blocked" : ""}${s.unknown ? " is-unknown" : ""}" data-id="${esc(s.id)}" aria-pressed="false">
+      <span class="ports" aria-hidden="true"><span class="port in"></span><span class="port out"></span></span>
+      <span class="h">${opt}${esc(s.h)}</span>
+      <span class="t">${s.unknown ? "not declared by adaptor — edge seen in run log" : "step_id: " + esc(s.id)}</span>
+      <span class="state"><span class="st ${cls}">${word}</span></span>${ticks}${reason}
+      <span class="portlabels">${portText(s)}</span>
+    </button>`;
+  }
+
+  function name(id) { return byId[id] ? byId[id].h : id; }
+  function portText(s) {
+    const i = s.in.length ? "IN ← " + s.in.map(name).map(esc).join(", ") : "IN —";
+    const o = s.out.length ? "OUT → " + s.out.map(name).map(esc).join(", ") : "OUT —";
+    return i + "<br>" + o;
+  }
+
+  function renderSpine() {
+    const main = steps.filter(s => !s.optional && !s.branch);
+    const opts = steps.filter(s => s.optional);
+    // Owner 2026-11-07: a hidden group that holds a blocked / unknown / review step opens itself and says why
+    const attention = opts.filter(o => o.state === "blocked" || o.state === "unknown" || o.review);
+    const forced = attention.length > 0;
+    if (forced) showOptional = true;
+    let html = "";
+    for (const s of main) {
+      html += `<li>${stepButton(s)}${s.id === "score_risk" ? `<div class="branch">${stepButton(byId.audit_log)}</div>` : ""}</li>`;
+      if (s.id === "dedupe_v2") {
+        const ugLabel = forced ? `opened: ${attention.length} inside need${attention.length === 1 ? "s" : ""} attention — cannot hide`
+          : `${showOptional ? "− hide" : "[+" + opts.length + " optional]"} steps — off by default`;
+        html += `<li class="underground"><button type="button" class="ug-btn" id="ug" aria-expanded="${showOptional}" aria-controls="opt-list"${forced ? ' aria-disabled="true"' : ""}>${ugLabel}</button>
+          <ul class="optional-steps" id="opt-list" ${showOptional ? "" : "hidden"}>${opts.map(o => `<li>${stepButton(o)}</li>`).join("")}</ul></li>`;
+      }
+    }
+    $("#spine").innerHTML = html;
+    applySelection();
+  }
+
+  function neighbours(id) {
+    const s = byId[id]; const m = {};
+    s.in.forEach(x => byId[x] && (m[x] = "← input"));
+    s.out.forEach(x => byId[x] && (m[x] = "output →"));
+    return m;
+  }
+
+  function applySelection() {
+    const spine = $("#spine");
+    spine.classList.toggle("has-sel", !!selected);
+    const nb = selected ? neighbours(selected) : {};
+    spine.querySelectorAll(".step").forEach(b => {
+      const id = b.dataset.id;
+      b.setAttribute("aria-pressed", id === selected ? "true" : "false");
+      b.classList.toggle("nb", !!nb[id]);
+      if (nb[id]) b.setAttribute("data-rel", nb[id]); else b.removeAttribute("data-rel");
+      const rel = nb[id] ? `, ${nb[id].replace(/[←→]/g, "").trim()} of selected step` : "";
+      const tech = byId[id].unknown ? "not declared by adaptor" : `step id ${id}`;
+      b.setAttribute("aria-label", `${byId[id].h}, ${tech}, ${stateWord(byId[id].state)}${byId[id].reason ? ", " + byId[id].reason : ""}${byId[id].ticks != null ? ", " + byId[id].ticks + " events in run " + (byId[id].run || "") : ""}${rel}`);
+    });
+  }
+
+  // dependency order for the pager: walk declared edges (main + branch + unknown), skip hidden optionals
+  function order() {
+    const vis = steps.filter(s => !s.optional || showOptional);
+    return vis.map(s => s.id);
+  }
+  function nextOptions(id) { return byId[id].out.filter(x => order().includes(x)); }
+  function prevOptions(id) { return byId[id].in.filter(x => order().includes(x)); }
+
+  function techSub(id) { return `<span class="sub" style="display:block">${byId[id].unknown ? "undeclared" : "step_id: " + esc(id)}</span>`; }
+
+  function renderInspector() {
+    const el = $("#insp");
+    if (!selected) {
+      el.innerHTML = `<h2 id="insp-h">Step detail</h2><div class="empty" style="margin-top:12px"><p>No step selected. Pick a step on the spine to see its inputs, bindings and runs here.</p></div>`;
+      updateThumb(); return;
+    }
+    const s = byId[selected]; const [cls, word] = STATE[s.state];
+    const nx = nextOptions(s.id), pv = prevOptions(s.id);
+    const pager = `<div class="pager${nx.length > 1 ? " has-fork" : ""}">
+      <button class="btn" data-dir="prev" data-go="${esc(pv[0] || "")}" ${pv.length ? "" : 'aria-disabled="true"'}><span class="dir">◀ previous</span>${pv.length ? esc(byId[pv[0]].h) + techSub(pv[0]) : "— first step"}</button>
+      ${nx.length ? nx.map(n => `<button class="btn" data-dir="next" data-go="${esc(n)}"><span class="dir">next ▶${nx.length > 1 ? " (branch)" : ""}</span>${esc(byId[n].h)}${techSub(n)}</button>`).join("") : `<button class="btn" data-dir="next" aria-disabled="true"><span class="dir">next ▶</span>— last step</button>`}
+    </div>${nx.length > 1 ? `<p class="fork">fork: ${nx.length} next steps — choose one</p>` : ""}`;
+    const binds = s.binds.length ? `<ul class="bindings">${s.binds.map(([k, v]) => `<li><span class="socket"><strong>${esc(k)}</strong> ← <span class="sub">${esc(v)}</span></span><button class="btn" aria-label="Change binding ${esc(k)}">Change</button></li>`).join("")}</ul>` : `<div class="empty"><p>No inputs are declared for this step, so there is nothing to bind.</p></div>`;
+    let runs;
+    if (s.runs === null) runs = `<div class="empty"><p>Unknown: the adaptor has not declared this step, so Jaryo cannot show its runs. Its existence is inferred from a run-log edge.</p><button class="btn">Show the log line</button></div>`;
+    else if (!s.runs.length) runs = `<div class="empty"><p>${s.state === "blocked" ? "This step has never run: it is blocked (" + esc(s.reason.replace("needs: ", "")) + ")." : "This step has never run: it is optional and switched off."}</p><button class="btn">${s.state === "blocked" ? "Set warehouse credential" : "Turn step on"}</button></div>`;
+    else runs = `<div class="ledger-wrap" role="region" aria-label="Runs of ${esc(s.h)}" tabindex="0"><table class="ledger"><thead><tr><th scope="col">run</th><th scope="col">state</th><th scope="col">time</th><th scope="col">rows</th></tr></thead><tbody>${s.runs.map(r => `<tr${r[1] === "RUNNING" ? ' class="running"' : ""}><td>${esc(r[0])}</td><td class="stc"><span class="st ${r[1] === "OK" ? "ok" : "run"}">${r[1] === "OK" ? "● [OK]" : "▶ [RUNNING]"}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")}</tbody></table></div>`;
+    el.innerHTML = `<h2 id="insp-h" tabindex="-1">${esc(s.h)}</h2><p class="sub">${s.unknown ? "undeclared · inferred" : "step_id: " + esc(s.id)}</p>
+      <p><span class="st ${cls}">${word}</span>${s.reason ? `<span class="reason">${esc(s.reason)}</span>` : ""}</p>
+      ${pager}
+      <h3>Neighbours</h3><ul class="nblist">${[...pv.map(x => ["← input", x]), ...nx.map(x => ["output →", x])].map(([r, x]) => `<li><button class="btn" data-go="${esc(x)}" data-dir="${r.startsWith("←") ? "prev" : "next"}">${r} · ${esc(byId[x].h)}${techSub(x)}</button></li>`).join("") || "<li class='sub'>none declared</li>"}</ul>
+      <h3>Inputs · bindings</h3>${binds}
+      <h3>Runs</h3>${runs}
+      ${s.ticks != null ? `<h3>Live · run ${esc(s.run || "")}</h3><p class="sub">${s.ticks} events this run · the bar moves only when an event arrives and starts empty on each new run</p><div class="pager"><button class="btn" id="sim-event">DEMO: deliver 1 event</button><button class="btn" id="sim-run">DEMO: start next run</button></div>` : ""}`;
+    updateThumb();
+  }
+
+  function updateThumb() {
+    const nx = selected ? nextOptions(selected) : [], pv = selected ? prevOptions(selected) : [];
+    const p = $("#t-prev"), n = $("#t-next");
+    p.setAttribute("aria-disabled", pv.length ? "false" : "true"); p.dataset.go = pv[0] || "";
+    n.setAttribute("aria-disabled", nx.length ? "false" : "true"); n.dataset.go = nx[0] || "";
+    const idOf = x => byId[x].unknown ? "undeclared" : "step id " + x;
+    p.setAttribute("aria-label", pv.length ? `Previous step: ${byId[pv[0]].h}, ${idOf(pv[0])}` : "No previous step");
+    n.setAttribute("aria-label", nx.length ? `Next step: ${byId[nx[0]].h}, ${idOf(nx[0])}${nx.length > 1 ? " (one of " + nx.length + " branches; see step detail)" : ""}` : "No next step");
+    p.title = p.getAttribute("aria-label"); n.title = n.getAttribute("aria-label");
+    $("#t-prev-name").textContent = pv.length ? byId[pv[0]].h : "—";
+    $("#t-next-name").textContent = nx.length ? byId[nx[0]].h : "—";
+    $("#t-next-count").textContent = "";
+    if (nx.length > 1) { $("#t-next-name").textContent = `choose (${nx.length})`; n.dataset.go = ""; }
+    n.setAttribute("aria-label", nx.length > 1 ? `Next: choose one of ${nx.length} branches` : n.getAttribute("aria-label")); n.title = n.getAttribute("aria-label");
+    if (nx.length > 1) n.setAttribute("aria-haspopup", "dialog"); else n.removeAttribute("aria-haspopup");
+  }
+
+  function select(id, { focusInspector = false } = {}) {
+    if (!byId[id]) return;
+    if (byId[id].optional && !showOptional) { showOptional = true; renderSpine(); }
+    selected = id; applySelection(); renderInspector();
+    announce(`${byId[id].h} selected. ${stateWord(byId[id].state)}.`);
+    if (narrow()) { openSheet(); $("#insp-h").focus(); }
+    else if (focusInspector) $("#insp-h").focus();
+  }
+
+  // ---------- events ----------
+  document.addEventListener("click", e => {
+    const st = e.target.closest(".step");
+    if (st) { select(st.dataset.id); return; }
+    // Owner 2026-11-07: at a fork the phone's Next opens a branch chooser instead of guessing
+    const tn = e.target.closest("#t-next");
+    if (tn && selected && nextOptions(selected).length > 1) { openBranches(tn); return; }
+    const go = e.target.closest("[data-go]");
+    if (go && go.dataset.go && go.getAttribute("aria-disabled") !== "true") {
+      select(go.dataset.go);
+      // keep walking in the same direction: focus the new pager's button for that direction
+      const dir = go.dataset.dir || "next";
+      const again = document.querySelector(`#insp .pager [data-dir="${dir}"]:not([aria-disabled="true"])`) || document.querySelector(`#insp .pager [data-dir="${dir}"]`);
+      if (go.closest(".thumb")) go.focus();
+      else if (again && again.offsetParent) again.focus();
+      else if (narrow()) (dir === "prev" ? $("#t-prev") : $("#t-next")).focus();
+      else $("#insp-h").focus();
+      return;
+    }
+    if (e.target.closest("#ug") && $("#ug").getAttribute("aria-disabled") === "true") { announce($("#ug").textContent.trim() + "."); return; }
+    if (e.target.closest("#ug")) {
+      showOptional = !showOptional; renderSpine(); $("#ug").focus();
+      announce(showOptional ? "2 optional steps shown." : "Optional steps hidden."); return;
+    }
+    if (e.target.closest("#sim-event")) {
+      const s = byId.score_risk; s.ticks += 1; renderSpine(); renderInspector(); $("#sim-event").focus();
+      announce(`Event received: ${s.ticks} this run.`); return;
+    }
+    if (e.target.closest("#sim-run")) {
+      const s = byId.score_risk; s.run = "#" + (Number(s.run.slice(1)) + 1); s.ticks = 0; renderSpine(); renderInspector(); $("#sim-run").focus();
+      announce(`Run ${s.run} started: 0 events.`); return;
+    }
+  });
+  // phone sheet: everything it covers is inert (no Tab/Shift+Tab into hidden controls); the thumb bar stays live
+  const covered = () => [document.querySelector(".sample"), document.querySelector(".top"), document.querySelector(".spine-wrap"), document.querySelector(".skip")];
+  function openSheet() { $("#inspector").classList.add("sheet-open"); covered().forEach(el => el && (el.inert = true)); }
+  function closeSheet({ refocus = true } = {}) {
+    $("#inspector").classList.remove("sheet-open"); covered().forEach(el => el && (el.inert = false));
+    // never pull focus behind an open palette or review
+    if (!refocus || $("#palette-bg").classList.contains("open") || $("#review").open || $("#branches").open) return;
+    const b = document.querySelector(`.step[data-id="${CSS.escape(selected || "")}"]`); if (b) b.focus();
+  }
+  $("#close-sheet").addEventListener("click", closeSheet);
+  // leaving phone width with the sheet open must not leave the page inert
+  // backstop: some environments (viewport emulation, embedded panes) resize without firing the media-query change
+  const leaveNarrow = () => { if (!narrow() && $("#inspector").classList.contains("sheet-open")) closeSheet(); };
+  matchMedia("(max-width: 700px)").addEventListener("change", leaveNarrow);
+  window.addEventListener("resize", leaveNarrow);
+  $("#skin").addEventListener("click", e => { const on = document.documentElement.dataset.skin !== "mono"; document.documentElement.dataset.skin = on ? "mono" : ""; e.currentTarget.setAttribute("aria-pressed", String(on)); announce(on ? "Mono fallback on." : "Copper Workshop on."); });
+
+  function openBranches(opener) {
+    const nx = nextOptions(selected);
+    $("#br-sub").textContent = `${byId[selected].h} has ${nx.length} next steps.`;
+    $("#br-list").innerHTML = nx.map(x => `<li><button class="btn" data-branch="${esc(x)}">${esc(byId[x].h)}${techSub(x)}</button></li>`).join("");
+    const d = $("#branches"); d.showModal(); $("#br-list .btn").focus();
+    d.onclose = () => { if (d.returnValue !== "chosen") (shown(opener) ? opener : visibleOpener()).focus(); d.returnValue = ""; };
+  }
+  $("#br-list").addEventListener("click", e => {
+    const b = e.target.closest("[data-branch]"); if (!b) return;
+    $("#branches").close("chosen"); select(b.dataset.branch);
+    // focus a VISIBLE control: the thumb bar's Next on phones; after widening, the inspector's next button or heading
+    const t = $("#t-next");
+    if (shown(t)) t.focus();
+    else (document.querySelector('#insp .pager [data-dir="next"]:not([aria-disabled="true"])') || $("#insp-h")).focus();
+  });
+  $("#br-cancel").addEventListener("click", () => $("#branches").close());
+
+  // review gate for the consequential primary action
+  function openReview(opener) {
+    const blocked = steps.filter(s => s.state === "blocked").map(s => s.h);
+    const unknown = steps.filter(s => s.unknown).length;
+    $("#rev-body").textContent = `${steps.filter(s => !s.optional).length} steps will run. ${blocked.length} blocked (${blocked.join(", ")}); ${unknown} undiscovered step. The run will stop at the blocked step.`;
+    const d = $("#review"); d.showModal(); $("#rev-cancel").focus();
+    d.onclose = () => { (shown(opener) ? opener : visibleOpener()).focus(); };
+  }
+  $("#run-top").addEventListener("click", e => openReview(e.currentTarget));
+  $("#t-primary").addEventListener("click", e => openReview(e.currentTarget));
+  $("#rev-cancel").addEventListener("click", () => $("#review").close());
+  $("#rev-ok").addEventListener("click", () => { $("#review").close(); announce("SAMPLE: nothing was run."); });
+
+  // ---------- F16.01 Command palette: capability-gated, visible button, combobox, live count ----------
+  const commands = [
+    { t: "Run pipeline", cmd: "run orders_nightly", ok: caps.run, act: () => { openReview(visibleOpener()); return true; } },
+    { t: "Retry selected step", cmd: "retry --step <id>", ok: caps.retry },
+    { t: "Open logs", cmd: "logs orders_nightly", ok: caps.logs },
+    { t: "Pause run", cmd: "pause", ok: caps.pause, why: "n/a: sample-cli adaptor does not declare pause" },
+    { t: "Show optional steps", cmd: "view --optional", ok: true, act: () => { if ($("#inspector").classList.contains("sheet-open")) closeSheet({ refocus: false }); if (!showOptional) { showOptional = true; renderSpine(); } const f = document.querySelector('.step[data-id="geo_enrich"]'); if (f) f.focus(); announce("2 optional steps shown."); return true; } },
+    { t: "Go to: Load to warehouse", cmd: "goto load_wh", ok: true, act: () => { select("load_wh", { focusInspector: true }); return true; } },
+  ];
+  let pal = [], palIdx = 0, palOpener = null;
+  const shown = el => el && el.offsetParent !== null && !el.closest("[inert]");
+  function visibleOpener() { return shown(palOpener) ? palOpener : (shown($("#open-palette")) ? $("#open-palette") : $("#t-more")); }
+  function openPalette(opener) {
+    if ($("#palette-bg").classList.contains("open")) { $("#pal-input").focus(); return; }
+    palOpener = opener; $("#palette-bg").classList.add("open"); $("#pal-input").value = ""; filterPalette(); $("#pal-input").focus(); }
+  function closePalette() { $("#palette-bg").classList.remove("open"); visibleOpener().focus(); }
+  function filterPalette() {
+    const q = $("#pal-input").value.trim().toLowerCase();
+    pal = commands.filter(c => !q || (c.t + " " + c.cmd).toLowerCase().includes(q)); palIdx = 0;
+    $("#pal-list").innerHTML = pal.map((c, i) => `<li role="option" id="pal-${i}" aria-selected="${i === palIdx}" ${c.ok ? "" : 'aria-disabled="true"'}><span>${esc(c.t)}${c.ok ? "" : " (n/a)"}</span><span class="why">${c.ok ? "= " + esc(c.cmd) : esc(c.why)}</span></li>`).join("");
+    $("#pal-input").setAttribute("aria-activedescendant", pal.length ? "pal-0" : "");
+    $("#pal-count").textContent = `${pal.length} command${pal.length === 1 ? "" : "s"}${pal.some(c => !c.ok) ? ", some not offered by this adaptor" : ""}`;
+  }
+  function movePalette(d) {
+    if (!pal.length) return; palIdx = (palIdx + d + pal.length) % pal.length;
+    [...$("#pal-list").children].forEach((li, i) => li.setAttribute("aria-selected", String(i === palIdx)));
+    $("#pal-input").setAttribute("aria-activedescendant", "pal-" + palIdx);
+    document.getElementById("pal-" + palIdx).scrollIntoView({ block: "nearest" });
+  }
+  function runPalette(i) {
+    const c = pal[i]; if (!c) return;
+    if (!c.ok) { announce(`${c.t} is not available — ${c.why.replace(/^n\/a:\s*/, "")}.`); return; }
+    $("#palette-bg").classList.remove("open");
+    const handled = c.act ? c.act() : (announce(`SAMPLE: “${c.t}” would run: ${c.cmd}.`), false);
+    if (!handled) visibleOpener().focus();
+  }
+  $("#open-palette").addEventListener("click", e => openPalette(e.currentTarget));
+  $("#t-more").addEventListener("click", e => openPalette(e.currentTarget));
+  $("#pal-input").addEventListener("input", filterPalette);
+  $("#pal-input").addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); movePalette(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); movePalette(-1); }
+    else if (e.key === "Enter") { e.preventDefault(); runPalette(palIdx); }
+    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closePalette(); }
+    else if (e.key === "Tab") { e.preventDefault(); } // single focus stop: the combobox
+  });
+  $("#pal-list").addEventListener("click", e => { const li = e.target.closest("[role=option]"); if (li) runPalette(Number(li.id.slice(4))); });
+  $("#palette-bg").addEventListener("click", e => { if (e.target.id === "palette-bg") closePalette(); });
+  document.addEventListener("keydown", e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); if (!$("#review").open && !$("#branches").open) openPalette(document.activeElement); return; }
+    if (e.key === "Escape" && !e.defaultPrevented && $("#palette-bg").classList.contains("open")) { e.preventDefault(); closePalette(); return; }
+    // one layer per Escape: palette and review handle their own; only then the phone sheet
+    if (e.key === "Escape" && !e.defaultPrevented && !$("#review").open && !$("#branches").open && !$("#palette-bg").classList.contains("open") && $("#inspector").classList.contains("sheet-open")) closeSheet();
+  });
+
+  renderSpine(); renderInspector();
+})();
+</script>
+</body>
+</html>

@@ -6,6 +6,10 @@ This repository is the interactive design lab: a static local page for comparing
 
 Site: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
 
+All projects in this repository are work in progress.
+
+Interface spec, reference screens, and a read-only adaptor spike: [`spec/`](spec/).
+
 ## Open the lab
 
 ```bash
