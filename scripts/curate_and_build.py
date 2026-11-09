@@ -9,7 +9,7 @@ LAB = ROOT / "adaptive-design-lab"
 DATA = LAB / "data"
 
 # Curated picks: maximize mechanism distinctness; preserve stable IDs.
-# Rationale strings are short, for handoff + card UI.
+# Rationale strings are short, for Notion handoff + card UI.
 CURATION = {
   "F01": {
     "slug": "layout",
@@ -306,7 +306,7 @@ def build_curated(catalog):
             "F17.01 Copper is an EXAMPLE only — not a user-selected default.",
             "MCP exposes tools/resources; it does not by itself render UI.",
             "This lab is a local documentation/demo artifact, not an installable product.",
-            "Site: https://fortheloveof.studio/code/jaryo/. This lab is the interactive companion.",
+            "Canonical prose home remains Notion; this lab is the interactive companion.",
         ],
         "state_grammar_v4": {
             "selected": "invert fill + ▶",

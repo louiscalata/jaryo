@@ -10,6 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `spec/`: interface spec v0.5e, reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page (work in progress).
 
+## [0.2.0] - 2026-11-09
+
+### Added
+
+- F18 Legacy studies (F18.01–F18.08) and F19 Red interactive UI (F19.01–F19.04).
+- Extended catalog: 19 families / 97 options (`data/curated-extended.json`); original 85 unchanged.
+- Lab-wide typography tokens in `lab.css` and `docs/TYPOGRAPHY-PRINCIPLES.md`.
+
+### Notes
+
+- Portfolio before/after source captures are not published; lab verification screenshots and JSON are.
 
 ## [0.1.0] - 2026-11-09
 

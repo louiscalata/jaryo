@@ -3,7 +3,7 @@
   "use strict";
 
   const STORAGE_KEY = "jaryo-adaptive-lab-choices-v1";
-  const DATA_URL = "data/curated-85.json";
+  const DATA_URL = "data/curated-extended.json";
 
   /** @type {any} */
   let DATA = null;
@@ -533,7 +533,7 @@
   }
 
   function renderPreview(opt) {
-    if (opt.id.startsWith("F17")) return colorPreview(opt);
+    if (opt.id.startsWith("F17") || opt.id.startsWith("F19")) return colorPreview(opt);
     const fn = PREVIEW[opt.id];
     if (fn) return fn(opt);
     const ascii = (opt.preview_ascii || []).join("\n");
@@ -548,20 +548,25 @@
     const nav = $("#family-nav");
     const btn = (f) =>
       `<button type="button" class="navbtn" data-fam="${f.id}" title="${f.id} · ${esc(f.title)}" aria-current="${f.id === activeFamily ? "true" : "false"}"><span class="fid">${f.id}</span><span class="ftitle"><span class="sep"> · </span>${esc(f.title)}</span></button>`;
-    // Monochrome set is the primary look; the color batch stays available as its own, secondary group.
-    const mono = DATA.families.filter((f) => !f.id.startsWith("F17"));
-    const color = DATA.families.filter((f) => f.id.startsWith("F17"));
+    const count = (arr) => arr.reduce((n, f) => n + f.options.length, 0);
+    // Monochrome F01–F16 primary; F17 color batch optional; F18 legacy studies; F19 Red interactive UI optional.
+    const mono = DATA.families.filter((f) => /^F(0[1-9]|1[0-6])$/.test(f.id));
+    const color = DATA.families.filter((f) => f.id === "F17");
+    const legacy = DATA.families.filter((f) => f.id === "F18");
+    const red = DATA.families.filter((f) => f.id === "F19");
     nav.innerHTML =
-      `<p class="navgroup" id="ng-mono">Monochrome set · ${mono.length * 5} options</p>` +
+      `<p class="navgroup" id="ng-mono">Monochrome set · ${count(mono)} options</p>` +
       mono.map(btn).join("") +
-      (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${color.length * 5} options · optional</p>` + color.map(btn).join("") : "");
+      (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${count(color)} options · optional</p>` + color.map(btn).join("") : "") +
+      (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">Legacy studies · ${count(legacy)} options</p>` + legacy.map(btn).join("") : "") +
+      (red.length ? `<p class="navgroup navgroup-red" id="ng-red">Red interactive UI · ${count(red)} options · optional</p>` + red.map(btn).join("") : "");
   }
 
   function renderCompare() {
     const fam = familyById(activeFamily);
     if (!fam) return;
     $("#section-title").textContent = `${fam.id} — ${fam.title}`;
-    $("#section-meta").textContent = `Curated 5 of ${fam.catalog_size} catalog options · stable IDs preserved`;
+    $("#section-meta").textContent = `Curated ${fam.curated_count || fam.options.length} of ${fam.catalog_size || fam.options.length} catalog options · stable IDs preserved`;
     $("#contexts").innerHTML = fam.screen_contexts.map((c) => `<span class="chip">${esc(c)}</span>`).join("");
     const cards = $("#cards");
     const expanded = expandedByFamily[fam.id] || new Set();
@@ -580,6 +585,7 @@
           <p class="small"><strong>Why curated:</strong> ${esc(opt.curation_rationale)}</p>
           <p class="tradeoff"><strong>Tradeoff:</strong> ${esc(opt.tradeoff)}</p>
           <p class="small"><strong>Narrow / touch:</strong> ${esc(opt.narrow)}</p>
+          ${opt.provenance ? `<p class="small provenance"><strong>Provenance:</strong> ${esc(opt.provenance.source_project || "")}${opt.provenance.improved && opt.provenance.improved.length ? " · improved: " + esc(opt.provenance.improved.slice(0, 2).join("; ")) : ""}</p>` : ""}
           <div class="card-actions">
             <label class="choose-label">
               <input type="radio" name="jaryo-choice-${esc(fam.id)}" value="${esc(opt.id)}" data-choice="${esc(opt.id)}"
@@ -1090,7 +1096,8 @@
       }
     }
 
-    $("#lab-version").textContent = `${DATA.version} · ${DATA.families.length} families · ${DATA.source_catalog.curated_count} curated options`;
+    const optCount = DATA.families.reduce((n, f) => n + f.options.length, 0);
+    $("#lab-version").textContent = `${DATA.version} · ${DATA.families.length} families · ${optCount} options (${DATA.source_catalog.curated_count} original)`;
     normalizeAfterCatalog();
     if (persistenceRejects.length) {
       storageMsg += ` Rejected ${persistenceRejects.length} invalid stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (status=${persistenceStatus}).`;
