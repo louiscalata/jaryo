@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `spec/`: interface spec v0.5e, reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page (work in progress).
+
 ## [0.2.0] - 2026-11-09
 
 ### Added
@@ -17,7 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Notes
 
 - Portfolio before/after source captures are not published; lab verification screenshots and JSON are.
-
 
 ## [0.1.0] - 2026-11-09
 

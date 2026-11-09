@@ -1,0 +1,15 @@
+{"run":4,"ts":"2026-11-08T03:49:24.874Z","event":"run-start","pipeline":"jaryo-verify"}
+{"run":4,"ts":"2026-11-08T03:49:24.875Z","step":"check_hashes","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:24.886Z","step":"check_hashes","status":"ok","exit":0,"ms":11,"tail":["adaptor/view-template.html: OK","adaptor/build-view-page.mjs: OK","pipeline/jaryo-verify.manifest.json: OK","pipeline/run.mjs: OK","pipeline/check-tokens.mjs: OK","pipeline/check-contrast.mjs: OK"]}
+{"run":4,"ts":"2026-11-08T03:49:24.886Z","step":"run_decision_tests","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:25.289Z","step":"run_decision_tests","status":"ok","exit":0,"ms":403,"tail":["ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291"]}
+{"run":4,"ts":"2026-11-08T03:49:25.289Z","step":"check_tokens","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:25.312Z","step":"check_tokens","status":"ok","exit":0,"ms":23,"tail":["PASS reference/index.html: 16 hex literals","PASS reference/hero.html: 10 hex literals"]}
+{"run":4,"ts":"2026-11-08T03:49:25.312Z","step":"check_contrast","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:25.335Z","step":"check_contrast","status":"ok","exit":0,"ms":23,"tail":["PASS ok on surface: 8.85:1 (min 4.5)","PASS run on surface: 8.09:1 (min 4.5)","PASS blocked on blocked bg: 10.87:1 (min 4.5)","PASS ink on selected fill: 16.97:1 (min 4.5)","PASS sel-sub on selected fill: 8.84:1 (min 4.5)","PASS sel-blocked on selected fill: 9.43:1 (min 4.5)"]}
+{"run":4,"ts":"2026-11-08T03:49:25.335Z","step":"run_adaptor_tests","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:25.649Z","step":"run_adaptor_tests","status":"ok","exit":0,"ms":314,"tail":["PASS mutation caught: accept a run-end from another run","PASS mutation caught: drop retry from the review list","PASS mutation caught: sort record files as text","PASS mutation caught: uncapped tail","PASS mutation caught: a duplicate id keeps its state","63/63 passed"]}
+{"run":4,"ts":"2026-11-08T03:49:25.649Z","step":"run_render_tests","event":"step-start"}
+{"run":4,"ts":"2026-11-08T03:49:26.047Z","step":"run_render_tests","status":"ok","exit":0,"ms":398,"tail":["ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291","ERROR: failed to copy trust settings of system certificate-25291"]}
+{"run":4,"ts":"2026-11-08T03:49:26.047Z","step":"request_codex_review","status":"review","reason":"starts a paid external review; needs an operator's go-ahead"}
+{"run":4,"ts":"2026-11-08T03:49:26.047Z","event":"run-end"}

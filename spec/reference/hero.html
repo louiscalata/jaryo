@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jaryo Install Hero</title>
+<style>
+/* F15.01 Install Line Hero — one install command AND a primary GUI connect path; copy with aria-live.
+   Copper Workshop tokens (F17.01). SAMPLE: the command and link are placeholders; nothing installs. */
+:root {
+  --bg:#0B1012; --surface:#141A1C; --text:#F4F1EA; --muted:#9AA3A8; --border:#5A676C;
+  --focus:#E8D7A8; --copper:#C47A3A; --copper-ink:#0B1012; --ok:#8FC4A0;
+  --hit:44px; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+:root[data-skin="mono"] { --bg:#000; --surface:#000; --text:#fff; --muted:#fff; --border:#fff; --focus:#fff; --copper:#fff; --copper-ink:#000; --ok:#fff; }
+* { box-sizing: border-box; border-radius: 0 !important; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.45; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px dashed var(--focus); outline-offset: 3px; }
+.sample { font-family: var(--mono); font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--border); padding: 6px 16px; }
+nav { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 2px solid var(--border); }
+.mark { font-family: var(--mono); font-weight: 700; letter-spacing: .12em; background: var(--copper); color: var(--copper-ink); padding: 6px 10px; }
+nav .links { display: flex; gap: 18px; font-family: var(--mono); font-size: 13px; flex-wrap: wrap; }
+nav .links a { min-height: var(--hit); min-width: var(--hit); padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; }
+.spacer { flex: 1; }
+.btn { min-height: var(--hit); padding: 10px 16px; background: var(--surface); border: 2px solid var(--border); font-family: var(--mono); font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+.btn.primary { background: var(--copper); border-color: var(--copper); color: var(--copper-ink); font-weight: 700; }
+main { max-width: 1040px; margin: 0 auto; padding: 56px 24px 72px; }
+h1 { font-family: var(--mono); font-size: clamp(30px, 6vw, 52px); line-height: 1.05; margin: 0 0 16px; letter-spacing: -.01em; }
+.lede { font-size: 19px; max-width: 34em; margin: 0 0 36px; color: var(--text); }
+/* the two paths, side by side: CLI line + GUI connect */
+.paths { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+.path { border: 2px solid var(--border); background: var(--surface); padding: 18px; min-width: 0; }
+.path h2 { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 12px; }
+.cmd { display: flex; align-items: stretch; border: 2px solid var(--text); }
+.cmd code { flex: 1; font-family: var(--mono); font-size: 15px; padding: 12px 14px; overflow-x: auto; white-space: nowrap; }
+.cmd code::before { content: "$ "; color: var(--muted); }
+.cmd .btn { border-width: 0 0 0 2px; border-color: var(--text); }
+.copied { font-family: var(--mono); font-size: 12px; color: var(--ok); min-height: 18px; margin: 8px 0 0; }
+.path p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+/* the result, honestly: a before/after strip, labelled SAMPLE */
+.result { margin-top: 40px; border-top: 2px solid var(--border); padding-top: 20px; font-family: var(--mono); font-size: 13px; }
+.result .row { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 12px; align-items: center; }
+.result .row > div { min-width: 0; }
+.result pre { margin: 0; background: var(--surface); border: 1px solid var(--border); padding: 12px; overflow-x: auto; font-size: 12px; }
+.arrow { text-align: center; color: var(--muted); }
+.lbl { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.honest { margin-top: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 14px; }
+.honest div { border-top: 2px solid var(--border); padding-top: 10px; }
+.honest strong { display: block; font-family: var(--mono); font-size: 12px; margin-bottom: 4px; }
+@media (max-width: 760px) {
+  .paths, .honest, .result .row { grid-template-columns: minmax(0, 1fr); }
+  .arrow { transform: rotate(90deg); }
+  nav .links { display: none; }
+  main { padding-top: 32px; }
+  .lede { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+<div class="sample" role="note">SAMPLE — website reference for F15.01. Command, links and results are placeholders; nothing installs.</div>
+<nav aria-label="Site">
+  <span class="mark">JARYO</span>
+  <div class="links"><a href="#how">How it works</a><a href="#adaptors">What you get</a></div>
+  <span class="spacer"></span>
+  <button class="btn" id="skin" aria-pressed="false">Mono</button>
+</nav>
+<main>
+  <h1>Your pipeline,<br>visual.</h1>
+  <p class="lede">Jaryo reads what your existing pipeline already exposes — steps, inputs, runs, logs — and gives it a graphical interface. It shows only what your backend declares, and asks before anything consequential.</p>
+
+  <div class="paths">
+    <section class="path" aria-labelledby="cli-h">
+      <h2 id="cli-h">Terminal</h2>
+      <div class="cmd">
+        <code id="cmd">jaryo connect ./my-pipeline</code>
+        <button class="btn" id="copy" aria-describedby="cmd">Copy</button>
+      </div>
+      <p class="copied" id="copied" aria-live="polite"></p>
+      <p>Placeholder command. Discovery lists what it checked and what it found before showing anything.</p>
+    </section>
+    <section class="path" aria-labelledby="gui-h">
+      <h2 id="gui-h">No terminal</h2>
+      <button type="button" class="btn primary" id="connect">Open connect UI</button>
+      <p>Pick a folder or an MCP server; Jaryo shows each step it can see, and marks the rest <span style="font-family:var(--mono)">? [UNKNOWN]</span>.</p>
+    </section>
+  </div>
+
+  <section class="result" id="adaptors" aria-labelledby="res-h">
+    <h2 id="res-h" style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:0 0 12px">What you get — SAMPLE</h2>
+    <div class="row">
+      <div><span class="lbl">Before: the log</span><pre>$ run orders_nightly
+fetch_orders   ok   1.9s
+dedupe_v2      ok   4.4s
+score_risk     ...
+load_wh        ERR  no credential</pre></div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div><span class="lbl">After: Jaryo's view</span><pre>│ Fetch today's orders   ● [OK]
+│ Clean customer rows    ● [OK]
+│ Score order risk       ▶ [RUNNING]
+│ Load to warehouse      ✕ [BLOCKED]
+│   needs: warehouse credential</pre></div>
+    </div>
+  </section>
+
+  <section class="honest" id="how" aria-label="Principles">
+    <div><strong>01 no fake status</strong>State comes from your pipeline, never guessed.</div>
+    <div><strong>02 only declared actions</strong>No pause button if your backend can't pause.</div>
+    <div><strong>03 review first</strong>Consequential runs pass a review you confirm.</div>
+  </section>
+</main>
+<script>
+(() => {
+  const copied = document.getElementById("copied");
+  document.getElementById("copy").addEventListener("click", async () => {
+    const text = document.getElementById("cmd").textContent;
+    try { await navigator.clipboard.writeText(text); copied.textContent = "Copied: " + text; }
+    catch (_) { copied.textContent = "Copy blocked by the browser — select the command and copy it by hand."; }
+  });
+  document.getElementById("connect").addEventListener("click", e => { e.preventDefault(); copied.textContent = ""; alert("SAMPLE: the connect UI is not part of this reference."); });
+  document.getElementById("skin").addEventListener("click", e => { const on = document.documentElement.dataset.skin !== "mono"; document.documentElement.dataset.skin = on ? "mono" : ""; e.currentTarget.setAttribute("aria-pressed", String(on)); });
+})();
+</script>
+</body>
+</html>

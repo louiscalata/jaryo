@@ -1,0 +1,13 @@
+{"run":1,"ts":"2026-11-08T03:47:59.412Z","event":"run-start","pipeline":"jaryo-verify"}
+{"run":1,"ts":"2026-11-08T03:47:59.413Z","step":"check_hashes","event":"step-start"}
+{"run":1,"ts":"2026-11-08T03:47:59.423Z","step":"check_hashes","status":"ok","exit":0,"ms":10,"tail":["reference/index.html: OK","reference/hero.html: OK","docs/spec/JARYO-INTERFACE-SPEC.md: OK","tests/decisions.test.mjs: OK","catalog pick export: omitted in public tree","safe-area receipt: omitted in public tree"]}
+{"run":1,"ts":"2026-11-08T03:47:59.423Z","step":"run_decision_tests","status":"blocked","reason":"needs env JSDOM"}
+{"run":1,"ts":"2026-11-08T03:47:59.423Z","step":"check_tokens","event":"step-start"}
+{"run":1,"ts":"2026-11-08T03:47:59.446Z","step":"check_tokens","status":"ok","exit":0,"ms":23,"tail":["PASS reference/index.html: 16 hex literals","PASS reference/hero.html: 10 hex literals"]}
+{"run":1,"ts":"2026-11-08T03:47:59.446Z","step":"check_contrast","event":"step-start"}
+{"run":1,"ts":"2026-11-08T03:47:59.467Z","step":"check_contrast","status":"ok","exit":0,"ms":21,"tail":["PASS ok on surface: 8.85:1 (min 4.5)","PASS run on surface: 8.09:1 (min 4.5)","PASS blocked on blocked bg: 10.87:1 (min 4.5)","PASS ink on selected fill: 16.97:1 (min 4.5)","PASS sel-sub on selected fill: 8.84:1 (min 4.5)","PASS sel-blocked on selected fill: 9.43:1 (min 4.5)"]}
+{"run":1,"ts":"2026-11-08T03:47:59.467Z","step":"run_adaptor_tests","event":"step-start"}
+{"run":1,"ts":"2026-11-08T03:47:59.778Z","step":"run_adaptor_tests","status":"ok","exit":0,"ms":311,"tail":["PASS mutation caught: accept a run-end from another run","PASS mutation caught: drop retry from the review list","PASS mutation caught: sort record files as text","PASS mutation caught: uncapped tail","PASS mutation caught: a duplicate id keeps its state","63/63 passed"]}
+{"run":1,"ts":"2026-11-08T03:47:59.778Z","step":"run_render_tests","status":"blocked","reason":"needs env JSDOM"}
+{"run":1,"ts":"2026-11-08T03:47:59.778Z","step":"request_codex_review","status":"blocked","reason":"needs run_decision_tests (blocked)"}
+{"run":1,"ts":"2026-11-08T03:47:59.778Z","event":"run-end"}
