@@ -7,7 +7,7 @@ The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-ide
 - The look is now black and white with a factory feel and quiet surfaces. Monochrome is the default and primary look.
 - The header is a machine-plate row: a `JRY·LAB` plate, the title, and the version on the right. A thin hatched hazard strip sits under it.
 - The storage banner is monochrome: a surface fill with a heavy left rule. Error banners use a double rule plus a `!` prefix, so warm yellow and pink fills are gone.
-- The sidebar is split into **Monochrome set · 80 options** and **Color batch · 5 options · optional**. F17 colors appear only inside their own preview cards and never in the chrome.
+- The sidebar is split into **Monochrome set · 80 options** and **Color batch · 5 options**. F17 is part of the curated 85. Its colors appear only inside their own preview cards and never in the chrome.
 - Type scale: 11/12/13/15/20/24 px. Mono stencil labels are uppercase with tracking. Body prose is sans 13px at line-height 1.5.
 - Spacing rhythm: 4/8/12/16/24/32 px tokens, used across the header, sidebar, tabs, cards and tables.
 - Cards:
@@ -82,7 +82,7 @@ Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). W
 - Each F18/F19 option carries `provenance` (source project + what was improved).
 
 ## UI
-- Sidebar groups: Monochrome set (80) · Color batch optional (5) · **Legacy studies (8)** · **Red interactive UI optional (4)**.
+- Sidebar groups: Monochrome set (80) · Color batch (5, curated) · **Legacy studies (8, optional)** · **Red interactive UI (4, optional)**.
 - F19 uses the color preview path; red tokens AA-checked (light accent `#9B1B1B` on white ≥8:1; dark accent `#FF6B6B` on `#0C0C0C` ≥7:1; chip fill/ink pairs ≥7:1).
 - Provenance line on F18/F19 cards.
 
