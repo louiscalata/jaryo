@@ -533,6 +533,7 @@
   }
 
   function renderPreview(opt) {
+    if (window.JARYO_STAGE_UI && window.JARYO_STAGE_UI.has(opt.id)) return window.JARYO_STAGE_UI.render(opt);
     if (opt.id.startsWith("F17") || opt.id.startsWith("F19")) return colorPreview(opt);
     const fn = PREVIEW[opt.id];
     if (fn) return fn(opt);
@@ -588,6 +589,7 @@
     $("#contexts").innerHTML = fam.screen_contexts.map((c) => `<span class="chip">${esc(c)}</span>`).join("");
     const cards = $("#cards");
     const expanded = expandedByFamily[fam.id] || new Set();
+    cards.classList.toggle("cards-wide", !!(window.JARYO_STAGE_UI && window.JARYO_STAGE_UI.wideFamilies[fam.id]));
     cards.setAttribute("role", "radiogroup");
     cards.setAttribute("aria-labelledby", "section-title");
     cards.innerHTML = fam.options.map((opt, idx) => {
@@ -1023,6 +1025,7 @@
         choose(radio.value);
       }
     });
+    if (window.JARYO_STAGE_UI) window.JARYO_STAGE_UI.bind($("#cards"));
     $("#cards").addEventListener("click", (e) => {
       const exp = e.target.closest("[data-expand]");
       if (!exp) return;
