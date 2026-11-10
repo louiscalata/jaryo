@@ -1,7 +1,12 @@
 /* Interactive stages for F19 Red interactive UI and F18 legacy studies.
    Width frames are container queries: Phone 320, Fold 560, Tablet 800, Desk full. */
 
-.cards.cards-wide { grid-template-columns: minmax(0, 1fr); }
+.cards.cards-wide {
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: visible;
+}
 .preview-stage:has(.jstage) { overflow: visible; }
 
 .jstage { display: grid; gap: 8px; }
