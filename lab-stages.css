@@ -31,7 +31,7 @@
 .jstage-ui [data-live] { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* Red interactive UI — identity accent only */
-.red { --bg: #fff; --ink: #121212; --accent: #9b1b1b; --on-accent: #fff; --surface: #f7f5f5; --muted: #5c5555; --focus: #9b1b1b; background: var(--bg); color: var(--ink); }
+.red { --bg: #fff; --ink: #121212; --accent: #C21A27; --on-accent: #fff; --surface: #f7f5f5; --muted: #5c5555; --focus: #C21A27; background: var(--bg); color: var(--ink); }
 .red[data-tone="dark"] { --bg: #0c0c0c; --ink: #f7f5f5; --accent: #ff6b6b; --on-accent: #0c0c0c; --surface: #161212; --muted: #c8bdbd; --focus: #ff6b6b; }
 .red .red-kicker { font-family: "IBM Plex Sans", sans-serif; font-style: italic; font-weight: 700; color: var(--accent); margin: 0; }
 .red .red-title { font-family: "IBM Plex Sans", sans-serif; font-style: italic; font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.01em; color: var(--accent); margin: 0; }
@@ -134,3 +134,119 @@
 .glyph.diamond { transform: rotate(45deg); width: 12px; height: 12px; }
 .glyph.round { border-radius: 50%; }
 .glyph.solid { background: currentColor; }
+
+/* Expanded card: a spread. The preview takes the left column. The notes
+   take the right, the way a spec column sits beside a reading column.
+   The option id becomes a large folio. Narrow widths stack. */
+.opt-card:has(.preview-stage.expanded) {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: start;
+  padding-bottom: 8px;
+  border-top: 4px solid #C21A27;
+}
+.opt-card:has(.preview-stage.expanded) .idbar {
+  grid-column: 1;
+  grid-row: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 0;
+  padding: 4px 0 0;
+  background: transparent;
+  color: var(--fg, #000);
+}
+.opt-card:has(.preview-stage.expanded) .oid {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: none;
+}
+.opt-card:has(.preview-stage.expanded) .body {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.85fr);
+  gap: 12px 28px;
+  align-items: start;
+  min-width: 0;
+}
+.opt-card:has(.preview-stage.expanded) h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #C21A27;
+}
+.opt-card:has(.preview-stage.expanded) .preview-stage {
+  grid-column: 1;
+  grid-row: 2 / span 8;
+  align-self: start;
+  height: auto;
+  min-height: 0;
+  padding: 16px;
+}
+.opt-card:has(.preview-stage.expanded) .preview-stage svg { min-height: 0; }
+.opt-card:has(.preview-stage.expanded) .chosen-marker { margin-left: 0; }
+.opt-card:has(.preview-stage.expanded) .provenance {
+  font-size: 12px;
+  line-height: 1.35;
+}
+.opt-card:has(.preview-stage.expanded) .spec-foot,
+.opt-card:has(.preview-stage.expanded) .small,
+.opt-card:has(.preview-stage.expanded) .tradeoff {
+  grid-column: 2;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.opt-card:has(.preview-stage.expanded) .spec-foot {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.opt-card:has(.preview-stage.expanded) .card-actions {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+.preview-stage.expanded .jstage-ui { min-height: 260px; padding: 20px; }
+.preview-stage.expanded .jstage-view { margin-inline: auto; }
+
+@media (max-width: 720px) {
+  .opt-card:has(.preview-stage.expanded) {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+  }
+  .opt-card:has(.preview-stage.expanded) .idbar,
+  .opt-card:has(.preview-stage.expanded) .body { grid-column: 1; }
+  .opt-card:has(.preview-stage.expanded) .body { grid-template-columns: minmax(0, 1fr); }
+  .opt-card:has(.preview-stage.expanded) h3 { font-size: 28px; }
+  .opt-card:has(.preview-stage.expanded) .oid { font-size: 22px; }
+  .opt-card:has(.preview-stage.expanded) .preview-stage {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: 220px;
+  }
+  .opt-card:has(.preview-stage.expanded) .spec-foot,
+  .opt-card:has(.preview-stage.expanded) .small,
+  .opt-card:has(.preview-stage.expanded) .tradeoff,
+  .opt-card:has(.preview-stage.expanded) .card-actions { grid-column: 1; }
+}
+
+@media (forced-colors: active) {
+  .opt-card:has(.preview-stage.expanded),
+  .opt-card:has(.preview-stage.expanded) h3,
+  .opt-card:has(.preview-stage.expanded) .oid,
+  .opt-card:has(.preview-stage.expanded) .idbar {
+    forced-color-adjust: auto;
+    color: CanvasText;
+    background: transparent;
+    border-color: CanvasText;
+  }
+}
