@@ -573,12 +573,23 @@
     const color = DATA.families.filter((f) => f.id === "F17");
     const legacy = DATA.families.filter((f) => f.id === "F18");
     const red = DATA.families.filter((f) => f.id === "F19");
-    nav.innerHTML =
+    const html =
       `<p class="navgroup" id="ng-mono">Monochrome set · ${count(mono)} options</p>` +
       mono.map(btn).join("") +
       (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${count(color)} options · optional</p>` + color.map(btn).join("") : "") +
       (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">Legacy studies · ${count(legacy)} options</p>` + legacy.map(btn).join("") : "") +
       (red.length ? `<p class="navgroup navgroup-red" id="ng-red">Red interactive UI · ${count(red)} options · optional</p>` + red.map(btn).join("") : "");
+    // index.html already contains this list so the first paint does not jump the grammar demo.
+    const painted = [...nav.querySelectorAll(".navbtn")].map((el) => `${el.dataset.fam}|${el.getAttribute("aria-current")}|${el.getAttribute("title")}`).join("\n");
+    const groups = [...nav.querySelectorAll(".navgroup")].map((el) => el.textContent).join("\n");
+    const expected = DATA.families.map((f) => `${f.id}|${f.id === activeFamily ? "true" : "false"}|${f.id} · ${f.title}`).join("\n");
+    const expectedGroups = [
+      `Monochrome set · ${count(mono)} options`,
+      color.length ? `Color batch · ${count(color)} options · optional` : "",
+      legacy.length ? `Legacy studies · ${count(legacy)} options` : "",
+      red.length ? `Red interactive UI · ${count(red)} options · optional` : "",
+    ].filter(Boolean).join("\n");
+    if (painted !== expected || groups !== expectedGroups) nav.innerHTML = html;
   }
 
   function renderCompare() {
