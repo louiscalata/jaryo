@@ -58,9 +58,18 @@ for (const width of widths) {
     if (exp !== "true") fails.push(fam + ":expand");
     await b.click();
   }
-  const summary = await (async () => { await page.click('.tab[data-tab="summary"]'); return page.textContent("#summary-count"); })();
   const expectedOpts = data.fams >= 19 ? 97 : 85;
   const expectedFams = data.fams >= 19 ? 19 : 17;
+  // WebKit at 260px on Windows can briefly show 18/19 after the last click; wait for the summary to catch up.
+  await page.locator('.tab[data-tab="summary"]').scrollIntoViewIfNeeded();
+  await page.click('.tab[data-tab="summary"]');
+  await page.waitForSelector("#summary-count");
+  try {
+    await page.waitForFunction((re) => new RegExp(re).test(document.querySelector("#summary-count")?.textContent || ""), `^${expectedFams} / ${expectedFams}`, { timeout: 5000 });
+  } catch {
+    // Keep the original assertion below so a real shortfall still fails the job.
+  }
+  const summary = await page.textContent("#summary-count");
   check(`options-count data (w=${width})`, data.opts === expectedOpts && data.fams === expectedFams && data.color === 5 && data.legacy === (expectedFams>=19?8:0) && data.red === (expectedFams>=19?4:0), data);
   check(`original-85 still present (w=${width})`, data.monoBase === 80, data);
   check(`options-count DOM rendered (w=${width})`, domTotal === expectedOpts, domTotal);
