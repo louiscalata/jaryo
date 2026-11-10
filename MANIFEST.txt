@@ -17,3 +17,4 @@ red_interactive_ui=F19.01-F19.04
 typography=lab.css shared tokens; docs/TYPOGRAPHY-PRINCIPLES.md
 verification=VERIFICATION.md; verification/*.json
 homepage=https://fortheloveof.studio/code/jaryo/
+live_lab=https://louiscalata.github.io/jaryo/

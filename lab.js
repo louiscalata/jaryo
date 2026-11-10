@@ -897,6 +897,7 @@
       <h3>Links</h3>
       <ul>
         <li><a href="https://github.com/louiscalata/jaryo">Repository</a></li>
+        <li><a href="https://louiscalata.github.io/jaryo/">Live lab</a></li>
         <li><a href="${esc(DATA.canonical_notion || DATA.homepage || "https://fortheloveof.studio/code/jaryo/")}">Project page</a></li>
       </ul>
       <p>This lab is an interactive companion, not a production product.</p>
