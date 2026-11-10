@@ -28,3 +28,8 @@
 - Command: `SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs <lab> <out.json> "" firefox` and the same with `webkit`
 - CI job `browsers` installs Playwright 1.49.1 Firefox and WebKit and runs that smoke
 - Real Safari on Apple hardware: NOT_RUN
+
+## Chromium forced-colors emulation
+- Not a Windows hardware test. Windows forced-colors on hardware: not tested.
+- `node scripts/browser/forced-colors-smoke.mjs <lab> /tmp/forced-colors-emulation.json`
+- Checks that the selected radio and the focused control stay visible and keep their text.

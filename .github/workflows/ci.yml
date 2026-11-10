@@ -35,3 +35,15 @@ jobs:
         run: |
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json "" firefox
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json "" webkit
+
+  forced-colors:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright Chromium
+        run: mkdir -p /tmp/jaryo-pw && cd /tmp/jaryo-pw && npm init -y && npm install playwright@1.49.1 && cd - && ln -sfn /tmp/jaryo-pw/node_modules node_modules && /tmp/jaryo-pw/node_modules/.bin/playwright install --with-deps chromium
+      - name: Forced-colors emulation smoke
+        run: node scripts/browser/forced-colors-smoke.mjs "$PWD" /tmp/forced-colors-emulation.json

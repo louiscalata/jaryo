@@ -71,7 +71,7 @@ Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATIO
 - Real screen readers (VoiceOver, NVDA, TalkBack)
 - Real phones, cover screens, touch, OS zoom / text scaling
 - Real Safari on Apple hardware: NOT_RUN. Playwright Firefox and WebKit run in CI at 1280, 375, and 260.
-- Windows forced-colors mode (CSS present, not rendered)
+- Windows forced-colors on hardware: not tested. Chromium forced-colors emulation runs in CI.
 - Import through a real OS file picker (jsdom covers wiring)
 
 ## Known limits
