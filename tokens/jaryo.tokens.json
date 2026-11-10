@@ -61,6 +61,14 @@
       "inv-fg": {
         "$type": "color",
         "$value": "#ffffff"
+      },
+      "red": {
+        "$type": "color",
+        "$value": "#c21a27"
+      },
+      "red-on": {
+        "$type": "color",
+        "$value": "#ffffff"
       }
     },
     "dark": {
@@ -121,6 +129,14 @@
         "$value": "#f0f0f0"
       },
       "inv-fg": {
+        "$type": "color",
+        "$value": "#0c0c0c"
+      },
+      "red": {
+        "$type": "color",
+        "$value": "#f62131"
+      },
+      "red-on": {
         "$type": "color",
         "$value": "#0c0c0c"
       }
@@ -249,7 +265,7 @@
     },
     "font-display": {
       "$type": "fontFamily",
-      "$value": "{fontFamily.mono}"
+      "$value": "{fontFamily.sans}"
     },
     "font-serif-study": {
       "$type": "fontFamily",

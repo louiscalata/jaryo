@@ -36,27 +36,27 @@
 .jstage-ui [data-live] { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* Red interactive UI — identity accent only */
-.red { --bg: #fff; --ink: #121212; --accent: #9b1b1b; --on-accent: #fff; --surface: #f7f5f5; --muted: #5c5555; --focus: #9b1b1b; background: var(--bg); color: var(--ink); }
-.red[data-tone="dark"] { --bg: #0c0c0c; --ink: #f7f5f5; --accent: #ff6b6b; --on-accent: #0c0c0c; --surface: #161212; --muted: #c8bdbd; --focus: #ff6b6b; }
+.red { --bg: #fff; --ink: #121212; --accent: #C21A27; --on-accent: #fff; --surface: #f7f5f5; --muted: #5c5555; --focus: #C21A27; background: var(--bg); color: var(--ink); }
+.red[data-tone="dark"] { --bg: #0c0c0c; --ink: #f7f5f5; --accent: #F62131; --on-accent: #0c0c0c; --surface: #161212; --muted: #c8bdbd; --focus: #F62131; }
 .red .red-kicker { font-family: "IBM Plex Sans", sans-serif; font-style: italic; font-weight: 700; color: var(--accent); margin: 0; }
 .red .red-title { font-family: "IBM Plex Sans", sans-serif; font-style: italic; font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.01em; color: var(--accent); margin: 0; }
-.red .red-section { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin: 12px 0 8px; }
+.red .red-section { font-family: "IBM Plex Sans", sans-serif; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin: 12px 0 8px; }
 .red .red-body { font-family: "IBM Plex Sans", sans-serif; font-size: 16px; line-height: 1.5; margin: 0; max-width: 38em; }
 .red[data-align="center"] .red-body { text-align: center; margin-inline: auto; }
 .red[data-align="justify"] .red-body { text-align: justify; }
-.red .red-spec { margin-top: 12px; color: var(--accent); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.red .red-spec { margin-top: 12px; color: var(--accent); font-family: "IBM Plex Sans", sans-serif; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .red .toolrow { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
 .red .toolrow button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 
 .cross { display: grid; gap: 12px; }
-.cross .meta-col { color: var(--accent); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; display: grid; gap: 8px; }
+.cross .meta-col { color: var(--accent); font-family: "IBM Plex Sans", sans-serif; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; display: grid; gap: 8px; }
 .cross .read-col { font-family: "Libre Baskerville", Palatino, serif; font-size: 16px; line-height: 1.5; }
 @container stage (min-width: 560px) {
   .cross { grid-template-columns: 9rem minmax(0, 1fr); align-items: start; }
 }
 
 .wordmark { display: grid; gap: 8px; justify-items: start; }
-.wordmark .wm { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 700; font-size: 32px; letter-spacing: 0.12em; line-height: 1.1; }
+.wordmark .wm { font-family: "IBM Plex Sans", sans-serif; font-weight: 700; font-size: 32px; letter-spacing: 0.04em; line-height: 1.1; color: var(--accent); }
 .wordmark .rule { height: 2px; width: 100%; background: var(--accent); border: 0; }
 .wm-short { display: none; }
 @container stage (max-width: 360px) {
