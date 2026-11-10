@@ -18,6 +18,15 @@ const server = http.createServer((req, res) => {
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 const out = { checks: [], errors: [] };
 const check = (name, pass, detail) => { out.checks.push({ name, pass: !!pass, detail }); console.log(pass ? "PASS" : "FAIL", name, detail !== undefined ? JSON.stringify(detail) : ""); };
+// Scroll clear of the fixed toast, then let locator.click wait until the
+// target is visible, stable, enabled, and the top element at the point.
+async function clickReady(locator) {
+  await locator.scrollIntoViewIfNeeded();
+  await locator.evaluate((el) => el.scrollIntoView({ block: "center", inline: "nearest" }));
+  await locator.waitFor({ state: "visible" });
+  await locator.click({ trial: true });
+  await locator.click();
+}
 const browser = await engines[engineName].launch();
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
@@ -35,11 +44,11 @@ for (const width of widths) {
   const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), monoBase: d.families.filter(f=>/^F(0[1-9]|1[0-6])$/.test(f.id)).reduce((n,f)=>n+f.options.length,0), color: (d.families.find(f=>f.id==="F17")||{options:[]}).options.length, legacy: (d.families.find(f=>f.id==="F18")||{options:[]}).options.length, red: (d.families.find(f=>f.id==="F19")||{options:[]}).options.length }; });
   let domTotal = 0, clicked = 0, fails = [];
   for (const fam of famIds) {
-    await page.click(`[data-fam="${fam}"]`);
+    await clickReady(page.locator(`[data-fam="${fam}"]`));
     const ids = await page.$$eval("#cards .opt-card", (c) => c.map((x) => x.dataset.id));
     domTotal += ids.length;
     for (const id of ids) {
-      await page.locator(`.opt-card[data-id="${id}"] .choose-label`).click();
+      await clickReady(page.locator(`.opt-card[data-id="${id}"] .choose-label`));
       const ok = await page.evaluate((id) => {
         const card = document.querySelector(`.opt-card[data-id="${id}"]`);
         const r = card.querySelector('input[type=radio]');
@@ -50,12 +59,12 @@ for (const width of widths) {
     }
     // expand toggle on first card
     const b = page.locator("#cards .expand-btn").first();
-    await b.click();
+    await clickReady(b);
     const exp = await b.getAttribute("aria-expanded");
     if (exp !== "true") fails.push(fam + ":expand");
-    await b.click();
+    await clickReady(b);
   }
-  const summary = await (async () => { await page.click('.tab[data-tab="summary"]'); return page.textContent("#summary-count"); })();
+  const summary = await (async () => { await clickReady(page.locator('.tab[data-tab="summary"]')); return page.textContent("#summary-count"); })();
   const expectedOpts = data.fams >= 19 ? 97 : 85;
   const expectedFams = data.fams >= 19 ? 19 : 17;
   check(`options-count data (w=${width})`, data.opts === expectedOpts && data.fams === expectedFams && data.color === 5 && data.legacy === (expectedFams>=19?8:0) && data.red === (expectedFams>=19?4:0), data);
