@@ -584,7 +584,7 @@
     const fam = familyById(activeFamily);
     if (!fam) return;
     $("#section-title").textContent = `${fam.id} — ${fam.title}`;
-    $("#section-meta").textContent = `Curated ${fam.curated_count || fam.options.length} of ${fam.catalog_size || fam.options.length} catalog options · stable IDs preserved`;
+    $("#section-meta").textContent = `Curated ${fam.curated_count || fam.options.length} of ${fam.catalog_size || fam.options.length} catalog options · stable IDs preserved · 24/29 IBM Plex Mono 700`;
     $("#contexts").innerHTML = fam.screen_contexts.map((c) => `<span class="chip">${esc(c)}</span>`).join("");
     const cards = $("#cards");
     const expanded = expandedByFamily[fam.id] || new Set();
@@ -599,6 +599,7 @@
         <div class="body">
           <h3>${esc(opt.name)}</h3>
           <div class="preview-stage${isExp ? " expanded" : ""}" id="stage-${opt.id.replace(".", "-")}" data-preview="${opt.id}">${renderPreview(opt)}</div>
+          <p class="spec-foot">14/21 · IBM Plex Sans · regular · 0 tracking</p>
           <p class="small"><strong>Mechanism:</strong> ${esc(opt.mechanism)}</p>
           <p class="small"><strong>Why curated:</strong> ${esc(opt.curation_rationale)}</p>
           <p class="tradeoff"><strong>Tradeoff:</strong> ${esc(opt.tradeoff)}</p>
@@ -864,6 +865,15 @@
   function renderDocs() {
     const g = DATA.state_grammar_v4;
     $("#docs").innerHTML = `
+      <h3>Type roles</h3>
+      <p class="meta">From Typography 1 (FALL 2021). Tokens live in lab.css. Licenses: <a href="docs/FONTS.md">docs/FONTS.md</a>.</p>
+      <div class="type-specimen">
+        <div class="type-row"><div class="role-meta spec-foot">Display</div><div class="role-display">Visible language</div></div>
+        <div class="type-row"><div class="role-meta spec-foot">Title</div><div class="role-title">Card and document titles</div></div>
+        <div class="type-row"><div class="role-meta spec-foot">Reading</div><div class="role-body">Reading text uses IBM Plex Sans at 14px on 21px leading. Alignment in the lab is left, rag right.</div></div>
+        <div class="type-row"><div class="role-meta spec-foot">Study serif</div><div class="role-serif">Libre Baskerville is the study serif. The booklet’s Baskerville is not a free web font and is not shipped.</div></div>
+        <div class="type-row"><div class="role-meta spec-foot">Spec</div><p class="spec-foot">14/21 · IBM Plex Sans · regular · 0 tracking</p></div>
+      </div>
       <h3>Product frame (proposed)</h3>
       <p>Jaryo is a proposed graphical interface for pipelines via CLI, MCP, or other adapters. The architecture is exploratory. AGIW Suite is one application of Jaryo, not the whole product. MCP alone has no renderer; a host is still required. This lab is not an installable product.</p>
       <h3>State grammar (v4)</h3>
