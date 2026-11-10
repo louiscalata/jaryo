@@ -6,7 +6,9 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Same-repo events use Louis's Mac runner (Python and Node checks only); fork pull requests and the
+    # Playwright jobs stay on GitHub-hosted Ubuntu.
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","mac-m5"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
