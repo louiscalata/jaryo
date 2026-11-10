@@ -23,6 +23,9 @@ def local_refs(text: str) -> list[str]:
             continue
         if raw.startswith("blob:"):
             continue
+        # Script templates such as href="${url}" are not file paths.
+        if "${" in raw or raw.startswith("$"):
+            continue
         out.append(raw.split("#", 1)[0].split("?", 1)[0])
     return out
 
