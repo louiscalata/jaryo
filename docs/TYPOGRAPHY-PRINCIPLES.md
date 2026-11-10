@@ -43,7 +43,7 @@ The lab is a screen, so 8pt body and a 5pt Fibonacci step are not used. The less
 |---|---|---|---|
 | Machine | `--font-machine` | IBM Plex Mono | IDs, nav, tabs, spec lines, section titles |
 | Reading | `--font-reading` | IBM Plex Sans | Body, mechanisms, tradeoffs, card titles |
-| Display | `--font-display` | IBM Plex Mono | Section titles. Size and caps, not a second color |
+| Display | `--font-display` | IBM Plex Mono | Lab title and section titles. Size and caps, not a second color |
 | Study serif | `--font-serif-study` | Libre Baskerville | Docs specimen and the F19 reading column |
 
 Libre Baskerville is an OFL transitional serif used where the booklet used Baskerville. Baskerville is not shipped. Antique Olive, Didot, Futura, Univers, and Helvetica are not shipped.
@@ -51,16 +51,17 @@ Libre Baskerville is an OFL transitional serif used where the booklet used Baske
 ### Scale
 | Token | Size | Use |
 |---|---|---|
-| `--fs-0` | 11px | Non-essential chrome only |
-| `--fs-1` | 12px | Spec labels, chips |
-| `--fs-2` | 13px | Nav, buttons |
-| `--fs-3` | 14px | Reading body |
-| `--fs-4` | 16px | Card titles |
+| `--fs-0` | 11px | Kept in the token file. Not used for visible lab text |
+| `--fs-1` | 12px | Spec line on a card |
+| `--fs-2` | 13px | Nav, meta, chips |
+| `--fs-3` | 14px | Reading body and controls |
+| `--fs-4` | 16px | Card titles. The card face is unchanged |
 | `--fs-5` | 20px | Panel titles |
-| `--fs-6` | 24px | Section titles |
-| `--fs-7` | 32px | Rare display |
+| `--fs-6` | 24px | Section titles on a narrow screen |
+| `--fs-7` | 32px | Section titles |
+| `--fs-display` | 48px | Lab title |
 
-Body and interactive labels stay at least 12px. The 11px step is chrome, not reading text.
+Body and controls stay at 14px. The 11px step is unused on screen. The card title stays IBM Plex Sans at 16px.
 
 ### Weight, leading, tracking
 | Token | Value | Use |
