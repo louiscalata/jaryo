@@ -64,7 +64,7 @@ section.s { padding-block: 44px; border-top: 2px solid var(--border); display: g
 .box p, .box li { font-size: 15px; }
 .box ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 
-/* state chips: word + glyph, never colour alone */
+/* state chips: word + glyph, never color alone */
 .chip { font-family: var(--mono); font-size: 12px; font-weight: 700; display: inline-block; padding: 2px 7px; border: 1px solid currentColor; white-space: nowrap; }
 .chip.ok { color: var(--ok); } .chip.run { color: var(--run); }
 .chip.blocked { background: var(--blocked-bg); color: var(--blocked-fg); border-color: var(--blocked-fg); }
@@ -209,7 +209,7 @@ load_wh        ERR  no credential</pre></div>
             <li><b>Files intact.</b> All five hashed files (spec, both screens, test file, safe-area diff) match their recorded hashes.</li>
             <li><b>Behaviour tests.</b> 21 of 21 jsdom tests pass (stubbed dialog; no layout or safe-area coverage): hidden groups auto-open on a problem, the phone fork never guesses, the activity tick resets per run.</li>
             <li><b>Screens behave.</b> Selection, the command palette (unavailable actions listed with a reason) and the review gate were driven at desktop width. The phone sheet, thumb bar and fork chooser were driven at 375px. Not every path ran at both widths.</li>
-            <li><b>Contrast is real.</b> 23 colour pairs recomputed; none off by more than 0.01. Every colour in the app comes from the token table.</li>
+            <li><b>Contrast is real.</b> 23 color pairs recomputed; none off by more than 0.01. Every color in the app comes from the token table.</li>
             <li><b>Reviewed.</b> 15 rounds by one reviewer model (Codex) reading the source. Nine returned findings, all fixed; rounds 5, 8, 9, 12, 13 and 15 returned none. This is advice, not user validation.</li>
             <li><b>Adaptor spike.</b> It copies every status from a pipeline's own run record and shows anything else as unknown. 63 adaptor checks (14 deliberately broken versions must each fail) and 21 renderer checks pass. It also showed the spec has no "failed" state.</li>
             <li><b>Phone.</b> Checked in real mobile Safari inside an iPhone 17 Pro simulator: thumb bar, full-sheet detail, fork chooser.</li>

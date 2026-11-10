@@ -1,4 +1,4 @@
-// Every colour literal in the reference screens must be a spec token, pure black/white (mono skin) or the scrim.
+// Every color literal in the reference screens must be a spec token, pure black/white (mono skin) or the scrim.
 import fs from "node:fs";
 const TOKENS = new Set(["0b1012", "141a1c", "f4f1ea", "9aa3a8", "5a676c", "e8d7a8", "c47a3a", "8fc4a0", "8fb4d6", "ffd2c8", "3a2020", "3b4448", "6b2a1e", "1f4a72", "000", "000000", "fff", "ffffff"]);
 let bad = 0;

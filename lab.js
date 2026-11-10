@@ -165,7 +165,7 @@
         storageMsg = "Selections save in this browser only (localStorage).";
       }
       if ($("#storage-banner")) {
-        $("#storage-banner").textContent = storageMsg + " Choice ≠ production change. Demo data fictional.";
+        $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
         $("#storage-banner").className = hasCatalogMismatch ? "banner warn" : "banner warn";
         $("#storage-banner").hidden = false;
       }
@@ -544,8 +544,26 @@
     return DATA.families.find((f) => f.id === id);
   }
 
+  function catalogPhrase() {
+    const families = DATA.families.length;
+    const total = DATA.families.reduce((n, f) => n + f.options.length, 0);
+    const curated = Number(DATA.source_catalog && DATA.source_catalog.curated_count) || 0;
+    const optional = Math.max(0, total - curated);
+    return `${families} families · ${curated} curated + ${optional} optional (${total} total)`;
+  }
+
+  function withLinks(text) {
+    return esc(text).replace(/https?:\/\/[^\s<]+/g, (raw) => {
+      const url = raw.replace(/[),.;]+$/, "");
+      const tail = raw.slice(url.length);
+      return `<a href="${url}">${url}</a>${tail}`;
+    });
+  }
+
   function renderNav() {
     const nav = $("#family-nav");
+    const catalog = $("#catalog-count");
+    if (catalog) catalog.textContent = catalogPhrase();
     const btn = (f) =>
       `<button type="button" class="navbtn" data-fam="${f.id}" title="${f.id} · ${esc(f.title)}" aria-current="${f.id === activeFamily ? "true" : "false"}"><span class="fid">${f.id}</span><span class="ftitle"><span class="sep"> · </span>${esc(f.title)}</span></button>`;
     const count = (arr) => arr.reduce((n, f) => n + f.options.length, 0);
@@ -725,11 +743,11 @@
       schemaVersion: 1,
       catalogVersion: DATA && DATA.version ? DATA.version : "unknown",
       writerId,
-      notice: "Choice preference ≠ validation or production change. Demo data fictional.",
+      notice: "A saved choice is a preference, not a product change. Demo data is fictional.",
       exported_at_utc: new Date().toISOString(),
       persistenceStatus,
       acceptedCount: acceptedChoiceCount(),
-      copper_note: "F17.01 Copper is EXAMPLE only unless Louis explicitly selects it.",
+      copper_note: "Copper is an example palette in the color set, not the default.",
       choices,
       rejects: persistenceRejects.slice(),
       by_family: DATA.families.map((f) => ({
@@ -847,7 +865,7 @@
     const g = DATA.state_grammar_v4;
     $("#docs").innerHTML = `
       <h3>Product frame (proposed)</h3>
-      <p>Jaryo is an installable graphical interface for pipelines via CLI / MCP / other adapters. Architecture is exploratory. AGIW Suite is one application of Jaryo — not the whole product. MCP alone has no renderer; a host is still required.</p>
+      <p>Jaryo is a proposed graphical interface for pipelines via CLI, MCP, or other adapters. The architecture is exploratory. AGIW Suite is one application of Jaryo, not the whole product. MCP alone has no renderer; a host is still required. This lab is not an installable product.</p>
       <h3>State grammar (v4)</h3>
       <ul>
         <li><strong>Selected:</strong> ${esc(g.selected)}</li>
@@ -863,9 +881,13 @@
       <h3>Accessibility baseline (required, not an option)</h3>
       <p>Contrast-aware B/W or color-independent signals; 3px dashed focus ring; ≥44px hit targets; state in words/glyphs; keyboard path; prefers-reduced-motion respected; honest unsupported controls.</p>
       <h3>Notices</h3>
-      <ul>${DATA.notices.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-      <h3>Canonical home</h3>
-      <p>Project page: <code>${esc(DATA.canonical_notion || DATA.homepage || "https://fortheloveof.studio/code/jaryo/")}</code>. This lab is an interactive companion, not a production product.</p>
+      <ul>${DATA.notices.map((n) => `<li>${withLinks(n)}</li>`).join("")}</ul>
+      <h3>Links</h3>
+      <ul>
+        <li><a href="https://github.com/louiscalata/jaryo">Repository</a></li>
+        <li><a href="${esc(DATA.canonical_notion || DATA.homepage || "https://fortheloveof.studio/code/jaryo/")}">Project page</a></li>
+      </ul>
+      <p>This lab is an interactive companion, not a production product.</p>
     `;
   }
 
@@ -1076,7 +1098,7 @@
 
   async function boot() {
     loadChoices();
-    $("#storage-banner").textContent = storageMsg + " Choice ≠ production change. Demo data fictional.";
+    $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
     $("#storage-banner").className = (!storageOk || persistenceStatus === "malformed") ? "banner err" : "banner warn";
     $("#storage-banner").hidden = false;
     updateRecoveryButton();
@@ -1096,12 +1118,11 @@
       }
     }
 
-    const optCount = DATA.families.reduce((n, f) => n + f.options.length, 0);
-    $("#lab-version").textContent = `${DATA.version} · ${DATA.families.length} families · ${optCount} options (${DATA.source_catalog.curated_count} original)`;
+    $("#lab-version").textContent = catalogPhrase();
     normalizeAfterCatalog();
     if (persistenceRejects.length) {
       storageMsg += ` Rejected ${persistenceRejects.length} invalid stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (status=${persistenceStatus}).`;
-      $("#storage-banner").textContent = storageMsg + " Choice ≠ production change. Demo data fictional.";
+      $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
       $("#storage-banner").className = persistenceStatus === "malformed" || persistenceStatus === "unavailable" ? "banner err" : "banner warn";
     }
     updateRecoveryButton();
