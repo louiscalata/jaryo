@@ -3,13 +3,16 @@
 Run: `python3 scripts/validate_lab.py`
 
 Expected:
-- 17 families × 5 options = 85
-- Unique stable IDs; all IDs exist in source catalog (F01–F16 from options.json; F17 from color-batch)
+- The original curated file stays byte-stable: `data/curated-85.json`
+- Extended catalog phrase, in the README and the lab: 19 families · 85 curated + 12 optional (97 total)
+- The family list in `index.html` matches `data/curated-extended.json`
+- The summary line starts at `0 / 19 families chosen (validated)`
+- Unique stable IDs
 - Every curated option has mechanism, tradeoff, curation_rationale
-- Every non-F17 option has a distinct preview renderer key in lab.js OR ascii preview
+- Every non-F17 option has a distinct preview renderer key in lab.js or an ascii preview
 - All F17 curated options have tokens
 - index.html references lab.css, lab.js, embedded-data.js
 - Export payload shape keys present in lab.js
-- No claim of live telemetry / installable product in banners
+- No claim of live telemetry or an installable product in the banners
 
-**Not run here:** real browser click/keyboard/storage E2E (no browser control tools in this executor). Ask parent to arrange interactive verification if required.
+CI also runs the lab smoke on Playwright Firefox and WebKit, and a Chromium forced-colors emulation. Real Safari on Apple hardware and Windows forced-colors on hardware are not tested.

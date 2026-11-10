@@ -129,6 +129,9 @@ if ext_path.exists():
         for label in expected_groups:
             if label not in nav_html:
                 fail(f"index.html family nav missing group label {label!r}")
+    summary = f"0 / {n_fam} families chosen (validated)"
+    if summary not in index_html:
+        fail(f"index.html summary count should start at {summary}")
 
 # DOM/HTML basics
 index = (LAB / "index.html").read_text(encoding="utf-8")
