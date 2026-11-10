@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install Playwright Firefox and WebKit
-        run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps firefox webkit
+        run: mkdir -p /tmp/jaryo-pw && cd /tmp/jaryo-pw && npm init -y && npm install playwright@1.49.1 && cd - && ln -sfn /tmp/jaryo-pw/node_modules node_modules && /tmp/jaryo-pw/node_modules/.bin/playwright install --with-deps firefox webkit
       - name: Smoke on Firefox and WebKit
         run: |
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json "" firefox
@@ -43,6 +43,6 @@ jobs:
         with:
           node-version: "22"
       - name: Install Playwright Chromium
-        run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
+        run: mkdir -p /tmp/jaryo-pw && cd /tmp/jaryo-pw && npm init -y && npm install playwright@1.49.1 && cd - && ln -sfn /tmp/jaryo-pw/node_modules node_modules && /tmp/jaryo-pw/node_modules/.bin/playwright install --with-deps chromium
       - name: Forced-colors emulation smoke
         run: node scripts/browser/forced-colors-smoke.mjs "$PWD" /tmp/forced-colors-emulation.json
