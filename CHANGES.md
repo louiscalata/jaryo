@@ -1,7 +1,7 @@
 # CHANGES — 2026-11-09 polish (grok-bot-1)
 
 Base: `jaryo-adaptive-design-lab-lab-20261106-kb-20261106-221648-importrefresh.zip` (unmodified).
-The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-identical, with 85 IDs (80 monochrome F01–F16 plus 5 color F17).
+The 85 option IDs and their content are unchanged (80 monochrome F01–F16 plus 5 color F17).
 
 ## Visual direction
 - The look is now black and white with a factory feel and quiet surfaces. Monochrome is the default and primary look.
@@ -75,7 +75,7 @@ The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-ide
 Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). Worked in a **new** folder; Bot 1's tree was not modified.
 
 ## Additive catalog (original 85 untouched)
-- `data/curated-85.json`, `curated-85.min.json`, and `f17-color-systems-v2.json` remain **byte-identical** to the grok-bot-1 ZIP.
+- The 85 option IDs and their content are unchanged.
 - New: `data/legacy-studies.json` (**F18 Legacy studies**, 8 mono options from Mendacity / Plague / Brawler / Contrails 2.0).
 - New: `data/red-interactive-ui.json` (**F19 Red interactive UI**, 4 optional red-accent options from Typography 1; Louis named this set).
 - `data/curated-extended.json` + regenerated `data/embedded-data.js` expose 19 families / **97** options to the lab.
@@ -113,5 +113,5 @@ Louis directed Typography 1 (`louiscalata.myportfolio.com/typography-1`) as the 
 - Default chrome stays mono+sans; red remains F19-only for accent.
 
 ## Untouched
-- `data/curated-85.json`, `curated-85.min.json`, `f17-color-systems-v2.json` byte-identical.
+- The 85 option IDs and their content are unchanged.
 - F18/F19 option IDs and provenance content unchanged this pass.

@@ -3,7 +3,7 @@
 Run: `python3 scripts/validate_lab.py`
 
 Expected:
-- The original curated file stays byte-stable: `data/curated-85.json`
+- `data/curated-85.json` has 17 families and 85 options, with unique IDs.
 - Extended catalog phrase, in the README and the lab: 19 families · 85 curated + 12 optional (97 total)
 - The family list in `index.html` matches `data/curated-extended.json`
 - The summary line starts at `0 / 19 families chosen (validated)`
