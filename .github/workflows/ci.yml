@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Lab checks
+        run: |
+          python3 scripts/validate_lab.py
+          python3 scripts/check_assets.py
+          node --check lab.js
+          if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
+          node scripts/test_persistence_rules.mjs
+          node scripts/test_lab_dom.mjs
