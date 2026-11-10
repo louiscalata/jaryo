@@ -432,12 +432,7 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
   .toolbar .btn { width: 100%; min-width: 0; padding: var(--s1) var(--s2); }
   .theme-field select { flex: 1; min-width: 0; }
   .notice { font-size: var(--fs-1); }
-  #family-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: var(--s1); }
-  #family-nav .navgroup { grid-column: 1 / -1; margin: var(--s2) 0 0; }
-  #family-nav > .navgroup:first-child { margin-top: 0; }
-  .navbtn { justify-content: center; margin: 0; padding: var(--s1); text-align: center; }
-  .navbtn[aria-current="true"]::after { content: ""; display: none; }
-  .navbtn .ftitle { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+  .navbtn .ftitle { overflow-wrap: anywhere; }
   .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-bottom: 0; }
   .tab { padding: var(--s1) var(--s2); letter-spacing: 0.02em; }
   .section-head h2 { font-size: var(--fs-5); }
