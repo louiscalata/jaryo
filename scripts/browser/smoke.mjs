@@ -18,7 +18,10 @@ const server = http.createServer((req, res) => {
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 const out = { checks: [], errors: [] };
 const check = (name, pass, detail) => { out.checks.push({ name, pass: !!pass, detail }); console.log(pass ? "PASS" : "FAIL", name, detail !== undefined ? JSON.stringify(detail) : ""); };
-const browser = await engines[engineName].launch();
+const launchOpts = engineName === "chromium"
+  ? { args: ["--use-mock-keychain", "--password-store=basic"] }
+  : {};
+const browser = await engines[engineName].launch(launchOpts);
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
   const page = await ctx.newPage();

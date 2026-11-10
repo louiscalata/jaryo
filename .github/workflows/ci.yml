@@ -6,8 +6,8 @@ on:
 
 jobs:
   check:
-    # Same-repo events use Louis's Mac runner (Python and Node checks only); fork pull requests and the
-    # Playwright jobs stay on GitHub-hosted Ubuntu.
+    # Same-repo events use Louis's Mac runner (Python and Node checks only); fork pull requests stay
+    # on GitHub-hosted Ubuntu. Browser jobs never target the Mac.
     runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","mac-m5"]') || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
@@ -28,27 +28,81 @@ jobs:
         run: shasum -a 256 -c HASHES.txt
 
   browsers:
-    runs-on: ubuntu-24.04
+    # Same-repo events use the PC runner; fork pull requests stay on GitHub-hosted Ubuntu.
+    # Never run Playwright on the Mac. Chromium, when used, gets mock-keychain flags in the smoke script.
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","pc-win"]') || 'ubuntu-24.04' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - name: Install Playwright Firefox and WebKit
+        if: runner.os != 'Windows'
         run: mkdir -p /tmp/jaryo-pw && cd /tmp/jaryo-pw && npm init -y && npm install playwright@1.49.1 && cd - && ln -sfn /tmp/jaryo-pw/node_modules node_modules && /tmp/jaryo-pw/node_modules/.bin/playwright install --with-deps firefox webkit
+      - name: Install Playwright Firefox and WebKit
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tmp = Join-Path $env:RUNNER_TEMP 'jaryo-pw'
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+          Push-Location $tmp
+          npm init -y
+          npm install playwright@1.49.1
+          Pop-Location
+          $nodePath = Join-Path $tmp 'node_modules'
+          if (Test-Path -LiteralPath .\node_modules) { Remove-Item -Recurse -Force .\node_modules }
+          cmd /c "mklink /J node_modules `"$nodePath`""
+          if ($LASTEXITCODE -ne 0) { throw 'failed to junction node_modules' }
+          & (Join-Path $tmp 'node_modules\.bin\playwright.cmd') install firefox webkit
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Smoke on Firefox and WebKit
+        if: runner.os != 'Windows'
         run: |
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json "" firefox
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json "" webkit
+      - name: Smoke on Firefox and WebKit
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:SMOKE_WIDTHS = '1280,375,260'
+          $out = $env:RUNNER_TEMP
+          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-firefox.json') '' firefox
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-webkit.json') '' webkit
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   forced-colors:
-    runs-on: ubuntu-24.04
+    # Same-repo events use the PC runner; fork pull requests stay on GitHub-hosted Ubuntu.
+    # Never run Playwright on the Mac. Chromium gets mock-keychain flags in the smoke script.
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","pc-win"]') || 'ubuntu-24.04' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - name: Install Playwright Chromium
+        if: runner.os != 'Windows'
         run: mkdir -p /tmp/jaryo-pw && cd /tmp/jaryo-pw && npm init -y && npm install playwright@1.49.1 && cd - && ln -sfn /tmp/jaryo-pw/node_modules node_modules && /tmp/jaryo-pw/node_modules/.bin/playwright install --with-deps chromium
+      - name: Install Playwright Chromium
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tmp = Join-Path $env:RUNNER_TEMP 'jaryo-pw'
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+          Push-Location $tmp
+          npm init -y
+          npm install playwright@1.49.1
+          Pop-Location
+          $nodePath = Join-Path $tmp 'node_modules'
+          if (Test-Path -LiteralPath .\node_modules) { Remove-Item -Recurse -Force .\node_modules }
+          cmd /c "mklink /J node_modules `"$nodePath`""
+          if ($LASTEXITCODE -ne 0) { throw 'failed to junction node_modules' }
+          & (Join-Path $tmp 'node_modules\.bin\playwright.cmd') install chromium
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Forced-colors emulation smoke
+        if: runner.os != 'Windows'
         run: node scripts/browser/forced-colors-smoke.mjs "$PWD" /tmp/forced-colors-emulation.json
+      - name: Forced-colors emulation smoke
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: node scripts/browser/forced-colors-smoke.mjs $pwd.Path (Join-Path $env:RUNNER_TEMP 'forced-colors-emulation.json')
