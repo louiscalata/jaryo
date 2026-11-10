@@ -23,3 +23,8 @@
 ### Typography-apply before/after (F01, F02 existing · F19 new · 375 & 1280)
 - before: `verification/typography-apply/before/{F01,F02,F19}-{375,1280}.png`
 - after: `verification/typography-apply/after/{F01,F02,F19}-{375,1280}.png`
+
+## Playwright Firefox and WebKit
+- Command: `SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs <lab> <out.json> "" firefox` and the same with `webkit`
+- CI job `browsers` installs Playwright 1.49.1 Firefox and WebKit and runs that smoke
+- Real Safari on Apple hardware: NOT_RUN

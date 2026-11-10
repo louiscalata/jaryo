@@ -1,7 +1,14 @@
 // Usage: node smoke.mjs <labDir> <outJson> [shotDir]
-import { chromium } from "playwright";
+import { chromium, firefox, webkit } from "playwright";
 import fs from "node:fs"; import path from "node:path"; import http from "node:http";
-const [labDir, outJson, shotDir] = process.argv.slice(2);
+const [labDir, outJson, shotDir, browserName] = process.argv.slice(2);
+const engineName = browserName || process.env.SMOKE_BROWSER || "chromium";
+const engines = { chromium, firefox, webkit };
+if (!engines[engineName]) {
+  console.error("unknown browser", engineName);
+  process.exit(1);
+}
+const widths = (process.env.SMOKE_WIDTHS || "1280,260").split(",").map((n) => Number(n.trim())).filter((n) => n > 0);
 const types = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png" };
 const server = http.createServer((req, res) => {
   const p = path.join(labDir, decodeURIComponent(req.url.split("?")[0]).replace(/^\/$/, "/index.html"));
@@ -11,7 +18,7 @@ const server = http.createServer((req, res) => {
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 const out = { checks: [], errors: [] };
 const check = (name, pass, detail) => { out.checks.push({ name, pass: !!pass, detail }); console.log(pass ? "PASS" : "FAIL", name, detail !== undefined ? JSON.stringify(detail) : ""); };
-const browser = await chromium.launch();
+const browser = await engines[engineName].launch();
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
   const page = await ctx.newPage();
@@ -23,7 +30,7 @@ async function open(opts = {}) {
 const famIds = await (async () => { const { ctx, page } = await open(); const f = await page.$$eval("[data-fam]", (b) => b.map((x) => x.dataset.fam)); await ctx.close(); return f; })();
 
 // 1) Count + click every option (mouse), at 1280 and 260
-for (const width of [1280, 260]) {
+for (const width of widths) {
   const { ctx, page } = await open({ width, tag: "click-" + width });
   const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), monoBase: d.families.filter(f=>/^F(0[1-9]|1[0-6])$/.test(f.id)).reduce((n,f)=>n+f.options.length,0), color: (d.families.find(f=>f.id==="F17")||{options:[]}).options.length, legacy: (d.families.find(f=>f.id==="F18")||{options:[]}).options.length, red: (d.families.find(f=>f.id==="F19")||{options:[]}).options.length }; });
   let domTotal = 0, clicked = 0, fails = [];
@@ -123,7 +130,7 @@ for (const width of [1280, 260]) {
 }
 
 // 3) Focus-visible on every interactive element type, both themes; ring contrast vs page bg
-for (const scheme of ["light", "dark"]) for (const width of [1280, 260]) {
+for (const scheme of ["light", "dark"]) for (const width of widths) {
   const { ctx, page } = await open({ colorScheme: scheme, width, tag: "focus-" + scheme });
   const res = []; const seen = new Set();
   await page.keyboard.press("Tab"); // skip link
@@ -182,5 +189,7 @@ for (const rm of ["no-preference", "reduce"]) {
 }
 check("no console errors across smoke run", out.errors.length === 0, out.errors);
 fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
-console.log("TOTAL", out.checks.filter(c=>c.pass).length, "/", out.checks.length);
+const passed = out.checks.filter((c) => c.pass).length;
+console.log("TOTAL", passed, "/", out.checks.length, engineName);
 await browser.close(); server.close();
+if (passed !== out.checks.length || out.errors.length) process.exit(1);

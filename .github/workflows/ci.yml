@@ -20,3 +20,17 @@ jobs:
           if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
           node scripts/test_persistence_rules.mjs
           node scripts/test_lab_dom.mjs
+
+  browsers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright Firefox and WebKit
+        run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps firefox webkit
+      - name: Smoke on Firefox and WebKit
+        run: |
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json "" firefox
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json "" webkit
