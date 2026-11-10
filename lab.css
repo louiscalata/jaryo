@@ -182,7 +182,7 @@ p { margin: 0; }
 select.btn { padding: var(--s2) var(--s3); }
 
 /* ============ Layout ============ */
-.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: calc(100vh - 140px); margin-top: 8px; }
+.layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: calc(100vh - 140px); margin-top: 8px; overflow-x: clip; }
 .sidebar {
   border-right: 2px solid var(--rule); padding: var(--s5) var(--s4); min-width: 0;
   position: sticky; top: 0; align-self: start; max-height: 100vh; overflow: auto;
@@ -240,12 +240,15 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 .chip::before { content: "#"; color: var(--muted); margin-right: 2px; }
 
 /* ============ Option cards ============ */
-.cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s4); align-items: stretch; }
-@media (max-width: 1400px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cards {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, 1fr);
+  gap: var(--s5); align-items: stretch; overflow-x: auto; padding-bottom: var(--s2);
+  min-width: 0; max-width: 100%;
+}
 @media (max-width: 980px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
   .sidebar { position: static; max-height: none; border-right: 0; border-bottom: 2px solid var(--rule); }
-  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: minmax(0, 1fr); gap: var(--s6); overflow: visible; }
   #family-nav {
     display: flex; flex-wrap: nowrap; gap: var(--s2); overflow-x: auto;
     overscroll-behavior-x: contain; padding-bottom: var(--s2);
@@ -256,13 +259,12 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
   .navbtn { flex: 0 0 auto; width: auto; margin: 0; white-space: nowrap; }
   .navbtn .ftitle { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; }
 }
-@media (max-width: 640px) { .cards { grid-template-columns: minmax(0, 1fr); } }
 .opt-card {
   display: flex; flex-direction: column; min-width: 0;
-  border: 2px solid var(--border); background: var(--surface);
+  border: 1px solid var(--border); background: var(--surface);
   transition: box-shadow var(--dur) var(--ease);
 }
-.opt-card.chosen { box-shadow: inset 0 0 0 2px var(--border), 4px 4px 0 0 var(--rule); }
+.opt-card.chosen { box-shadow: inset 0 0 0 2px var(--border); }
 .opt-card .idbar {
   display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap;
   background: var(--inv-bg); color: var(--inv-fg); padding: var(--s2) var(--s3);
@@ -272,7 +274,7 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 .opt-card .oidx { opacity: 0.75; font-size: var(--fs-1); }
 .opt-card .chosen-marker { margin-left: auto; font-weight: 700; }
 .opt-card .chosen-marker:not(:empty)::before { content: "■ "; }
-.opt-card .body { display: flex; flex-direction: column; gap: var(--s3); flex: 1; min-width: 0; padding: var(--s3); }
+.opt-card .body { display: flex; flex-direction: column; gap: var(--s4); flex: 1; min-width: 0; padding: var(--s4); }
 .opt-card h3 { margin: 0; font-family: var(--font-reading); font-size: var(--fs-4); font-weight: var(--fw-bold); letter-spacing: var(--track-display-tight); line-height: var(--lh-tight); overflow-wrap: anywhere; }
 .spec-foot {
   margin: 0; font-family: var(--font-machine); font-size: var(--fs-1); font-weight: var(--fw-semibold);
@@ -313,8 +315,8 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
   --bg: #ffffff; --fg: #000000; --fg2: #1f1f1f; --muted: #4d4d4d; --border: #000000; --rule: #000000;
   --surface: #ffffff; --hover: #ebebeb; --inv-bg: #000000; --inv-fg: #ffffff; --focus: #000000;
   color-scheme: light;
-  position: relative; overflow: hidden; min-height: 150px; padding: var(--s2);
-  background: #fff; color: #000; border: 1px solid #000; outline: 1px solid var(--surface);
+  position: relative; overflow: hidden; min-height: 150px; padding: var(--s3);
+  background: #fff; color: #000; border: 0;
   font-family: var(--mono); font-size: var(--fs-1);
   transition: min-height var(--dur-2) var(--ease);
 }
