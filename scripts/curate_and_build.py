@@ -291,7 +291,7 @@ def build_curated(catalog):
         "version": "lab-v1",
         "created": "2026-11-06",
         "timezone_note": "America/Los_Angeles",
-        "canonical_notion": "https://fortheloveof.studio/code/jaryo/",
+        "canonical_notion": "https://louiscalata.github.io/jaryo/",
         "source_catalog": {
             "options_json": "private source catalog",
             "interface_md": "private source catalog",
@@ -306,7 +306,7 @@ def build_curated(catalog):
             "Copper is an example palette, not the default.",
             "MCP exposes tools and resources. It does not draw the interface by itself.",
             "This lab is a documentation demo, not an installable product.",
-            "Project page: https://fortheloveof.studio/code/jaryo/",
+            "Published lab: https://louiscalata.github.io/jaryo/",
             "Repository: https://github.com/louiscalata/jaryo",
         ],
         "state_grammar_v4": {
