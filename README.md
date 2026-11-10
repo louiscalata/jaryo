@@ -4,7 +4,7 @@ Jaryo is an adaptive black-and-white design language used across [AGIW Suite](ht
 
 This repository is the interactive design lab: a static local page for comparing curated options, saving choices, and exporting JSON. It is a documentation and design tool, not a production product.
 
-Published lab: [louiscalata.github.io/jaryo](https://louiscalata.github.io/jaryo/)
+Live lab: [louiscalata.github.io/jaryo](https://louiscalata.github.io/jaryo/) · Project page: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
 
 Jaryo is a work in progress.
 
