@@ -105,10 +105,11 @@
     const step = event.target.closest("[data-step]");
     if (step) {
       const ui = step.closest(".jstage-ui");
-      const people = ui.getAttribute("data-people").split("|");
-      let i = Number(ui.getAttribute("data-i") || "0");
+      const host = ui.querySelector("[data-people]") || ui;
+      const people = host.getAttribute("data-people").split("|");
+      let i = Number(host.getAttribute("data-i") || "0");
       i = (i + Number(step.getAttribute("data-step")) + people.length) % people.length;
-      ui.setAttribute("data-i", String(i));
+      host.setAttribute("data-i", String(i));
       const parts = people[i].split("/");
       ui.querySelector("[data-person]").textContent = parts[0];
       ui.querySelector("[data-tag]").textContent = parts[1];
@@ -190,6 +191,134 @@
           <p data-live>Specimen selected</p>
           <p class="red-spec">Selected is fill plus a check. Red is not the only signal.</p>
         </div>`, true);
+    },
+    "F18.01": function () {
+      return shell("F18.01", "Mendacity void cue", `
+        <div class="mv">
+          <h4 class="mv-title">MENDACITY</h4>
+          <div class="mv-stage"><div class="mv-actor" aria-hidden="true">A</div></div>
+          <div class="mv-actions" role="group" aria-label="Mendacity cue">
+            <button type="button" data-pick data-label="Step forward" aria-pressed="true">Step</button>
+            <button type="button" data-pick data-label="Exit" aria-pressed="false">Exit</button>
+          </div>
+          <p data-live>Step forward</p>
+        </div>`);
+    },
+    "F18.02": function () {
+      return shell("F18.02", "Mendacity combat ledger", `
+        <div class="mv">
+          <div class="mv-ledger">
+            <div class="mv-disc" aria-hidden="true">A</div>
+            <div>
+              <p class="mv-row"><span>HP</span><span>95%</span></p>
+              <p class="mv-row"><span>MP</span><span>44%</span></p>
+              <p class="mv-row"><span>Bow</span><span>3</span></p>
+            </div>
+            <div>
+              <button type="button" data-disclose aria-expanded="true" aria-controls="mend-keys">Keys</button>
+              <div id="mend-keys" data-panel>
+                <p class="mv-row"><span>Move</span><span>WASD</span></p>
+                <p class="mv-row"><span>Sprint</span><span>Shift</span></p>
+                <p class="mv-row"><span>Attack</span><span>J</span></p>
+              </div>
+            </div>
+          </div>
+        </div>`);
+    },
+    "F18.03": function () {
+      return shell("F18.03", "Plague journal menu", `
+        <div class="plague">
+          <p class="plague-quest">Objective · find the source</p>
+          <div class="plague-body">
+            <div class="plague-lockup">
+              <h4 class="plague-title">PLAGUE</h4>
+              <div class="plague-rule" role="presentation"></div>
+            </div>
+            <div class="plague-menu" role="group" aria-label="Plague menu">
+              <button type="button" data-pick data-label="Resume" aria-pressed="true">Resume</button>
+              <button type="button" data-pick data-label="Save" aria-pressed="false">Save</button>
+              <button type="button" data-pick data-label="Options" aria-pressed="false">Options</button>
+              <button type="button" data-pick data-label="Quit" aria-pressed="false">Quit</button>
+            </div>
+            <p data-live>Resume</p>
+          </div>
+        </div>`);
+    },
+    "F18.04": function () {
+      return shell("F18.04", "Plague dialogue", `
+        <div class="plague">
+          <div class="dlg">
+            <div class="mv-disc" aria-hidden="true">D</div>
+            <p class="dlg-name">DOC</p>
+            <p class="dlg-line" data-line>The outbreak is moving up from the catacombs.</p>
+            <button type="button" class="advance" data-advance="The outbreak is moving up from the catacombs.|The source is still below the streets.|Keep the objective on screen.">Advance</button>
+          </div>
+        </div>`);
+    },
+    "F18.05": function () {
+      return shell("F18.05", "Brawler focus stack", `
+        <div class="brawl">
+          <h4 class="brawl-mark">BRAWLER</h4>
+          <p class="brawl-sub">NEON CITY</p>
+          <div class="brawl-menu" role="group" aria-label="Brawler menu">
+            <button type="button" data-pick data-label="Play" aria-pressed="true">Play</button>
+            <button type="button" data-pick data-label="Quit" aria-pressed="false">Quit</button>
+          </div>
+          <p data-live>Play</p>
+        </div>`);
+    },
+    "F18.06": function () {
+      return shell("F18.06", "Brawler character rail", `
+        <div class="brawl" data-people="Lead/P1|Partner/P2">
+          <p class="brawl-sub">CHARACTER</p>
+          <div class="rail">
+            <button type="button" data-step="-1" aria-label="Previous character">Prev</button>
+            <div>
+              <p class="rail-name" data-person>Lead</p>
+              <p class="rail-tag" data-tag>P1</p>
+            </div>
+            <button type="button" data-step="1" aria-label="Next character">Next</button>
+          </div>
+          <p data-live>Lead P1</p>
+        </div>`);
+    },
+    "F18.07": function () {
+      return shell("F18.07", "Contrails tactical select", `
+        <div class="ct">
+          <div class="ct-body">
+            <div>
+              <div class="ct-mark" role="img" aria-label="Contrails mark"></div>
+              <p class="ct-word">CTRLS</p>
+            </div>
+            <div>
+              <p class="ct-alert"><b>CONTROL</b> OR BE CONTROLLED</p>
+              <p class="ct-meter">SPD <span class="seg on"></span><span class="seg on"></span><span class="seg on"></span><span class="seg"></span><span class="seg"></span> 60%</p>
+              <p class="ct-meter">RNG <span class="seg on"></span><span class="seg on"></span><span class="seg on"></span><span class="seg on"></span><span class="seg"></span> 80%</p>
+              <button type="button" data-pick data-label="Back" aria-pressed="false">Back</button>
+            </div>
+            <div class="ct-menu" role="group" aria-label="Contrails menu">
+              <button type="button" data-pick data-label="Continue" aria-pressed="true">Continue</button>
+              <button type="button" data-pick data-label="New game" aria-pressed="false">New game</button>
+              <button type="button" data-pick data-label="Settings" aria-pressed="false">Settings</button>
+              <button type="button" data-pick data-label="Quit" aria-pressed="false">Quit</button>
+            </div>
+          </div>
+          <p data-live>Continue</p>
+        </div>`);
+    },
+    "F18.08": function () {
+      return shell("F18.08", "Contrails status", `
+        <div class="ct">
+          <p class="ct-word">CTRLS</p>
+          <div class="status-row" role="group" aria-label="Contrails status">
+            <button type="button" data-pick data-label="Help" aria-pressed="false"><span class="glyph diamond" aria-hidden="true"></span>Help</button>
+            <button type="button" data-pick data-label="Mute" aria-pressed="false"><span class="glyph diamond" aria-hidden="true"></span>Mute</button>
+            <button type="button" data-pick data-label="OK" aria-pressed="true"><span class="glyph diamond solid" aria-hidden="true"></span>OK</button>
+            <button type="button" data-pick data-label="Blocked, link down" aria-pressed="false"><span class="glyph diamond" aria-hidden="true"></span>Blocked</button>
+            <button type="button" data-pick data-label="Locked" aria-pressed="false"><span class="glyph round" aria-hidden="true"></span>Locked</button>
+          </div>
+          <p data-live>OK</p>
+        </div>`);
     }
   };
 
@@ -219,7 +348,7 @@
       const fn = stages[opt.id];
       return fn ? fn(opt) : "";
     },
-    wideFamilies: { F19: true },
+    wideFamilies: { F18: true, F19: true },
     bind: function (root) {
       root.addEventListener("click", onClickFixed);
       root.addEventListener("keydown", onKey);
