@@ -26,6 +26,7 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 - 19 families · 85 curated + 12 optional (97 total). The 85 curated options are 80 monochrome (F01–F16) and 5 color (F17). The 12 optional options are 8 legacy studies (F18) and 4 Red interactive UI (F19).
 - Theme: System / Light / Dark (persisted separately from choices)
 - Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md)). Latin OFL faces load from `assets/fonts/`; licenses are in [docs/FONTS.md](docs/FONTS.md).
+- Token export: `tokens/jaryo.tokens.json` (DTCG 2025.10), written by `scripts/export_tokens.py` from `lab.css`. Export only; AGIW Suite and OPOS do not consume this file yet.
 - Layouts from about 260px wide to desktop
 - Keyboard support for option groups and tabs (arrow keys, Home/End, Space)
 - Reduced-motion support via `prefers-reduced-motion`
@@ -60,7 +61,7 @@ Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
 
 Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
 
-- Original 85 options remain byte-stable in `data/curated-85.json`
+- The original curated file stays byte-stable: `data/curated-85.json`
 - Extended catalog: 19 families · 85 curated + 12 optional (97 total), in `data/curated-extended.json` and `data/embedded-data.js`
 - Smoke: 34/34 for legacy+typography passes; axe: 0 violations in reported modes/widths
 - Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `node --check lab.js`

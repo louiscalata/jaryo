@@ -76,6 +76,29 @@ if ext_path.exists():
 else:
     warn("curated-extended.json absent — lab is original 85 only")
 
+# Catalog phrase is derived from the extended file, not a hand-typed leftover.
+if ext_path.exists():
+    n_fam = len(fams)
+    n_opt = len(ids)
+    curated_n = int(ext["source_catalog"]["curated_count"])
+    optional_n = n_opt - curated_n
+    phrase = f"{n_fam} families · {curated_n} curated + {optional_n} optional ({n_opt} total)"
+    readme_text = (LAB / "README.md").read_text(encoding="utf-8")
+    index_html = (LAB / "index.html").read_text(encoding="utf-8")
+    lab_js = (LAB / "lab.js").read_text(encoding="utf-8")
+    if phrase not in readme_text:
+        fail(f"README.md missing catalog phrase {phrase}")
+    if phrase not in index_html:
+        fail(f"index.html missing catalog phrase {phrase}")
+    template = "${families} families · ${curated} curated + ${optional} optional (${total} total)"
+    if template not in lab_js:
+        fail("lab.js does not build the catalog phrase from the loaded counts")
+    stale = ("17 × 5", "85 options", "97 options (85 original)")
+    for label, text in (("README.md", readme_text), ("index.html", index_html), ("lab.js", lab_js)):
+        for old in stale:
+            if old in text:
+                fail(f"stale count phrase {old!r} in {label}")
+
 # DOM/HTML basics
 index = (LAB / "index.html").read_text(encoding="utf-8")
 for needle in ("family-nav", "cards", "jaryo"):
