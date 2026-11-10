@@ -98,6 +98,37 @@ if ext_path.exists():
         for old in stale:
             if old in text:
                 fail(f"stale count phrase {old!r} in {label}")
+    # The family list is in the HTML so the first paint matches the script.
+    # Otherwise the empty list grows and pushes the grammar demo (mobile CLS).
+    nav_m = re.search(r'<div id="family-nav">(.*?)</div>', index_html, re.S)
+    if not nav_m:
+        fail("index.html is missing #family-nav")
+    else:
+        nav_html = nav_m.group(1)
+        buttons = re.findall(
+            r'data-fam="(F\d+)" title="(.*?)" aria-current="(true|false)"',
+            nav_html,
+        )
+        if [b[0] for b in buttons] != [f["id"] for f in fams]:
+            fail("index.html family nav ids do not match curated-extended.json")
+        for fam, (fid, title, current) in zip(fams, buttons):
+            expect_title = f"{fid} · {fam['title']}"
+            if title != expect_title:
+                fail(f"index.html nav title for {fid} is {title!r}, expected {expect_title!r}")
+            expect_current = "true" if fid == "F01" else "false"
+            if current != expect_current:
+                fail(f"index.html nav aria-current for {fid} is {current}")
+        def group_count(pred):
+            return sum(len(f["options"]) for f in fams if pred(f["id"]))
+        expected_groups = [
+            f"Monochrome set · {group_count(lambda i: re.match(r'F(0[1-9]|1[0-6])$', i))} options",
+            f"Color batch · {group_count(lambda i: i == 'F17')} options · optional",
+            f"Legacy studies · {group_count(lambda i: i == 'F18')} options",
+            f"Red interactive UI · {group_count(lambda i: i == 'F19')} options · optional",
+        ]
+        for label in expected_groups:
+            if label not in nav_html:
+                fail(f"index.html family nav missing group label {label!r}")
 
 # DOM/HTML basics
 index = (LAB / "index.html").read_text(encoding="utf-8")

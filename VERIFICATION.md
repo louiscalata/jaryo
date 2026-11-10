@@ -33,3 +33,11 @@
 - Not a Windows hardware test. Windows forced-colors on hardware: not tested.
 - `node scripts/browser/forced-colors-smoke.mjs <lab> /tmp/forced-colors-emulation.json`
 - Checks that the selected radio and the focused control stay visible and keep their text.
+
+## Mobile layout shift, local Lighthouse 12 (2026-11-10)
+The family list is in `index.html`. An empty list filled by script was pushing `.grammar-box`.
+Same machine, mobile emulation, before and after that change:
+- before: CLS 0.148, accessibility 100, best practices 100, performance 75
+- after: CLS 0, accessibility 100, best practices 100, performance 84
+Desktop after: CLS 0, accessibility 100, best practices 100, performance 99
+Live Pages numbers are measured again after this change is deployed.
