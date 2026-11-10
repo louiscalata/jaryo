@@ -45,6 +45,7 @@ Then open http://127.0.0.1:8765/ . Opening `index.html` from disk also works. Em
 From `spec/`:
 
 ```bash
+shasum -a 256 -c HASHES.txt
 node pipeline/check-tokens.mjs
 node pipeline/check-contrast.mjs
 node tests/adaptor.test.mjs
@@ -64,7 +65,7 @@ The sample pipeline runner writes a new JSONL file under `spec/pipeline/runs/`. 
 
 `.github/workflows/ci.yml` runs on push and pull_request. The required checks are the three jobs:
 
-- `check` — Node 22 and the root command block above
+- `check` — Node 22, the root command block above, and `shasum -a 256 -c HASHES.txt` from `spec/`
 - `browsers` — Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375, and 260 (`scripts/browser/smoke.mjs`)
 - `forced-colors` — Chromium forced-colors emulation (`scripts/browser/forced-colors-smoke.mjs`)
 
