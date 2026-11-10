@@ -76,7 +76,7 @@ Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATIO
 
 ## Known limits
 
-- Two open tabs can overwrite each other’s saved choices
+- Two open tabs share one saved envelope. A storage event whose writerId is not this tab reloads those choices here, so the next save does not clobber the other tab. An unreadable write is left in place and the banner warns that saving would overwrite it.
 - On narrow screens the toast covers content for about 3 seconds
 - Preview mocks stay light “paper” in dark theme by design
 - Text over gradients was not hand-checked for contrast
