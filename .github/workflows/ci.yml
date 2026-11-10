@@ -28,9 +28,10 @@ jobs:
         run: shasum -a 256 -c HASHES.txt
 
   browsers:
-    # Same-repo events use the box Linux runner; fork pull requests stay on GitHub-hosted Ubuntu.
-    # Never run Playwright on the Mac. Chromium, when used, gets mock-keychain flags in the smoke script.
-    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","box-linux"]') || 'ubuntu-24.04' }}
+    # Firefox + WebKit: same-repo events stay on the PC runner. Playwright's 1.49.1
+    # WebKit build is an Ubuntu 20.04 fallback and cannot load on the Debian 13 box.
+    # Fork pull requests stay on GitHub-hosted Ubuntu. Never run Playwright on the Mac.
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","pc-win"]') || 'ubuntu-24.04' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
