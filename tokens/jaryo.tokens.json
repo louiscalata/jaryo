@@ -1,0 +1,317 @@
+{
+  "$description": "Export only. AGIW Suite and OPOS do not consume this file yet.",
+  "color": {
+    "light": {
+      "bg": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "fg2": {
+        "$type": "color",
+        "$value": "#1f1f1f"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#4d4d4d"
+      },
+      "rule": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "hair": {
+        "$type": "color",
+        "$value": "#8a8a8a"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "focus-halo": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "surface-2": {
+        "$type": "color",
+        "$value": "#f4f4f4"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "#ebebeb"
+      },
+      "chip": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "inv-bg": {
+        "$type": "color",
+        "$value": "#000000"
+      },
+      "inv-fg": {
+        "$type": "color",
+        "$value": "#ffffff"
+      }
+    },
+    "dark": {
+      "bg": {
+        "$type": "color",
+        "$value": "#0c0c0c"
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "#f0f0f0"
+      },
+      "fg2": {
+        "$type": "color",
+        "$value": "#d9d9d9"
+      },
+      "muted": {
+        "$type": "color",
+        "$value": "#ababab"
+      },
+      "rule": {
+        "$type": "color",
+        "$value": "#f0f0f0"
+      },
+      "hair": {
+        "$type": "color",
+        "$value": "#6b6b6b"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "#f0f0f0"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "#ffd75e"
+      },
+      "focus-halo": {
+        "$type": "color",
+        "$value": "#0c0c0c"
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "#121212"
+      },
+      "surface-2": {
+        "$type": "color",
+        "$value": "#1a1a1a"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "#242424"
+      },
+      "chip": {
+        "$type": "color",
+        "$value": "#121212"
+      },
+      "inv-bg": {
+        "$type": "color",
+        "$value": "#f0f0f0"
+      },
+      "inv-fg": {
+        "$type": "color",
+        "$value": "#0c0c0c"
+      }
+    }
+  },
+  "dimension": {
+    "fs-0": {
+      "$type": "dimension",
+      "$value": "11px"
+    },
+    "fs-1": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "fs-2": {
+      "$type": "dimension",
+      "$value": "13px"
+    },
+    "fs-3": {
+      "$type": "dimension",
+      "$value": "14px"
+    },
+    "fs-4": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "fs-5": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "fs-6": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "fs-7": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "track": {
+      "$type": "dimension",
+      "$value": "0.06em"
+    },
+    "track-body": {
+      "$type": "dimension",
+      "$value": "0em"
+    },
+    "track-meta": {
+      "$type": "dimension",
+      "$value": "0.06em"
+    },
+    "track-display": {
+      "$type": "dimension",
+      "$value": "0.04em"
+    },
+    "track-display-tight": {
+      "$type": "dimension",
+      "$value": "-0.01em"
+    },
+    "track-open": {
+      "$type": "dimension",
+      "$value": "0.12em"
+    },
+    "s1": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "s2": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "s3": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "s4": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "s5": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "s6": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "hit": {
+      "$type": "dimension",
+      "$value": "44px"
+    }
+  },
+  "fontFamily": {
+    "mono": {
+      "$type": "fontFamily",
+      "$value": [
+        "IBM Plex Mono",
+        "JetBrains Mono",
+        "Menlo",
+        "DejaVu Sans Mono",
+        "ui-monospace",
+        "monospace"
+      ]
+    },
+    "sans": {
+      "$type": "fontFamily",
+      "$value": [
+        "IBM Plex Sans",
+        "Inter",
+        "system-ui",
+        "-apple-system",
+        "Segoe UI",
+        "sans-serif"
+      ]
+    },
+    "font-machine": {
+      "$type": "fontFamily",
+      "$value": "{fontFamily.mono}"
+    },
+    "font-reading": {
+      "$type": "fontFamily",
+      "$value": "{fontFamily.sans}"
+    },
+    "font-display": {
+      "$type": "fontFamily",
+      "$value": "{fontFamily.mono}"
+    },
+    "font-serif-study": {
+      "$type": "fontFamily",
+      "$value": [
+        "Libre Baskerville",
+        "Iowan Old Style",
+        "Palatino Linotype",
+        "Palatino",
+        "serif"
+      ]
+    }
+  },
+  "fontWeight": {
+    "regular": {
+      "$type": "fontWeight",
+      "$value": 400
+    },
+    "semibold": {
+      "$type": "fontWeight",
+      "$value": 600
+    },
+    "bold": {
+      "$type": "fontWeight",
+      "$value": 700
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{fontFamily.font-reading}",
+        "fontSize": "{dimension.fs-3}",
+        "fontWeight": "{fontWeight.regular}",
+        "letterSpacing": "{dimension.track-body}",
+        "lineHeight": 1.5
+      }
+    },
+    "title": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{fontFamily.font-reading}",
+        "fontSize": "{dimension.fs-4}",
+        "fontWeight": "{fontWeight.bold}",
+        "letterSpacing": "{dimension.track-display-tight}",
+        "lineHeight": 1.2
+      }
+    },
+    "display": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{fontFamily.font-display}",
+        "fontSize": "{dimension.fs-6}",
+        "fontWeight": "{fontWeight.bold}",
+        "letterSpacing": "{dimension.track-display}",
+        "lineHeight": 1.2
+      }
+    },
+    "meta": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{fontFamily.font-machine}",
+        "fontSize": "{dimension.fs-1}",
+        "fontWeight": "{fontWeight.semibold}",
+        "letterSpacing": "{dimension.track-meta}",
+        "lineHeight": 1.35
+      }
+    }
+  }
+}

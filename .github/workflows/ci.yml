@@ -15,6 +15,7 @@ jobs:
       - name: Lab checks
         run: |
           python3 scripts/validate_lab.py
+          python3 scripts/export_tokens.py --check
           python3 scripts/check_assets.py
           node --check lab.js
           if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
