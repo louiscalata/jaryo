@@ -25,7 +25,7 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 
 - 19 families · 85 curated + 12 optional (97 total). The 85 curated options are 80 monochrome (F01–F16) and 5 color (F17). The 12 optional options are 8 legacy studies (F18) and 4 Red interactive UI (F19).
 - Theme: System / Light / Dark (persisted separately from choices)
-- Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md))
+- Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md)). Latin OFL faces load from `assets/fonts/`; licenses are in [docs/FONTS.md](docs/FONTS.md).
 - Layouts from about 260px wide to desktop
 - Keyboard support for option groups and tabs (arrow keys, Home/End, Space)
 - Reduced-motion support via `prefers-reduced-motion`
