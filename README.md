@@ -1,12 +1,12 @@
 # Jaryo
 
-Jaryo is an adaptive black-and-white design language used across [AGIW Suite](https://github.com/louiscalata/agiw-suite), [OPOS](https://fortheloveof.studio/), and [Nisi](https://github.com/louiscalata/nisi).
+Jaryo is an adaptive black-and-white design language used across [AGIW Suite](https://github.com/louiscalata/agiw-suite), [OPOS](https://github.com/louiscalata/old-phone-os), and [Nisi](https://github.com/louiscalata/nisi).
 
 This repository is the interactive design lab: a static local page for comparing curated options, saving choices, and exporting JSON. It is a documentation and design tool, not a production product.
 
-Site: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
+Live lab: [louiscalata.github.io/jaryo](https://louiscalata.github.io/jaryo/) · Project page: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
 
-All projects in this repository are work in progress.
+Jaryo is a work in progress.
 
 Interface spec, reference screens, and a read-only adaptor spike: [`spec/`](spec/).
 
