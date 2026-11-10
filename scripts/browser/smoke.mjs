@@ -194,7 +194,14 @@ for (const rm of ["no-preference", "reduce"]) {
 // 5) Narrow usability: hit targets at 260
 {
   const { ctx, page } = await open({ width: 260, tag: "w260" });
-  const small = await page.evaluate(() => [...document.querySelectorAll("button, select, .choose-label")].filter((e) => e.offsetParent).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.id || e.className || e.tagName) + "", w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right) }; }).filter((x) => x.h < 44 || x.w < 44 || x.right > 260));
+  const small = await page.evaluate(() => [...document.querySelectorAll("button, select, .choose-label")].filter((e) => e.offsetParent).map((e) => {
+    const r = e.getBoundingClientRect();
+    let scroller = false;
+    for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) {
+      if (/(auto|scroll)/.test(getComputedStyle(n).overflowX)) { scroller = true; break; }
+    }
+    return { t: (e.id || e.className || e.tagName) + "", w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right), left: Math.round(r.left), scroller };
+  }).filter((x) => x.h < 44 || x.w < 44 || (!x.scroller && (x.right > 260 || x.left < 0))));
   check("w=260: all visible controls >=44x44 and inside viewport", small.length === 0, small.slice(0, 10));
   if (shotDir) { await page.click('[data-fam="F17"]'); await page.locator("#section-title").scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shotDir, "light-260-F17-cards.png") }); }
   await ctx.close();
