@@ -159,6 +159,10 @@
       "$type": "dimension",
       "$value": "32px"
     },
+    "fs-display": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
     "track": {
       "$type": "dimension",
       "$value": "0.06em"
@@ -297,7 +301,7 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "{fontFamily.font-display}",
-        "fontSize": "{dimension.fs-6}",
+        "fontSize": "{dimension.fs-display}",
         "fontWeight": "{fontWeight.bold}",
         "letterSpacing": "{dimension.track-display}",
         "lineHeight": 1.2
