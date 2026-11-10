@@ -76,7 +76,7 @@ Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATIO
 
 ## Known limits
 
-- Two open tabs can overwrite each other’s saved choices
+- Another tab’s save is adopted and the banner warns. This tab does not keep a stale copy that would overwrite that save.
 - On narrow screens the toast covers content for about 3 seconds
 - Preview mocks stay light “paper” in dark theme by design
 - Text over gradients was not hand-checked for contrast

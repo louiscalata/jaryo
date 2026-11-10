@@ -181,6 +181,46 @@
     }
   }
 
+  function writerIdOf(parsed) {
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return "";
+    return typeof parsed.writerId === "string" ? parsed.writerId : "";
+  }
+
+  // Fires in other tabs when this key changes. Same-tab writes do not emit it.
+  function onStorageEvent(e) {
+    if (!e || e.key !== STORAGE_KEY) return;
+    if (e.storageArea && e.storageArea !== localStorage) return;
+    let parsed = null;
+    if (e.newValue != null && e.newValue !== "") {
+      try {
+        parsed = JSON.parse(e.newValue);
+      } catch (err) {
+        storageMsg = "Another tab saved selections this tab could not read. This tab kept its current choices.";
+        const banner = $("#storage-banner");
+        if (banner) {
+          banner.textContent = storageMsg + " A saved choice is a preference, not a product change.";
+          banner.className = "banner warn";
+          banner.hidden = false;
+        }
+        toast(storageMsg);
+        return;
+      }
+    }
+    const incomingId = writerIdOf(parsed);
+    if (incomingId === writerId) return;
+    loadChoices();
+    if (DATA) normalizeAfterCatalog();
+    refreshChoiceSurfaces();
+    storageMsg = "Another tab saved selections. This tab now shows that saved state.";
+    const banner = $("#storage-banner");
+    if (banner) {
+      banner.textContent = storageMsg + " A saved choice is a preference, not a product change.";
+      banner.className = "banner warn";
+      banner.hidden = false;
+    }
+    toast(storageMsg);
+  }
+
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;")
@@ -1105,6 +1145,7 @@
     if (recoveryBtn) recoveryBtn.addEventListener("click", downloadRecoveryRaw);
     $("#btn-copy").addEventListener("click", copyExport);
     $("#btn-download").addEventListener("click", downloadExport);
+    window.addEventListener("storage", onStorageEvent);
     $("#demo-state").addEventListener("change", (e) => {
       demoState = e.target.value;
       const stage = $("#grammar-demo");

@@ -114,6 +114,35 @@ function importMerge(prior, incomingMap, incomingCatalog) {
   assert.doesNotMatch(html, /<label class="btn" for="import-file">/);
   assert.match(js, /refreshChoiceSurfaces/);
   assert.match(js, /schemaVersion:\s*1/);
+  assert.match(js, /window\.addEventListener\("storage", onStorageEvent\)/);
+  assert.match(js, /function onStorageEvent\(e\)/);
+  assert.match(js, /const incomingId = writerIdOf\(parsed\)/);
+  assert.match(js, /if \(incomingId === writerId\) return/);
+  assert.match(js, /Another tab saved selections\. This tab now shows that saved state\./);
+  assert.match(js, /Another tab saved selections this tab could not read/);
+}
+
+// writerId distinguishes this tab from a storage event written by another tab.
+{
+  function writerIdOf(parsed) {
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return "";
+    return typeof parsed.writerId === "string" ? parsed.writerId : "";
+  }
+  function adoptForeign(selfId, newValue) {
+    if (newValue == null || newValue === "") return { adopt: true, reason: "cleared" };
+    let parsed;
+    try { parsed = JSON.parse(newValue); } catch (e) { return { adopt: false, reason: "unreadable" }; }
+    const incomingId = writerIdOf(parsed);
+    if (incomingId === selfId) return { adopt: false, reason: "self" };
+    return { adopt: true, reason: "foreign" };
+  }
+  const self = "lab-self";
+  assert.equal(adoptForeign(self, JSON.stringify({ writerId: self, choices: { F01: "F01.01" } })).reason, "self");
+  assert.equal(adoptForeign(self, JSON.stringify({ writerId: "lab-other", choices: { F02: "F02.01" } })).adopt, true);
+  assert.equal(adoptForeign(self, JSON.stringify({ choices: { F01: "F01.01" } })).reason, "foreign");
+  assert.equal(adoptForeign(self, null).reason, "cleared");
+  assert.equal(adoptForeign(self, "{").reason, "unreadable");
+  assert.match(js, /function writerIdOf\(parsed\)/);
 }
 
 // empty import must not wipe
