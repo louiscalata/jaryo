@@ -138,12 +138,9 @@ p { margin: 0; }
 /* ============ Header (machine plate) ============ */
 .app-header {
   display: grid; gap: var(--s3); padding: var(--s4) var(--s5) var(--s4);
-  background: var(--bg); border-bottom: 2px solid var(--rule); position: relative;
+  background: var(--bg); border-bottom: 2px solid var(--rule);
 }
-.app-header::after { /* quiet hazard strip */
-  content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 6px;
-  background: var(--hatch); opacity: 0.55; pointer-events: none;
-}
+.header-tools { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
 .brandrow { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s2) var(--s4); }
 .brand { display: flex; align-items: baseline; gap: var(--s3); min-width: 0; flex-wrap: wrap; }
 .plate {
@@ -164,8 +161,7 @@ p { margin: 0; }
 .banner.warn { border-left-style: solid; }
 .banner.err { border-left: 10px double var(--rule); font-weight: 600; }
 .banner.err::before { content: "! "; }
-.toolbar { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
-.toolbar .spacer { flex: 1; }
+.toolbar { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; margin: var(--s4) 0; }
 .theme-field { display: inline-flex; align-items: center; gap: var(--s2); }
 .theme-field { font-family: var(--mono); font-size: var(--fs-1); font-weight: 600; letter-spacing: var(--track); text-transform: uppercase; }
 .notice { max-width: 100ch; }
@@ -426,9 +422,9 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
   .h1-sub::before { content: ""; }
   .main { padding: var(--s4) var(--s3) var(--s6); }
   .sidebar { padding: var(--s4) var(--s3); }
+  .header-tools { display: block; }
+  .header-tools .theme-field { display: flex; }
   .toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
-  .toolbar .theme-field { grid-column: 1 / -1; display: flex; }
-  .toolbar .spacer { display: none; }
   .toolbar .btn { width: 100%; min-width: 0; padding: var(--s1) var(--s2); }
   .theme-field select { flex: 1; min-width: 0; }
   .notice { font-size: var(--fs-1); }
@@ -457,7 +453,6 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 @media (forced-colors: active) {
   :focus-visible, .choose-label:has(input:focus-visible) { outline: 3px solid Highlight; }
   .navbtn[aria-current="true"], .tab[aria-selected="true"], .choose-label:has(input:checked) { forced-color-adjust: none; background: Highlight; color: HighlightText; }
-  .app-header::after { display: none; }
 }
 
 
