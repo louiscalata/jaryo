@@ -121,8 +121,8 @@
 .ct-menu button { text-align: left; }
 .ct-menu button[aria-pressed="true"] { background: #f2f4f6; color: #0e1114; }
 .ct-meter { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; }
-.ct-meter i { display: inline-block; width: 8px; height: 12px; margin-right: 2px; background: #243028; font-style: normal; }
-.ct-meter i.on { background: #d6f25c; }
+.ct-meter .seg { display: inline-block; width: 8px; height: 12px; margin-right: 2px; background: #243028; }
+.ct-meter .seg.on { background: #d6f25c; }
 @container stage (min-width: 700px) {
   .ct-body { display: grid; grid-template-columns: 120px minmax(0, 1fr) 200px; gap: 16px; align-items: start; }
 }
