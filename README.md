@@ -23,7 +23,7 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 
 ## What’s in the lab
 
-- 19 families, 97 curated options (original 85 unchanged: 80 monochrome F01–F16 + 5 color F17; plus F18 Legacy studies 8 options; plus F19 Red interactive UI 4 options)
+- 19 families · 85 curated + 12 optional (97 total). The 85 curated options are 80 monochrome (F01–F16) and 5 color (F17). The 12 optional options are 8 legacy studies (F18) and 4 Red interactive UI (F19).
 - Theme: System / Light / Dark (persisted separately from choices)
 - Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md))
 - Layouts from about 260px wide to desktop
@@ -61,7 +61,7 @@ Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
 Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
 
 - Original 85 options remain byte-stable in `data/curated-85.json`
-- Extended catalog: 19 families / 97 options in `data/curated-extended.json` and `data/embedded-data.js`
+- Extended catalog: 19 families · 85 curated + 12 optional (97 total), in `data/curated-extended.json` and `data/embedded-data.js`
 - Smoke: 34/34 for legacy+typography passes; axe: 0 violations in reported modes/widths
 - Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `node --check lab.js`
 

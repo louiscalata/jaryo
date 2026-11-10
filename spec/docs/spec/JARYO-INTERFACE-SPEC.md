@@ -16,7 +16,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 - **Optional:** optional steps sit hidden behind an honest dashed gap.
 - **Motion:** it happens only when a real event arrives.
 
-**Colour.** The skin is **Copper Workshop**:
+**Color.** The skin is **Copper Workshop**:
 - a dark warm-graphite ground;
 - copper on the brand mark and **the one primary action per view**;
 - cool, desaturated status tints, so copper never reads as a status.
@@ -44,7 +44,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 | Commands | **F16.01 Command Palette** | ⌘K/Ctrl-K **and** a visible button (⌘ More on phones). Combobox semantics; the result count is announced. Undeclared actions are listed as `(n/a)` with the adaptor's reason. **Full sheet on ≤700px** |
 | Phone | **F14.02 Thumb Bar** | A 56px bottom bar: `◀ Prev` · **primary** · `Next ▶` · `⌘ More` |
 | Website | **F15.01 Install Line Hero** | One install command with copy (aria-live confirmation) **plus** a primary GUI connect path |
-| Colour | **F17.01 Copper Workshop** | **Explicitly selected by the owner**, no longer EXAMPLE-only. Tokens are in §4 |
+| Color | **F17.01 Copper Workshop** | **Explicitly selected by the owner**, no longer EXAMPLE-only. Tokens are in §4 |
 
 ## 3. Layout skeleton
 | Width | Layout |
@@ -72,7 +72,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 
 **Rules**
 - Copper fills only the brand mark and one primary action per view. It is never used for OK, RUNNING, BLOCKED or a warning.
-- Every colour comes from a token. The reference screen's mono skin measured pure `#000/#fff`, plus the modal scrim.
+- Every color comes from a token. The reference screen's mono skin measured pure `#000/#fff`, plus the modal scrim.
 - **Mono fallback:** pure `#000/#fff`. Copper becomes a white fill, tints become white text, the hatch is kept, selection is an invert and focus is a dashed ring. It is the high-contrast mode and the brand's B/W heritage.
 
 ## 5. Line and pattern vocabulary
@@ -80,7 +80,7 @@ Four picks plus the focus ring all use dashes. Each meaning gets its own stroke 
 
 | Meaning | Stroke | Word |
 |---|---|---|
-| **Focus** | 3px dashed, `focus_ring` colour, **offset 3px outside** | — (keyboard position) |
+| **Focus** | 3px dashed, `focus_ring` color, **offset 3px outside** | — (keyboard position) |
 | **Unknown** (F08.10) | 1px dashed box + 12px hatch strip on the left edge (never behind text) | `? [UNKNOWN]` + "not declared by adaptor" |
 | **Unavailable action** | 2px dashed button border, muted text | reason, e.g. `n/a: adaptor does not declare pause` |
 | **Optional / collapsed** (F12.10) | a dashed **gap on the spine line** (a line, never a box) + dashed-top button | `[+n optional] steps — off by default` |
@@ -119,14 +119,14 @@ These are required, not optional:
 - **Screen readers:** each step's name includes its state and its relation to the selection (e.g. "Clean customer rows, ● [OK], input of selected step").
 - **Live region:** announces selection, palette result counts, events and gated refusals.
 - **Palette:** a single focus stop (combobox); arrows move through options; Enter runs; Esc closes and returns focus.
-- **Colour:** no meaning by colour alone, and no motion except real events.
+- **Color:** no meaning by color alone, and no motion except real events.
 - **Contrast:** every text pair ≥ 4.5:1 and every UI stroke ≥ 3:1 (measured in §4).
 
 ## 8. Tensions between picks, and how they are resolved
 | Tension | Resolution |
 |---|---|
 | Five dashed meanings (F08 / F12 / unavailable / unknown / focus) | §5: separate stroke + word for each |
-| Receding with opacity breaks the token contrast (muted drops to ~3.4:1) and turns mono grey | Recede with a hairline frame + muted title only; state chips keep full colour |
+| Receding with opacity breaks the token contrast (muted drops to ~3.4:1) and turns mono grey | Recede with a hairline frame + muted title only; state chips keep full color |
 | F17 "RUNNING = inverted row" vs "selection = invert" | Invert = RUNNING in ledgers; invert = selection on the spine (§6.3) |
 | F03 pager wants a bottom bar on narrow, and so does F14 | The pager merges into the thumb bar. Forks keep their branch buttons in the sheet |
 | F11 inspector steals width, and the canvas reflows mid-inspection | The inspector column is always reserved, so nothing reflows |
@@ -161,9 +161,9 @@ These checks ran in the Chromium pane on 2026-11-07, each against the build name
   - The palette is a full sheet (375×812).
   - Palette → Run → review → Esc returns focus to ⌘ More, and the sheet stays open. A second Esc closes the sheet, returns focus to the step and removes `inert`.
   - No horizontal overflow, and no button under 44px.
-- **Colours:**
+- **Colors:**
   - Mono skin: only `#000` and `#fff` (plus the scrim).
-  - Copper skin: only token colours.
+  - Copper skin: only token colors.
 
 **Round-2 fixes (re-checked):**
 - **Selected-state contrast:**

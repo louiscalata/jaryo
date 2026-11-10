@@ -14,12 +14,13 @@
     "curated_count": 85
   },
   "notices": [
-    "Choice preference ≠ validation or production change.",
-    "All demo pipelines/data are fictional SAMPLE/DEMO.",
-    "F17.01 Copper is an EXAMPLE only — not a user-selected default.",
-    "MCP exposes tools/resources; it does not by itself render UI.",
-    "This lab is a local documentation/demo artifact, not an installable product.",
-    "Site: https://fortheloveof.studio/code/jaryo/. This lab is the interactive companion."
+    "A saved choice is a preference, not a product change.",
+    "Demo pipelines and data are fictional.",
+    "Copper is an example palette, not the default.",
+    "MCP exposes tools and resources. It does not draw the interface by itself.",
+    "This lab is a documentation demo, not an installable product.",
+    "Project page: https://fortheloveof.studio/code/jaryo/",
+    "Repository: https://github.com/louiscalata/jaryo"
   ],
   "state_grammar_v4": {
     "selected": "invert fill + ▶",

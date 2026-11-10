@@ -5,8 +5,8 @@
   "note": "Additive. Supersedes v1 only inside F17. Monochrome F01-F16 / v0.3 / v0.4 untouched. v1 files preserved.",
   "distinctness_axes": [
     "ground (dark/light/paired)",
-    "where colour lives (fills/lines/cursor/quantity/lane-type/references)",
-    "how status is carried (uncoloured vs tinted)"
+    "where color lives (fills/lines/cursor/quantity/lane-type/references)",
+    "how status is carried (uncolored vs tinted)"
   ],
   "options": [
     {
@@ -324,7 +324,7 @@
       "tradeoff": "Violet vs blue is the weakest pair (see CVD sim); patterns+tags are mandatory not decorative. Violet sits near F17.06 magenta \u2014 never combine those.",
       "mono_fallback": "Lanes \u2192 solid/dashed/dotted white lines + [IN]/[XF]/[OUT] tags.",
       "verdict_vs_v1": "REPLACE hues (kept mechanism)",
-      "source_inspiration": "Interpretive of Factorio circuit-wire identity colours (red/green wires) deliberately NOT copied because red/green collides with status; lanes use blue/violet/sand + patterns.",
+      "source_inspiration": "Interpretive of Factorio circuit-wire identity colors (red/green wires) deliberately NOT copied because red/green collides with status; lanes use blue/violet/sand + patterns.",
       "contrast": {
         "pairs_checked": 19,
         "pairs_failed": 0,
@@ -466,7 +466,7 @@
     {
       "id": "F17.08",
       "name": "Dual Surface Day/Night",
-      "architecture": "paired light+dark / one teal identity / MODE-CONSTANT mid-luminance status tints (3:1 on both grounds, words in text colour)",
+      "architecture": "paired light+dark / one teal identity / MODE-CONSTANT mid-luminance status tints (3:1 on both grounds, words in text color)",
       "tokens": {
         "bg": "#FFFFFF",
         "surface": "#F4F4F4",
@@ -513,10 +513,10 @@
         },
         "selection_focus_unavailable": "Selection = inverted fill; focus = outer dashed ring in focus_ring token; unavailable = dashed border + reason line."
       },
-      "hierarchy": "Status glyph tints are the SAME in day and night (mid luminance passes 3:1 on both); labels use text colour. Teal identity is darkened for day and lightened for night.",
+      "hierarchy": "Status glyph tints are the SAME in day and night (mid luminance passes 3:1 on both); labels use text color. Teal identity is darkened for day and lightened for night.",
       "v1_change": "v1 checked only night text/bg (not night focus, border, status or selection); v2 computes both modes in full and picks status tints that work on both grounds.",
-      "tradeoff": "The only system with coloured status glyphs: traffic-light semantics return, so glyph SHAPE + word remain mandatory; two matrices to maintain.",
-      "mono_fallback": "Tints\u2192text colour; teal\u2192text colour.",
+      "tradeoff": "The only system with colored status glyphs: traffic-light semantics return, so glyph SHAPE + word remain mandatory; two matrices to maintain.",
+      "mono_fallback": "Tints\u2192text color; teal\u2192text color.",
       "verdict_vs_v1": "REVISE",
       "source_inspiration": "No Factorio source; day/night pairing is a product need.",
       "contrast": {

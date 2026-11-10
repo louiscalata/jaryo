@@ -32,7 +32,7 @@ body { padding: var(--safe-t) var(--safe-r) 0 var(--safe-l); } /* viewport-fit=c
 button, input { font: inherit; color: inherit; }
 a { color: inherit; }
 /* Focus: ALWAYS outside the element (offset), so it sits on bg/surface (≥12:1), never on the light
-   selected fill (1.27:1). Distinct from every other dashed meaning: 3px, focus colour, offset. */
+   selected fill (1.27:1). Distinct from every other dashed meaning: 3px, focus color, offset. */
 :focus-visible { outline: 3px dashed var(--focus); outline-offset: 3px; }
 .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .skip { position:absolute; left:-9999px; }
@@ -91,7 +91,7 @@ a { color: inherit; }
 .step:focus-visible .t, .step[aria-pressed="true"] .t { white-space: normal; overflow: visible; }
 .step[aria-pressed="true"] .h::before { content: "▶ "; }
 
-/* ---------- F09.01 Word+Glyph state (never colour alone; words never truncate) ---------- */
+/* ---------- F09.01 Word+Glyph state (never color alone; words never truncate) ---------- */
 .st { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; white-space: nowrap; border: 1px solid currentColor; }
 .st.ok { color: var(--ok); }
 .st.run { color: var(--run); }

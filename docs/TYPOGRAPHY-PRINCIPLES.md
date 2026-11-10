@@ -26,7 +26,7 @@ Do **not** treat Adobe Portfolio chrome fonts as part of the work.
 - Body reading repeatedly specified as **8/12** (8 pt type on 12 pt leading → **line-height 1.5**).
 - Display: typeface names set much larger and heavier than body; designer names one step smaller/lighter.
 - Folios: large corner numerals vs tiny meta — high size contrast.
-- Ink contrast is near-max: black on white paper. Red is accent only (see Colour).
+- Ink contrast is near-max: black on white paper. Red is accent only (see Color).
 
 ### Weight
 - Body: Regular.
@@ -66,7 +66,7 @@ Do **not** treat Adobe Portfolio chrome fonts as part of the work.
 
 Type alone builds the IA: no pictorial logo. That matches AGIW’s typography-only wordmark practice.
 
-### Colour
+### Color
 - Primary: black ink on white.
 - Accent: **bright red** for project titles, `FALL 2021`, some anatomical callouts, registration marks.
 - Red never carries long reading text; it marks **structure / identity / meta**.
@@ -128,11 +128,11 @@ Serif is available for study previews; the lab shell stays sans+mono so AGIW/OPO
 ### Case and alignment rules
 1. Machine labels: `uppercase` + `--track-meta` + `--font-machine`.
 2. Reading body: sentence case, `--font-reading`, `--lh-body`, measure comfortable (cards already constrain width).
-3. Family/section titles: uppercase or title-case mono display; prefer size+weight over colour for hierarchy in the default mono set.
+3. Family/section titles: uppercase or title-case mono display; prefer size+weight over color for hierarchy in the default mono set.
 4. Default alignment in app chrome: **left / rag right**. Justified and shape text are study options only (not default UI).
 5. Meta (provenance, specs) **cross-aligns** under the content it describes — left rule + shared column, as in Project 5.6.
 
-### Colour rules (type)
+### Color rules (type)
 1. Default Jaryo: black/white (or theme tokens) for all reading text.
 2. Red (`#9B1B1B` light / `#FF6B6B` dark) is **identity/meta accent only** — F19 Red interactive UI and optional wordmark rules. Never the sole status signal; never long body copy.
 3. Status stays glyph + word + border (existing grammar).

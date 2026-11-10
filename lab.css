@@ -177,8 +177,9 @@ select.btn { padding: var(--s2) var(--s3); }
   border-right: 2px solid var(--rule); padding: var(--s5) var(--s4); min-width: 0;
   position: sticky; top: 0; align-self: start; max-height: 100vh; overflow: auto;
 }
-.sidebar h2 { margin: 0 0 var(--s3); display: flex; justify-content: space-between; }
-.sidebar h2 .count { color: var(--muted); }
+.sidebar h2 { margin: 0 0 var(--s3); line-height: var(--lh-tight); }
+#catalog-count { font-size: var(--fs-2); text-transform: none; letter-spacing: 0; font-weight: var(--fw-semibold); }
+a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 .navgroup { margin: var(--s4) 0 var(--s2); color: var(--muted); border-top: 1px solid var(--hair); padding-top: var(--s2); }
 #family-nav > .navgroup:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
 .navbtn {

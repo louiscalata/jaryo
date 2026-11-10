@@ -18,7 +18,7 @@ The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-ide
 - Tabs are a joined, segmented strip on a 2px baseline.
 - The table has an inverted header row and zebra rows.
 - The toast is inverted and spans the full width on narrow screens.
-- Motion is limited to 120–160 ms colour and box-shadow transitions, a 4px panel fade-in and a toast rise. All of it is removed under reduced motion.
+- Motion is limited to 120–160 ms color and box-shadow transitions, a 4px panel fade-in and a toast rise. All of it is removed under reduced motion.
 
 ## Accessibility
 - **Option radiogroup (`#cards`):**

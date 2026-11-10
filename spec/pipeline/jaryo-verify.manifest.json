@@ -40,7 +40,7 @@
     },
     {
       "id": "check_tokens",
-      "name": "Check colour tokens",
+      "name": "Check color tokens",
       "needs": [
         "check_hashes"
       ],

@@ -1,6 +1,6 @@
 # Jaryo Adaptive Design Lab — review checklist
 
-Non-browser validator: `python3 scripts/validate_lab.py` (expect PASS, 17×5=85).
+Non-browser validator: `python3 scripts/validate_lab.py` (expect PASS). Catalog phrase: 19 families · 85 curated + 12 optional (97 total).
 
 ## Pending browser checks (not yet executed in agent box)
 - [ ] Keyboard: per-family radios — unselected entry, arrow wrap, Space select, Expand separate, focus retained after choose
@@ -10,7 +10,7 @@ Non-browser validator: `python3 scripts/validate_lab.py` (expect PASS, 17×5=85)
 - [ ] Two tabs: conflict notice or documented last-write-wins policy
 - [ ] prefers-reduced-motion: F13 demos static/useful
 - [ ] DEMO/SAMPLE labels visible; journeys labeled as reference sketches not live composition
-- [ ] F17.01 Copper still EXAMPLE only unless Louis selects it
+- [ ] Copper is labeled as an example palette, not the default
 
 ## Rollback
 Before applying lab patches: copy files from `astra-1103/scope-b/backups/`. Restore if validate_lab fails.

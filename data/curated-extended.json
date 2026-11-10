@@ -17,15 +17,14 @@
     "curated_count_extended": 97
   },
   "notices": [
-    "Choice preference ≠ validation or production change.",
-    "All demo pipelines/data are fictional SAMPLE/DEMO.",
-    "F17.01 Copper is an EXAMPLE only — not a user-selected default.",
-    "MCP exposes tools/resources; it does not by itself render UI.",
-    "This lab is a local documentation/demo artifact, not an installable product.",
-    "Site: https://fortheloveof.studio/code/jaryo/. This lab is the interactive companion.",
-    "F18 Legacy studies are additive modernizations of louiscalata.myportfolio.com/mobile-uiux — not production defaults.",
-    "F19 Red interactive UI is an optional color set from Typography 1; red is identity accent only.",
-    "Original curated 85 (F01–F17) remain byte-identical in data/curated-85.json."
+    "A saved choice is a preference, not a product change.",
+    "Demo pipelines and data are fictional.",
+    "Copper is an example palette, not the default.",
+    "MCP exposes tools and resources. It does not draw the interface by itself.",
+    "This lab is a documentation demo, not an installable product.",
+    "Project page: https://fortheloveof.studio/code/jaryo/",
+    "Repository: https://github.com/louiscalata/jaryo",
+    "Legacy studies and Red interactive UI are optional additions."
   ],
   "state_grammar_v4": {
     "selected": "invert fill + ▶",
