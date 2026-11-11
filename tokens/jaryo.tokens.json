@@ -61,6 +61,14 @@
       "inv-fg": {
         "$type": "color",
         "$value": "#ffffff"
+      },
+      "red": {
+        "$type": "color",
+        "$value": "#c21a27"
+      },
+      "red-on": {
+        "$type": "color",
+        "$value": "#ffffff"
       }
     },
     "dark": {
@@ -123,6 +131,14 @@
       "inv-fg": {
         "$type": "color",
         "$value": "#0c0c0c"
+      },
+      "red": {
+        "$type": "color",
+        "$value": "#f62131"
+      },
+      "red-on": {
+        "$type": "color",
+        "$value": "#0c0c0c"
       }
     }
   },
@@ -158,6 +174,10 @@
     "fs-7": {
       "$type": "dimension",
       "$value": "32px"
+    },
+    "fs-display": {
+      "$type": "dimension",
+      "$value": "48px"
     },
     "track": {
       "$type": "dimension",
@@ -245,7 +265,7 @@
     },
     "font-display": {
       "$type": "fontFamily",
-      "$value": "{fontFamily.mono}"
+      "$value": "{fontFamily.sans}"
     },
     "font-serif-study": {
       "$type": "fontFamily",
@@ -297,7 +317,7 @@
       "$type": "typography",
       "$value": {
         "fontFamily": "{fontFamily.font-display}",
-        "fontSize": "{dimension.fs-6}",
+        "fontSize": "{dimension.fs-display}",
         "fontWeight": "{fontWeight.bold}",
         "letterSpacing": "{dimension.track-display}",
         "lineHeight": 1.2

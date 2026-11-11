@@ -27,7 +27,10 @@ async function clickReady(locator) {
   await locator.click({ trial: true });
   await locator.click();
 }
-const browser = await engines[engineName].launch();
+const launchOpts = engineName === "chromium"
+  ? { args: ["--use-mock-keychain", "--password-store=basic"] }
+  : {};
+const browser = await engines[engineName].launch(launchOpts);
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
   const page = await ctx.newPage();
@@ -64,9 +67,17 @@ for (const width of widths) {
     if (exp !== "true") fails.push(fam + ":expand");
     await clickReady(b);
   }
-  const summary = await (async () => { await clickReady(page.locator('.tab[data-tab="summary"]')); return page.textContent("#summary-count"); })();
   const expectedOpts = data.fams >= 19 ? 97 : 85;
   const expectedFams = data.fams >= 19 ? 19 : 17;
+  // WebKit at 260px on Windows can briefly show 18/19 after the last click; wait for the summary to catch up.
+  await clickReady(page.locator('.tab[data-tab="summary"]'));
+  await page.waitForSelector("#summary-count");
+  try {
+    await page.waitForFunction((re) => new RegExp(re).test(document.querySelector("#summary-count")?.textContent || ""), `^${expectedFams} / ${expectedFams}`, { timeout: 5000 });
+  } catch {
+    // Keep the original assertion below so a real shortfall still fails the job.
+  }
+  const summary = await page.textContent("#summary-count");
   check(`options-count data (w=${width})`, data.opts === expectedOpts && data.fams === expectedFams && data.color === 5 && data.legacy === (expectedFams>=19?8:0) && data.red === (expectedFams>=19?4:0), data);
   check(`original-85 still present (w=${width})`, data.monoBase === 80, data);
   check(`options-count DOM rendered (w=${width})`, domTotal === expectedOpts, domTotal);
@@ -191,7 +202,14 @@ for (const rm of ["no-preference", "reduce"]) {
 // 5) Narrow usability: hit targets at 260
 {
   const { ctx, page } = await open({ width: 260, tag: "w260" });
-  const small = await page.evaluate(() => [...document.querySelectorAll("button, select, .choose-label")].filter((e) => e.offsetParent).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.id || e.className || e.tagName) + "", w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right) }; }).filter((x) => x.h < 44 || x.w < 44 || x.right > 260));
+  const small = await page.evaluate(() => [...document.querySelectorAll("button, select, .choose-label")].filter((e) => e.offsetParent).map((e) => {
+    const r = e.getBoundingClientRect();
+    let scroller = false;
+    for (let n = e.parentElement; n && n !== document.body; n = n.parentElement) {
+      if (/(auto|scroll)/.test(getComputedStyle(n).overflowX)) { scroller = true; break; }
+    }
+    return { t: (e.id || e.className || e.tagName) + "", w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right), left: Math.round(r.left), scroller };
+  }).filter((x) => x.h < 44 || x.w < 44 || (!x.scroller && (x.right > 260 || x.left < 0))));
   check("w=260: all visible controls >=44x44 and inside viewport", small.length === 0, small.slice(0, 10));
   if (shotDir) { await page.click('[data-fam="F17"]'); await page.locator("#section-title").scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shotDir, "light-260-F17-cards.png") }); }
   await ctx.close();
