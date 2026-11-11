@@ -24,6 +24,12 @@ retain their existing PC runner mapping. Fork pull requests use hosted runners.
 - [ ] Verify the required CI jobs on the cumulative maintenance revision before merge.
 - [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout, then retain one current agent guide (#32, #39).
 
+## Visual reconciliation candidate
+
+- [x] Adapt only the compatible expanded booklet title and preview/notes treatment from #36/#37; preserve current normal cards, folios, named scroller and contrast tokens.
+- [ ] Review the scoped source and remaining design choices before publication.
+- [ ] Verify responsive rendering, keyboard interaction, contrast and forced colors on the final native candidate.
+
 ## Native checks
 
 Real Safari on Apple hardware, Windows forced-colors on hardware, real screen
