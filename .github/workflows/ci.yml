@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install jsdom
+        run: mkdir -p /tmp/jsdom-install && cd /tmp/jsdom-install && npm init -y && npm install jsdom@26.1.0
       - name: Lab checks
         run: |
           python3 scripts/validate_lab.py
