@@ -337,7 +337,263 @@ await new Promise((r) => setTimeout(r, 50));
   console.log("dom-foreign-storage: PASS");
 }
 
-console.log("test_lab_dom: PASS");
+// Execute the real closure with a test-only observation point, never a production API.
+// No resource loader, network, browser engine, or application test double is used.
+const storageKey = "jaryo-adaptive-lab-choices-v1";
+const defaultBanner = "Selections save in this browser only (localStorage). A saved choice is a preference, not a product change.";
+async function persistenceDom({ raw = null, readFails = false, catalogFails = false } = {}) {
+  const dom = new JSDOM(html, { url: "https://jaryo.test/", runScripts: "outside-only" });
+  const { window } = dom;
+  if (raw !== null) window.localStorage.setItem(storageKey, raw);
+  const proto = window.Storage.prototype;
+  const getItem = proto.getItem;
+  const setItem = proto.setItem;
+  const writes = [];
+  let saveFails = false;
+  proto.getItem = function (key) {
+    if (readFails && key === storageKey) throw new Error("read blocked");
+    return getItem.call(this, key);
+  };
+  proto.setItem = function (key, value) {
+    if (saveFails && key === storageKey) throw new Error("quota");
+    writes.push(key);
+    return setItem.call(this, key, value);
+  };
+  window.fetch = async () => { throw new Error("offline fixture"); };
+  if (!catalogFails) window.JARYO_LAB_DATA = curated;
+  window.setTimeout = () => 0;
+  window.eval(labJs.replace('document.addEventListener("DOMContentLoaded", boot);', `
+    window.__persistenceTest = { boot, saveChoices, resetChoices, importPayloadText, exportPayload,
+      snapshot: () => ({ status: persistenceStatus, storageOk, recoveryRaw,
+        choices, rejects: persistenceRejects, envelopeCatalogVersion }) };
+  `));
+  const api = window.__persistenceTest;
+  await api.boot();
+  return {
+    window, document: window.document, api, writes,
+    failSaves: () => { saveFails = true; },
+    allowSaves: () => { saveFails = false; },
+    foreign: (value, area = window.localStorage, key = storageKey) => {
+      window.dispatchEvent(new window.StorageEvent("storage", { key, newValue: value, storageArea: area }));
+    },
+    state: () => JSON.parse(JSON.stringify({ ...api.snapshot(),
+      exportStatus: api.exportPayload().persistenceStatus,
+      banner: window.document.getElementById("storage-banner").textContent,
+      bannerClass: window.document.getElementById("storage-banner").className,
+    })),
+    close: () => window.close(),
+  };
+}
+
+let persistencePassed = 0;
+let persistenceFailed = 0;
+async function persistenceCase(name, options, run) {
+  const c = await persistenceDom(options);
+  try {
+    await run(c);
+    persistencePassed++;
+    console.log("PASS persistence", name);
+  } catch (error) {
+    persistenceFailed++;
+    console.error("FAIL persistence", name, error.message);
+  } finally { c.close(); }
+}
+function stateIs(c, status, { storageOk = status !== "unavailable", bannerClass = storageOk && status !== "malformed" ? "banner warn" : "banner err", ...rest } = {}) {
+  const actual = c.state();
+  for (const [key, value] of Object.entries({ status, exportStatus: status, storageOk, bannerClass, ...rest })) {
+    assert.deepEqual(actual[key], value, key);
+  }
+}
+const envelope = (choices, catalogVersion = curated.version) => JSON.stringify({ schemaVersion: 1, catalogVersion, revision: 1, writerId: "lab-other", choices });
+
+// Characterization: these cases pass on untouched main as well as the explicit machine.
+for (const [name, raw, status, choices, reasons] of [
+  ["missing", null, "missing", {}, []],
+  ["empty storage", "", "missing", {}, []],
+  ["empty map", "{}", "missing", {}, []],
+  ["legacy map", '{"F01":"F01.01"}', "valid", { F01: "F01.01" }, []],
+  ["envelope", envelope({ F02: "F02.01" }), "valid", { F02: "F02.01" }, []],
+  ["partial", envelope({ F01: "F01.01", F99: "x" }), "partial", { F01: "F01.01" }, ["unknown-family"]],
+  ["rejected only", '{"F01":"F02.01","F02":"F02.99","F03":3}', "malformed", {}, ["cross-family-or-retired", "retired-or-unknown-option", "non-string-option"]],
+  ["JSON parse failure", "{", "malformed", {}, ["json-parse-failed"]],
+  ["non-object", "[]", "malformed", {}, ["expected-object-map"]],
+  ["catalog mismatch", envelope({ F01: "F01.01" }, "old"), "catalog-mismatch", { F01: "F01.01" }, ["catalog-mismatch"]],
+]) {
+  await persistenceCase("load/normalize " + name, { raw }, (c) => {
+    stateIs(c, status, { choices });
+    assert.deepEqual(c.state().rejects.map((r) => r.reason), reasons);
+    if (!reasons.length) assert.equal(c.state().banner, defaultBanner);
+    else {
+      const diagnosis = name === "JSON parse failure" ? "Stored selections were malformed and were not applied. Raw bytes retained — use Download recovery raw."
+        : name === "non-object" ? "Stored selections were not an object map and were not applied. Raw bytes retained — use Download recovery raw."
+        : name === "catalog mismatch" ? `Catalog version in stored/imported envelope differs from this lab (old ≠ ${curated.version}). Valid entries kept; confirm before treating as authoritative.`
+        : "Selections save in this browser only (localStorage).";
+      assert.equal(c.state().banner, `${diagnosis} Rejected ${reasons.length} invalid stored entr${reasons.length === 1 ? "y" : "ies"} (status=${status}). A saved choice is a preference, not a product change.`);
+    }
+    if (reasons.length) assert.equal(c.state().recoveryRaw, raw);
+    assert.equal(c.writes.length, 0, "loading never writes storage");
+  });
+}
+await persistenceCase("load storage unavailable", { readFails: true }, (c) => {
+  stateIs(c, "unavailable", { recoveryRaw: null, choices: {}, banner: "Storage unavailable or blocked — choices will not persist: read blocked A saved choice is a preference, not a product change." });
+});
+await persistenceCase("pending catalog stays internal if boot fails", { raw: envelope({ F01: "F01.01" }), catalogFails: true }, (c) => {
+  assert.equal(c.api.snapshot().status, "pending-catalog");
+  assert.match(c.document.getElementById("main").textContent, /Failed to load/);
+  assert.equal(c.document.getElementById("btn-reset"), null);
+  assert.equal(c.document.getElementById("btn-download"), null);
+  assert.equal(c.writes.length, 0, "failed boot cannot save or export");
+});
+await persistenceCase("save format, keys, JSON export shape and stable revision", {}, (c) => {
+  const radio = c.document.querySelector('input[value="F01.01"]');
+  radio.checked = true;
+  radio.dispatchEvent(new c.window.Event("change", { bubbles: true }));
+  stateIs(c, "valid", { recoveryRaw: null, banner: defaultBanner });
+  const stored = JSON.parse(c.window.localStorage.getItem(storageKey));
+  assert.deepEqual(Object.keys(stored), ["schemaVersion", "catalogVersion", "revision", "writerId", "choices"]);
+  assert.equal(stored.schemaVersion, 1);
+  assert.equal(stored.catalogVersion, curated.version);
+  assert.equal(stored.revision, 1);
+  assert.match(stored.writerId, /^lab-/);
+  assert.deepEqual(stored.choices, { F01: "F01.01" });
+  c.api.saveChoices();
+  assert.equal(JSON.parse(c.window.localStorage.getItem(storageKey)).revision, 1);
+  const exported = JSON.parse(JSON.stringify(c.api.exportPayload()));
+  assert.deepEqual(Object.keys(exported), ["artifact", "schemaVersion", "catalogVersion", "writerId", "notice", "exported_at_utc", "persistenceStatus", "acceptedCount", "copper_note", "choices", "rejects", "by_family"]);
+  assert.equal(exported.artifact, "jaryo-adaptive-lab-choices");
+  assert.equal(exported.schemaVersion, 1);
+  assert.equal(exported.writerId, stored.writerId);
+  assert.equal(exported.catalogVersion, stored.catalogVersion);
+  assert.equal(exported.notice, "A saved choice is a preference, not a product change. Demo data is fictional.");
+  assert.equal(exported.copper_note, "Copper is an example palette in the color set, not the default.");
+  assert.equal(new Date(exported.exported_at_utc).toISOString(), exported.exported_at_utc);
+  assert.equal(exported.acceptedCount, 1);
+  assert.deepEqual(exported.choices, stored.choices);
+  assert.deepEqual(exported.rejects, []);
+  assert.equal(exported.by_family.length, 17);
+  assert.deepEqual(exported.by_family[0], { family: "F01", title: curated.families[0].title, choice: "F01.01", name: curated.families[0].options[0].name });
+  assert.deepEqual(Object.keys(exported.by_family[1]), ["family", "title", "choice", "name"]);
+  assert.equal(exported.by_family[1].choice, null);
+  assert.equal(exported.by_family[1].name, null);
+  assert.deepEqual(c.writes, [storageKey, storageKey]);
+});
+await persistenceCase("save failure and retry", {}, (c) => {
+  c.failSaves();
+  assert.equal(c.api.saveChoices(), false);
+  stateIs(c, "unavailable", { banner: "Could not save selections (kept in memory only): quota" });
+  c.allowSaves();
+  assert.equal(c.api.saveChoices(), true);
+  stateIs(c, "missing", { banner: defaultBanner });
+});
+await persistenceCase("reset success", { raw: envelope({ F01: "F01.01" }) }, (c) => {
+  c.api.resetChoices();
+  stateIs(c, "missing", { choices: {}, rejects: [], recoveryRaw: null, envelopeCatalogVersion: null, banner: defaultBanner });
+  assert.deepEqual(JSON.parse(c.window.localStorage.getItem(storageKey)).choices, {});
+  assert.equal(c.document.getElementById("toast").textContent, "Selections reset and cleared from storage.");
+});
+await persistenceCase("imports reject without mutation and merge valid families", { raw: envelope({ F02: "F02.01" }) }, (c) => {
+  const prior = c.state();
+  for (const [raw, message] of [["", "Import rejected: empty payload. Existing selections unchanged."], ["{", "Import JSON parse failed. Existing selections unchanged."], ["null", "Import must be an object map or envelope with choices. Existing selections unchanged."], ["{}", "Empty import rejected; existing selections unchanged. Use Reset to clear intentionally."], ['{"F99":"x"}', "Import rejected: 1 entry none matched the curated catalog. Existing selections unchanged."]]) {
+    assert.deepEqual(JSON.parse(JSON.stringify(c.api.importPayloadText(raw))), { ok: false, message });
+    assert.deepEqual(c.state(), prior);
+  }
+  const result = c.api.importPayloadText(envelope({ F01: "F01.02", F99: "x" }));
+  assert.equal(result.ok, true);
+  assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 1 rejected. Prior families not in import kept. Saved.");
+  stateIs(c, "partial", { choices: { F02: "F02.01", F01: "F01.02" }, recoveryRaw: null, banner: defaultBanner });
+});
+await persistenceCase("import mismatch survives successful save", {}, (c) => {
+  c.api.importPayloadText(envelope({ F01: "F01.01" }, "old"));
+  stateIs(c, "catalog-mismatch", { banner: "Imported envelope catalogVersion differs from this lab. Valid entries merged; not treated as authoritative without review. A saved choice is a preference, not a product change." });
+});
+await persistenceCase("ordinary save keeps rejected raw; successful import clears recovery", { raw: "{" }, (c) => {
+  const radio = c.document.querySelector('input[value="F01.01"]');
+  radio.checked = true;
+  radio.dispatchEvent(new c.window.Event("change", { bubbles: true }));
+  stateIs(c, "partial", { recoveryRaw: "{", choices: { F01: "F01.01" }, banner: defaultBanner });
+  c.api.importPayloadText(envelope({ F02: "F02.01" }));
+  stateIs(c, "valid", { recoveryRaw: null, choices: { F01: "F01.01", F02: "F02.01" } });
+});
+await persistenceCase("failed import save intentionally keeps merge and mismatch reject", { raw: envelope({ F02: "F02.01" }) }, (c) => {
+  c.failSaves();
+  const result = c.api.importPayloadText(envelope({ F01: "F01.01" }, "old"));
+  assert.equal(result.ok, true);
+  assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 1 rejected. Prior families not in import kept. Kept in memory only (save failed).");
+  stateIs(c, "unavailable", { choices: { F02: "F02.01", F01: "F01.01" }, banner: "Could not save selections (kept in memory only): quota" });
+  assert.equal(c.state().rejects[0].reason, "catalog-mismatch");
+  assert.deepEqual(JSON.parse(c.window.localStorage.getItem(storageKey)).choices, { F02: "F02.01" });
+});
+await persistenceCase("foreign adopt, warn content, clear and event filters", { raw: envelope({ F01: "F01.01" }) }, (c) => {
+  const saved = envelope({ F02: "F02.01" });
+  const prior = c.state();
+  c.foreign(saved, c.window.sessionStorage);
+  c.foreign(saved, c.window.localStorage, "jaryo-adaptive-lab-theme");
+  c.foreign(JSON.stringify({ writerId: c.api.exportPayload().writerId, choices: {} }));
+  assert.deepEqual(c.state(), prior);
+  c.foreign(saved);
+  stateIs(c, "valid", { choices: { F02: "F02.01" }, recoveryRaw: null, banner: "Another tab saved selections. This tab loaded them so a later save does not overwrite that tab. A saved choice is a preference, not a product change." });
+  c.foreign("{");
+  assert.deepEqual(c.state().choices, { F02: "F02.01" });
+  assert.equal(c.state().banner, "Another tab wrote selections this tab could not read. They were not applied. A save here would overwrite that tab. A saved choice is a preference, not a product change.");
+  c.foreign(null, c.window.localStorage, null);
+  stateIs(c, "missing", { choices: {}, rejects: [], recoveryRaw: null, banner: "Another tab cleared saved selections. This tab dropped them so a later save does not write them back. A saved choice is a preference, not a product change." });
+  assert.equal(c.writes.length, 0, "foreign events never write back");
+});
+await persistenceCase("radio and tab keyboard contracts", {}, (c) => {
+  const radios = [...c.document.querySelectorAll('#cards input[type="radio"]')];
+  for (const [key, from, to] of [["ArrowRight", 4, 0], ["ArrowDown", 0, 1], ["ArrowLeft", 0, 4], ["ArrowUp", 1, 0], ["End", 0, 4], ["Home", 4, 0], [" ", 2, 2], ["Spacebar", 3, 3]]) {
+    radios[from].focus();
+    const event = new c.window.KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+    radios[from].dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true, key);
+    assert.equal(c.document.activeElement, radios[to], key);
+    assert.equal(c.api.exportPayload().choices.F01, radios[to].value, key);
+  }
+  const before = c.window.localStorage.getItem(storageKey);
+  radios[0].dispatchEvent(new c.window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  assert.equal(c.window.localStorage.getItem(storageKey), before);
+  const tabs = [...c.document.querySelectorAll(".tab")];
+  for (const [key, from, to] of [["ArrowRight", 3, 0], ["ArrowLeft", 0, 3], ["Home", 3, 0], ["End", 0, 3]]) {
+    tabs[from].focus();
+    const event = new c.window.KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+    tabs[from].dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true);
+    assert.equal(c.document.activeElement, tabs[to]);
+    assert.equal(tabs[to].getAttribute("aria-selected"), "true");
+    assert.equal(tabs[to].tabIndex, 0);
+  }
+});
+
+// Regression expectations: each must fail against untouched main before implementation.
+await persistenceCase("regression: failed reset exports unavailable while preserving choices", { raw: envelope({ F01: "F01.01" }) }, (c) => {
+  c.failSaves();
+  c.api.resetChoices();
+  stateIs(c, "unavailable", { choices: { F01: "F01.01" }, banner: "Could not save selections (kept in memory only): quota" });
+  assert.equal(c.document.getElementById("toast").textContent, "Persistent reset failed; existing selections preserved in memory.");
+});
+await persistenceCase("regression: healthy load has no recovery download", { raw: envelope({ F01: "F01.01" }) }, (c) => {
+  stateIs(c, "valid", { recoveryRaw: null });
+  assert.equal(c.document.getElementById("btn-recovery").hidden, true);
+});
+await persistenceCase("regression: foreign unreadable storage exports malformed", { raw: envelope({ F01: "F01.01" }) }, (c) => {
+  c.foreign("{");
+  stateIs(c, "malformed", { choices: { F01: "F01.01" }, recoveryRaw: "{" });
+  assert.equal(JSON.parse(c.document.getElementById("export-box").textContent).persistenceStatus, "malformed");
+  assert.match(c.state().banner, /could not read/);
+  assert.equal(c.writes.length, 0);
+});
+for (const [raw, status, choices] of [[null, "missing", {}], [envelope({ F02: "F02.01" }), "valid", { F02: "F02.01" }]]) {
+  await persistenceCase("regression: foreign " + status + " clears stale unavailable flag", {}, (c) => {
+    c.failSaves();
+    c.api.saveChoices();
+    c.foreign(raw);
+    stateIs(c, status, { choices });
+    assert.equal(c.writes.length, 0);
+  });
+}
+console.log(`TOTAL ${persistencePassed} / ${persistencePassed + persistenceFailed} persistence DOM cases`);
+if (persistenceFailed) process.exitCode = 1;
+console.log(`test_lab_dom: ${persistenceFailed ? "FAIL" : "PASS"}`);
 
 // Keep preview-state regressions in the existing Node DOM check.
 await import("./test_preview_state.mjs");
