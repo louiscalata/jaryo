@@ -185,6 +185,7 @@ for (const scheme of ["light", "dark"]) for (const width of widths) {
       await page.keyboard.press("Tab"); // Establish keyboard modality, then test direct focus separately.
       await locator.focus({ timeout: 5000 });
       await page.waitForFunction(selector => document.activeElement?.matches(selector) && document.activeElement.matches(":focus-visible"), spec.selector, { timeout: 5000 });
+      await locator.scrollIntoViewIfNeeded({ timeout: 5000 });
       directLinks.push({ ...await page.evaluate(readFocusedTarget, spec.selector), id:spec.id, matchCount });
     } catch (error) { directLinks.push({ id:spec.id, matchCount, active:false, error:String(error) }); }
   }

@@ -38,6 +38,21 @@ export function readFocusedTarget(expectedSelector) {
   if (!a || a === document.body) return null;
   const target = a.matches('input[type="radio"]') ? a.closest(".choose-label") : a;
   const s = getComputedStyle(target), box = target.getBoundingClientRect();
+  const viewport = { left:0, top:0, right:document.documentElement.clientWidth, bottom:document.documentElement.clientHeight };
+  const range = document.createRange(); range.selectNodeContents(target);
+  const textRects = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0);
+  const fits = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+  const visibilityProblems = [];
+  if (!fits(box, viewport)) visibilityProblems.push("target outside viewport");
+  if (!textRects.length || !textRects.every(r => fits(r, viewport))) visibilityProblems.push("text outside viewport or empty");
+  for (let n = target; n; n = n.parentElement) {
+    const style = getComputedStyle(n), bounds = n.getBoundingClientRect();
+    if (style.visibility === "hidden" || style.visibility === "collapse" || Number(style.opacity) === 0) visibilityProblems.push("hidden ancestor");
+    if ((style.clip && style.clip !== "auto") || (style.clipPath && style.clipPath !== "none")) visibilityProblems.push("unsupported clipping");
+    const left = bounds.left + n.clientLeft, top = bounds.top + n.clientTop;
+    if (style.overflowX !== "visible" && textRects.some(r => r.left < left - 1 || r.right > left + n.clientWidth + 1)) visibilityProblems.push("text clipped horizontally");
+    if (style.overflowY !== "visible" && textRects.some(r => r.top < top - 1 || r.bottom > top + n.clientHeight + 1)) visibilityProblems.push("text clipped vertically");
+  }
   let backgroundNode = target, textBackground;
   while (backgroundNode) {
     textBackground = getComputedStyle(backgroundNode).backgroundColor;
@@ -48,7 +63,8 @@ export function readFocusedTarget(expectedSelector) {
     key:a.tagName + "." + (a.className || a.id || a.type), tag:a.tagName, classes:[...a.classList], type:a.type,
     href:a.getAttribute("href"), active:expectedSelector ? a.matches(expectedSelector) : true,
     fv:a.matches(":focus-visible"), style:s.outlineStyle, width:parseFloat(s.outlineWidth), color:s.outlineColor,
-    shown:s.visibility !== "hidden" && Number(s.opacity) !== 0 && box.width > 0 && box.height > 0,
+    shown:visibilityProblems.length === 0 && box.width > 0 && box.height > 0,
+    visibilityProblems, viewport, textRects:textRects.map(r => ({left:r.left,right:r.right,top:r.top,bottom:r.bottom})),
     text:target.textContent.trim(), textColor:s.color, textBackground,
     outlineBackground:getComputedStyle(document.body).backgroundColor,
   };
