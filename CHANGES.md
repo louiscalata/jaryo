@@ -1,13 +1,13 @@
 # CHANGES — 2026-11-09 polish (grok-bot-1)
 
 Base: `jaryo-adaptive-design-lab-lab-20261106-kb-20261106-221648-importrefresh.zip` (unmodified).
-The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-identical, with 85 IDs (80 monochrome F01–F16 plus 5 color F17).
+The 85 option IDs and their content are unchanged (80 monochrome F01–F16 plus 5 color F17).
 
 ## Visual direction
 - The look is now black and white with a factory feel and quiet surfaces. Monochrome is the default and primary look.
 - The header is a machine-plate row: a `JRY·LAB` plate, the title, and the version on the right. A thin hatched hazard strip sits under it.
 - The storage banner is monochrome: a surface fill with a heavy left rule. Error banners use a double rule plus a `!` prefix, so warm yellow and pink fills are gone.
-- The sidebar is split into **Monochrome set · 80 options** and **Color batch · 5 options · optional**. F17 colors appear only inside their own preview cards and never in the chrome.
+- The sidebar is split into **Monochrome set · 80 options** and **Color batch · 5 options**. F17 is part of the curated 85. Its colors appear only inside their own preview cards and never in the chrome.
 - Type scale: 11/12/13/15/20/24 px. Mono stencil labels are uppercase with tracking. Body prose is sans 13px at line-height 1.5.
 - Spacing rhythm: 4/8/12/16/24/32 px tokens, used across the header, sidebar, tabs, cards and tables.
 - Cards:
@@ -75,14 +75,14 @@ The catalog data is unchanged: `data/*.json` and `embedded-data.js` are byte-ide
 Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). Worked in a **new** folder; Bot 1's tree was not modified.
 
 ## Additive catalog (original 85 untouched)
-- `data/curated-85.json`, `curated-85.min.json`, and `f17-color-systems-v2.json` remain **byte-identical** to the grok-bot-1 ZIP.
+- The 85 option IDs and their content are unchanged.
 - New: `data/legacy-studies.json` (**F18 Legacy studies**, 8 mono options from Mendacity / Plague / Brawler / Contrails 2.0).
 - New: `data/red-interactive-ui.json` (**F19 Red interactive UI**, 4 optional red-accent options from Typography 1; Louis named this set).
 - `data/curated-extended.json` + regenerated `data/embedded-data.js` expose 19 families / **97** options to the lab.
 - Each F18/F19 option carries `provenance` (source project + what was improved).
 
 ## UI
-- Sidebar groups: Monochrome set (80) · Color batch optional (5) · **Legacy studies (8)** · **Red interactive UI optional (4)**.
+- Sidebar groups: Monochrome set (80) · Color batch (5, curated) · **Legacy studies (8, optional)** · **Red interactive UI (4, optional)**.
 - F19 uses the color preview path; red tokens AA-checked (light accent `#9B1B1B` on white ≥8:1; dark accent `#FF6B6B` on `#0C0C0C` ≥7:1; chip fill/ink pairs ≥7:1).
 - Provenance line on F18/F19 cards.
 
@@ -91,9 +91,11 @@ Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). W
 - `scripts/browser/smoke.mjs` and `audit.mjs` updated for 97 options and F18/F19 views.
 - Rerun smoke + axe (light/dark/reduced-motion × 260/375/768/1280); results under `verification/`.
 
+The live lab is published at https://louiscalata.github.io/jaryo/.
+
 ## Not done
-- Nothing published.
-- Real screen readers / phones / Firefox / Safari still not claimed.
+- Real screen readers and real phones are still not claimed.
+- Real Safari on Apple hardware is still not claimed. Playwright Firefox and WebKit run in CI.
 
 
 # CHANGES — 2026-11-09 typography-1 reference (lab-wide)
@@ -113,5 +115,5 @@ Louis directed Typography 1 (`louiscalata.myportfolio.com/typography-1`) as the 
 - Default chrome stays mono+sans; red remains F19-only for accent.
 
 ## Untouched
-- `data/curated-85.json`, `curated-85.min.json`, `f17-color-systems-v2.json` byte-identical.
+- The 85 option IDs and their content are unchanged.
 - F18/F19 option IDs and provenance content unchanged this pass.

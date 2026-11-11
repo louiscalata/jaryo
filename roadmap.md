@@ -16,6 +16,14 @@ retain their existing PC runner mapping. Fork pull requests use hosted runners.
 - [x] Drop cleared saved choices before a later local save, including storage-wide clear events.
 - [ ] Verify the required CI jobs on the integrated storage revision before merge.
 
+## Maintenance integration
+
+- [x] Integrate guarded click readiness and foreign-storage reconciliation from #35 and #29.
+- [x] Reconcile catalog identity and status documentation (#23, #27), apostrophe escaping (#30), shared pitch image references (#31), and curated/optional labels (#26).
+- [x] Require jsdom for DOM tests and install its pinned test dependency in CI (#25).
+- [ ] Verify the required CI jobs on the cumulative maintenance revision before merge.
+- [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout, then retain one current agent guide (#32, #39).
+
 ## Native checks
 
 Real Safari on Apple hardware, Windows forced-colors on hardware, real screen

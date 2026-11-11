@@ -37,9 +37,9 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 | ID | Title | Options |
 |---|---|---|
 | F01–F16 | Monochrome set | 80 |
-| F17 | Color systems | 5 (optional) |
-| F18 | Legacy studies | 8 |
-| F19 | Red interactive UI | 4 |
+| F17 | Color systems | 5 |
+| F18 | Legacy studies | 8 (optional) |
+| F19 | Red interactive UI | 4 (optional) |
 
 ![Lab light, 1280px](docs/screenshots/lab-light-1280.png)
 
@@ -61,7 +61,7 @@ Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
 
 Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
 
-- The original curated file stays byte-stable: `data/curated-85.json`
+- The 85 option IDs and their content are unchanged in `data/curated-85.json`.
 - Extended catalog: 19 families · 85 curated + 12 optional (97 total), in `data/curated-extended.json` and `data/embedded-data.js`
 - Smoke: 34/34 for legacy+typography passes; axe: 0 violations in reported modes/widths
 - Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `node --check lab.js`
