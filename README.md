@@ -61,7 +61,7 @@ Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
 
 Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
 
-- The original curated file stays byte-stable: `data/curated-85.json`
+- The 85 option IDs and their content are unchanged in `data/curated-85.json`.
 - Extended catalog: 19 families · 85 curated + 12 optional (97 total), in `data/curated-extended.json` and `data/embedded-data.js`
 - Smoke: 34/34 for legacy+typography passes; axe: 0 violations in reported modes/widths
 - Package checks: `validate_lab.py`, `test_persistence_rules.mjs`, `node --check lab.js`
