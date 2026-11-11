@@ -1,6 +1,7 @@
 // Usage: node smoke.mjs <labDir> <outJson> [shotDir]
 import { chromium, firefox, webkit } from "playwright";
 import fs from "node:fs"; import path from "node:path"; import http from "node:http";
+import { runExpandedLayoutChecks } from "./expanded-layout.mjs";
 const [labDir, outJson, shotDir, browserName] = process.argv.slice(2);
 const engineName = browserName || process.env.SMOKE_BROWSER || "chromium";
 const engines = { chromium, firefox, webkit };
@@ -33,11 +34,16 @@ const launchOpts = engineName === "chromium"
 const browser = await engines[engineName].launch(launchOpts);
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
-  const page = await ctx.newPage();
-  page.on("console", (m) => { if (m.type() === "error") out.errors.push(`[${opts.tag||"main"}] ${m.text()}`); });
-  page.on("pageerror", (e) => out.errors.push(`[${opts.tag||"main"}] pageerror ${e}`));
-  await page.goto(url); await page.waitForSelector(".opt-card");
-  return { ctx, page };
+  try {
+    const page = await ctx.newPage();
+    page.on("console", (m) => { if (m.type() === "error") out.errors.push(`[${opts.tag||"main"}] ${m.text()}`); });
+    page.on("pageerror", (e) => out.errors.push(`[${opts.tag||"main"}] pageerror ${e}`));
+    await page.goto(url); await page.waitForSelector(".opt-card");
+    return { ctx, page };
+  } catch (error) {
+    await ctx.close();
+    throw error;
+  }
 }
 const famIds = await (async () => { const { ctx, page } = await open(); const f = await page.$$eval("[data-fam]", (b) => b.map((x) => x.dataset.fam)); await ctx.close(); return f; })();
 
@@ -214,9 +220,27 @@ for (const rm of ["no-preference", "reduce"]) {
   if (shotDir) { await page.click('[data-fam="F17"]'); await page.locator("#section-title").scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shotDir, "light-260-F17-cards.png") }); }
   await ctx.close();
 }
+// Expanded normal cards and full-width F18/F19 frames, including ultrawide.
+// This bounded matrix does not repeat the 97-option click-through at 1920.
+for (const width of [1280, 375, 260, 1920]) for (const colorScheme of ["light", "dark"]) {
+  let ctx;
+  try {
+    const opened = await open({ width, colorScheme, reducedMotion: "reduce", tag: `expanded-${colorScheme}-${width}` });
+    ctx = opened.ctx;
+    const { page } = opened;
+    await runExpandedLayoutChecks({ page, width, check });
+  } catch (error) {
+    check(`expanded matrix completes (${colorScheme}, w=${width})`, false, String(error));
+  } finally {
+    if (ctx) {
+      try { await ctx.close(); }
+      catch (error) { check(`expanded context closes (${colorScheme}, w=${width})`, false, String(error)); }
+    }
+  }
+}
 check("no console errors across smoke run", out.errors.length === 0, out.errors);
 fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
 const passed = out.checks.filter((c) => c.pass).length;
 console.log("TOTAL", passed, "/", out.checks.length, engineName);
-await browser.close(); server.close();
+try { await browser.close(); } finally { server.close(); }
 if (passed !== out.checks.length || out.errors.length) process.exit(1);

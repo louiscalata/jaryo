@@ -23,7 +23,7 @@ retain their existing PC runner mapping. Fork pull requests use hosted runners.
 - [x] Require jsdom for DOM tests and install its pinned test dependency in CI (#25).
 - [x] Verify all six push/PR native checks on the cumulative maintenance revision (#45; receipt below).
 - [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout.
-- [ ] Review and retain one current agent guide from #32 and #39, then verify that guide revision's current-head CI before merge. The prepared guide remains a separate candidate.
+- [x] Retain the current agent guide in #32 after all eight current-head checks passed; #39 is superseded (receipt below).
 
 ## Additional CI coverage
 
@@ -41,10 +41,13 @@ ancestry or an older passing run does not validate a later revision.
 | [#29](https://github.com/louiscalata/jaryo/pull/29) | `c3d6453eb88f526eb3593809452c5ddf9d06dcc5` | `e5df3f238ec601b9ebf512605cb801ba9e07bfa3` | 6/6 SUCCESS: check, browsers and forced-colors on push and PR |
 | [#45](https://github.com/louiscalata/jaryo/pull/45) | `cef74771912a20d9f4d12e80e0dc02026c405565` | `5a0ed3f22c2875b8e882368c96240165c5fe7860` | 6/6 SUCCESS: check, browsers and forced-colors on push and PR |
 | [#46](https://github.com/louiscalata/jaryo/pull/46) | `a7fc8fbcdf232424a7ea1235c4478d060a11e986` | `ccc96b96eb345b7cb36930940945f7ca0266e265` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push and PR |
+| [#32](https://github.com/louiscalata/jaryo/pull/32) | `808cb450ced78b0a0ac2af2a374b1d8202e2ff43` | `52e5576895a469f4edcbb4db2405d90845171699` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push and PR |
 
 ## Visual reconciliation candidate
 
 - [x] Adapt only the compatible expanded booklet title and preview/notes treatment from #36/#37; preserve current normal cards, folios, named scroller and contrast tokens.
+- [x] Retain two-track expanded normal cards and full-width wide-family frames with notes below; defer #36's conflicting global hierarchy.
+- [x] Prepare native smoke assertions for multiple expanded normal cards, wide F18/F19 frames, keyboard focus, clipping/overflow and forced-colors emulation at 1280, 375, 260 and 1920; native execution remains pending.
 - [ ] Review the scoped source and remaining design choices before publication.
 - [ ] Verify responsive rendering, keyboard interaction, contrast and forced colors on the final native candidate.
 

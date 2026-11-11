@@ -4,6 +4,7 @@ import { chromium } from "playwright";
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
+import { runExpandedLayoutChecks } from "./expanded-layout.mjs";
 
 const [labDir, outJson] = process.argv.slice(2);
 if (!labDir || !outJson) {
@@ -98,12 +99,21 @@ const lost = await page.evaluate(() => {
   }).map((el) => (el.innerText || "").trim().slice(0, 40));
 });
 check("forced-colors emulation does not drop visible text", lost.length === 0, lost);
+for (const width of [1280, 375, 260, 1920]) {
+  try {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    await page.waitForSelector(".opt-card");
+    await runExpandedLayoutChecks({ page, width, check, forcedColors: true });
+  } catch (error) {
+    check(`expanded forced-colors matrix completes (w=${width})`, false, String(error));
+  }
+}
 check("no console errors in the emulation", out.errors.length === 0, out.errors);
 
 fs.mkdirSync(path.dirname(outJson), { recursive: true });
 fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
 const passed = out.checks.filter((c) => c.pass).length;
 console.log("TOTAL", passed, "/", out.checks.length, "chromium-forced-colors-emulation");
-await browser.close();
-server.close();
+try { await browser.close(); } finally { server.close(); }
 if (passed !== out.checks.length || out.errors.length) process.exit(1);
