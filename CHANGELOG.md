@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - `spec/`: interface spec v0.5e (a design spec, not a production build), reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page.
+- Explicit saved-choice persistence status keeps reset failures, unreadable foreign writes, recovery controls and exported status consistent.
 
 ## [0.2.0] - 2026-11-09
 
