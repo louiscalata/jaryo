@@ -37,9 +37,9 @@ You can also open `index.html` directly. Embedded data loads if fetch is blocked
 | ID | Title | Options |
 |---|---|---|
 | F01–F16 | Monochrome set | 80 |
-| F17 | Color systems | 5 (optional) |
-| F18 | Legacy studies | 8 |
-| F19 | Red interactive UI | 4 |
+| F17 | Color systems | 5 |
+| F18 | Legacy studies | 8 (optional) |
+| F19 | Red interactive UI | 4 (optional) |
 
 ![Lab light, 1280px](docs/screenshots/lab-light-1280.png)
 

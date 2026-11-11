@@ -569,7 +569,7 @@
     const btn = (f) =>
       `<button type="button" class="navbtn" data-fam="${f.id}" title="${f.id} · ${esc(f.title)}" aria-current="${f.id === activeFamily ? "true" : "false"}"><span class="fid">${f.id}</span><span class="ftitle"><span class="sep"> · </span>${esc(f.title)}</span></button>`;
     const count = (arr) => arr.reduce((n, f) => n + f.options.length, 0);
-    // Monochrome F01–F16 primary; F17 color batch optional; F18 legacy studies; F19 Red interactive UI optional.
+    // Monochrome F01–F16 and F17 are the curated 85. Optional means F18 and F19 only.
     const mono = DATA.families.filter((f) => /^F(0[1-9]|1[0-6])$/.test(f.id));
     const color = DATA.families.filter((f) => f.id === "F17");
     const legacy = DATA.families.filter((f) => f.id === "F18");
@@ -577,8 +577,8 @@
     const html =
       `<p class="navgroup" id="ng-mono">Monochrome set · ${count(mono)} options</p>` +
       mono.map(btn).join("") +
-      (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${count(color)} options · optional</p>` + color.map(btn).join("") : "") +
-      (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">Legacy studies · ${count(legacy)} options</p>` + legacy.map(btn).join("") : "") +
+      (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${count(color)} options</p>` + color.map(btn).join("") : "") +
+      (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">Legacy studies · ${count(legacy)} options · optional</p>` + legacy.map(btn).join("") : "") +
       (red.length ? `<p class="navgroup navgroup-red" id="ng-red">Red interactive UI · ${count(red)} options · optional</p>` + red.map(btn).join("") : "");
     // index.html already contains this list so the first paint does not jump the grammar demo.
     const painted = [...nav.querySelectorAll(".navbtn")].map((el) => `${el.dataset.fam}|${el.getAttribute("aria-current")}|${el.getAttribute("title")}`).join("\n");
@@ -586,8 +586,8 @@
     const expected = DATA.families.map((f) => `${f.id}|${f.id === activeFamily ? "true" : "false"}|${f.id} · ${f.title}`).join("\n");
     const expectedGroups = [
       `Monochrome set · ${count(mono)} options`,
-      color.length ? `Color batch · ${count(color)} options · optional` : "",
-      legacy.length ? `Legacy studies · ${count(legacy)} options` : "",
+      color.length ? `Color batch · ${count(color)} options` : "",
+      legacy.length ? `Legacy studies · ${count(legacy)} options · optional` : "",
       red.length ? `Red interactive UI · ${count(red)} options · optional` : "",
     ].filter(Boolean).join("\n");
     if (painted !== expected || groups !== expectedGroups) nav.innerHTML = html;
@@ -597,7 +597,7 @@
     const fam = familyById(activeFamily);
     if (!fam) return;
     $("#section-title").textContent = `${fam.id} — ${fam.title}`;
-    $("#section-meta").textContent = `Curated ${fam.curated_count || fam.options.length} of ${fam.catalog_size || fam.options.length} catalog options · stable IDs preserved · 24/29 IBM Plex Mono 700`;
+    $("#section-meta").textContent = `Curated ${fam.curated_count || fam.options.length} of ${fam.catalog_size || fam.options.length} catalog options · stable IDs preserved`;
     $("#contexts").innerHTML = fam.screen_contexts.map((c) => `<span class="chip">${esc(c)}</span>`).join("");
     const cards = $("#cards");
     const expanded = expandedByFamily[fam.id] || new Set();
