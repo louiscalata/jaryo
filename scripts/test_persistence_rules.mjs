@@ -229,5 +229,53 @@ function importMerge(prior, incomingMap, incomingCatalog) {
   assert.ok(rCat.rejects.some((x) => x.reason === "catalog-mismatch"));
 }
 
+function extractFunction(source, name) {
+  const sig = `function ${name}(`;
+  const start = source.indexOf(sig);
+  assert.ok(start >= 0, name);
+  let depth = 0;
+  for (let i = source.indexOf("{", start); i < source.length; i++) {
+    if (source[i] === "{") depth += 1;
+    else if (source[i] === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        const text = source.slice(start, i + 1);
+        return new Function(`${text}\nreturn ${name};`)();
+      }
+    }
+  }
+  throw new Error("unterminated " + name);
+}
+
+// writerId is read when another tab writes. A stale tab must adopt, not clobber.
+{
+  assert.match(js, /function foreignStorageDecision\(selfId, raw\)/);
+  assert.match(js, /const action = foreignStorageDecision\(writerId, raw\)/);
+  assert.match(js, /window\.addEventListener\("storage"/);
+  assert.match(js, /e\.storageArea && e\.storageArea !== localStorage/);
+  assert.match(js, /applyForeignStorage\(e\.key === null \? null : e\.newValue\)/);
+  assert.match(js, /Another tab saved selections/);
+  assert.match(js, /could not read/);
+  const decide = extractFunction(js, "foreignStorageDecision");
+  const self = "lab-self";
+  const other = JSON.stringify({
+    schemaVersion: 1,
+    writerId: "lab-other",
+    choices: { F01: "F01.01" },
+  });
+  assert.equal(decide(self, other), "adopt");
+  assert.equal(decide(self, JSON.stringify({ writerId: self, choices: { F02: "F02.01" } })), "ignore");
+  assert.equal(decide(self, "{"), "warn");
+  assert.equal(decide(self, "[]"), "warn");
+  assert.equal(decide(self, null), "adopt-clear");
+  assert.equal(decide(self, ""), "adopt-clear");
+  assert.equal(decide(self, "   "), "warn");
+  assert.equal(decide(self, JSON.stringify({ F01: "F01.01" })), "adopt");
+  assert.equal(decide(self, JSON.stringify({ schemaVersion: 1, writerId: "lab-other" })), "warn");
+  assert.equal(decide(self, JSON.stringify({ schemaVersion: 1, choices: [] })), "warn");
+  assert.equal(decide(self, JSON.stringify({ schemaVersion: 1, choices: { F01: "F01.02" } })), "adopt");
+  console.log("foreign-storage-decision: PASS");
+}
+
 console.log("test_persistence_rules: PASS");
 console.log("import-erase/empty/merge/mismatch/duplicate/catalog/fixtures: PASS");
