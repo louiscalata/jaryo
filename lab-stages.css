@@ -139,3 +139,70 @@
 .glyph.diamond { transform: rotate(45deg); width: 12px; height: 12px; }
 .glyph.round { border-radius: 50%; }
 .glyph.solid { background: currentColor; }
+
+/* Hidden labels need a containing block even when reduced motion removes the
+   panel animation; their static positions must not extend the root scroll area. */
+#panel-compare { position: relative; }
+#panel-compare > .sr-only { top: 0; left: 0; }
+
+/* Selected booklet/expanded-sheet treatment from #36/#37. Normal cards keep
+   the current type scale, horizontal flow, folios and narrow family scroller. */
+.opt-card:has(.preview-stage.expanded) { border-top: 4px solid var(--red); }
+.opt-card:has(.preview-stage.expanded) > .body > h3 {
+  font-family: var(--font-reading);
+  font-size: var(--fs-6);
+  font-weight: var(--fw-bold);
+  font-style: italic;
+  color: var(--red);
+}
+.preview-stage.expanded .jstage-ui { min-height: 260px; }
+
+@media (min-width: 981px) {
+  .cards:not(.cards-wide) > .opt-card:has(.preview-stage.expanded) {
+    grid-column: span 2;
+  }
+  .opt-card:has(.preview-stage.expanded) > .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.85fr);
+    gap: var(--s3) var(--s5);
+    align-content: start;
+  }
+  .opt-card:has(.preview-stage.expanded) > .body > h3 {
+    grid-column: 1 / -1;
+    font-size: var(--fs-7);
+  }
+  .opt-card:has(.preview-stage.expanded) > .body > .preview-stage {
+    grid-column: 1;
+    grid-row: 2 / span 6;
+    align-self: start;
+  }
+  .opt-card:has(.preview-stage.expanded) > .body > .spec-foot,
+  .opt-card:has(.preview-stage.expanded) > .body > .small,
+  .opt-card:has(.preview-stage.expanded) > .body > .tradeoff {
+    grid-column: 2;
+    margin: 0;
+  }
+  .opt-card:has(.preview-stage.expanded) > .body > .card-actions {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  /* Interactive wide families retain their full-width framed preview. */
+  .cards-wide > .opt-card:has(.preview-stage.expanded) > .body > .preview-stage {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .cards-wide > .opt-card:has(.preview-stage.expanded) > .body > .small,
+  .cards-wide > .opt-card:has(.preview-stage.expanded) > .body > .tradeoff {
+    grid-column: auto;
+  }
+  .cards-wide > .opt-card:has(.preview-stage.expanded) > .body > .spec-foot,
+  .cards-wide > .opt-card:has(.preview-stage.expanded) > .body > .provenance {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (forced-colors: active) {
+  .opt-card:has(.preview-stage.expanded) { border-color: CanvasText; }
+  .opt-card:has(.preview-stage.expanded) > .body > h3 { color: CanvasText; }
+}

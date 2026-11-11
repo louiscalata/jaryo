@@ -1,13 +1,18 @@
-// Usage: node smoke.mjs <labDir> <outJson> [shotDir]
-import { chromium, firefox, webkit } from "playwright";
+// Usage: node smoke.mjs <labDir> <outJson> [shotDir] --browser=chromium|firefox|webkit
 import fs from "node:fs"; import path from "node:path"; import http from "node:http";
-const [labDir, outJson, shotDir, browserName] = process.argv.slice(2);
-const engineName = browserName || process.env.SMOKE_BROWSER || "chromium";
-const engines = { chromium, firefox, webkit };
-if (!engines[engineName]) {
-  console.error("unknown browser", engineName);
+import { runExpandedLayoutChecks, contrast } from "./expanded-layout.mjs";
+import { parseSmokeArgs, verifyBrowserIdentity } from "./smoke-cli.mjs";
+import { assessFocusCoverage, requiredLinks, readFocusedTarget } from "./focus-coverage.mjs";
+let options;
+try { options = parseSmokeArgs(process.argv.slice(2), process.env); }
+catch (error) { console.error(error.message); process.exit(1); }
+if (process.platform === "darwin") {
+  console.error("Browser smoke runs on the PC or hosted Linux, not on the Mac.");
   process.exit(1);
 }
+const { labDir, outJson, shotDir, engineName } = options;
+const { chromium, firefox, webkit } = await import("playwright");
+const engines = { chromium, firefox, webkit };
 const widths = (process.env.SMOKE_WIDTHS || "1280,260").split(",").map((n) => Number(n.trim())).filter((n) => n > 0);
 const types = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png" };
 const server = http.createServer((req, res) => {
@@ -31,13 +36,27 @@ const launchOpts = engineName === "chromium"
   ? { args: ["--use-mock-keychain", "--password-store=basic"] }
   : {};
 const browser = await engines[engineName].launch(launchOpts);
+try {
+  const identity = verifyBrowserIdentity(browser, engineName, value => console.log("BROWSER", JSON.stringify(value)));
+  check("requested browser matches launched engine and reports version", true, identity);
+} catch (error) {
+  check("requested browser matches launched engine and reports version", false, String(error));
+  fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
+  try { await browser.close(); } finally { server.close(); }
+  throw error;
+}
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
-  const page = await ctx.newPage();
-  page.on("console", (m) => { if (m.type() === "error") out.errors.push(`[${opts.tag||"main"}] ${m.text()}`); });
-  page.on("pageerror", (e) => out.errors.push(`[${opts.tag||"main"}] pageerror ${e}`));
-  await page.goto(url); await page.waitForSelector(".opt-card");
-  return { ctx, page };
+  try {
+    const page = await ctx.newPage();
+    page.on("console", (m) => { if (m.type() === "error") out.errors.push(`[${opts.tag||"main"}] ${m.text()}`); });
+    page.on("pageerror", (e) => out.errors.push(`[${opts.tag||"main"}] pageerror ${e}`));
+    await page.goto(url); await page.waitForSelector(".opt-card");
+    return { ctx, page };
+  } catch (error) {
+    await ctx.close();
+    throw error;
+  }
 }
 const famIds = await (async () => { const { ctx, page } = await open(); const f = await page.$$eval("[data-fam]", (b) => b.map((x) => x.dataset.fam)); await ctx.close(); return f; })();
 
@@ -152,26 +171,33 @@ for (const width of widths) {
 // 3) Focus-visible on every interactive element type, both themes; ring contrast vs page bg
 for (const scheme of ["light", "dark"]) for (const width of widths) {
   const { ctx, page } = await open({ colorScheme: scheme, width, tag: "focus-" + scheme });
-  const res = []; const seen = new Set();
-  await page.keyboard.press("Tab"); // skip link
+  const res = [];
   for (let i = 0; i < 60; i++) {
-    const r = await page.evaluate(() => {
-      const a = document.activeElement; if (!a || a === document.body) return null;
-      const tgt = a.matches("input[type=radio]") ? a.closest(".choose-label") : a;
-      const s = getComputedStyle(tgt);
-      const key = a.tagName + "." + (a.className || a.id || a.type);
-      return { key, fv: a.matches(":focus-visible"), style: s.outlineStyle, width: parseFloat(s.outlineWidth), color: s.outlineColor };
-    });
-    if (r && !seen.has(r.key)) { seen.add(r.key); res.push(r); }
     await page.keyboard.press("Tab");
+    const r = await page.evaluate(readFocusedTarget);
+    if (r) res.push(r); // Every sample participates, including repeated type keys.
   }
-  const bad = res.filter((r) => !(r.fv && r.style !== "none" && r.width >= 2));
+  const directLinks = [];
+  for (const spec of requiredLinks) {
+    const locator = page.locator(spec.selector), matchCount = await locator.count();
+    try {
+      if (matchCount !== 1) throw new Error("Expected one real link, found " + matchCount);
+      await page.keyboard.press("Tab"); // Establish keyboard modality, then test direct focus separately.
+      await locator.focus({ timeout: 5000 });
+      await page.waitForFunction(selector => document.activeElement?.matches(selector) && document.activeElement.matches(":focus-visible"), spec.selector, { timeout: 5000 });
+      await locator.scrollIntoViewIfNeeded({ timeout: 5000 });
+      directLinks.push({ ...await page.evaluate(readFocusedTarget, spec.selector), id:spec.id, matchCount });
+    } catch (error) { directLinks.push({ id:spec.id, matchCount, active:false, error:String(error) }); }
+  }
+  const coverage = assessFocusCoverage(res, directLinks);
+  const reachability = { scheme, width, tabSteps:60, links:requiredLinks.map(spec => ({ id:spec.id, reachedByTab:res.some(r => r.tag === "A" && r.href === spec.href) })) };
+  (out.focusReachability ||= []).push(reachability);
+  console.log("MEASURED natural Tab reachability", JSON.stringify(reachability));
   const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   const ring = res.find((r) => r.key.startsWith("BUTTON"))?.color;
-  const rgb = (s) => s.match(/\d+/g).slice(0,3).map(Number).map((v)=>v/255).map((v)=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4));
-  const L = (s) => { const [r,g,b] = rgb(s); return 0.2126*r+0.7152*g+0.0722*b; };
-  const cr = ring ? (Math.max(L(ring),L(bodyBg))+0.05)/(Math.min(L(ring),L(bodyBg))+0.05) : 0;
-  check(`focus-visible ring on all tabbed element types (${scheme}, w=${width})`, bad.length === 0 && res.length >= 6, { types: res.map(r=>r.key), bad });
+  const cr = ring ? contrast(ring, bodyBg) : 0;
+  check(`focus-visible rings on observed Tab targets (${scheme}, w=${width})`, coverage.badTabbed.length === 0 && coverage.missingControls.length === 0, { types:[...new Set(res.map(r=>r.key))], controls:coverage.observedControls, missing:coverage.missingControls, bad:coverage.badTabbed });
+  check(`skip/header links focus-visible with contrast (${scheme}, w=${width})`, coverage.badLinks.length === 0, { mode:"direct focus after keyboard input", bad:coverage.badLinks, links:directLinks });
   check(`focus ring contrast >= 3:1 vs page (${scheme}, w=${width})`, cr >= 3, { ring, bodyBg, ratio: +cr.toFixed(2) });
   if (shotDir && width === 260) {
     await page.click('[data-fam="F04"]');
@@ -214,9 +240,27 @@ for (const rm of ["no-preference", "reduce"]) {
   if (shotDir) { await page.click('[data-fam="F17"]'); await page.locator("#section-title").scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shotDir, "light-260-F17-cards.png") }); }
   await ctx.close();
 }
+// Expanded normal cards and full-width F18/F19 frames, including ultrawide.
+// This bounded matrix does not repeat the 97-option click-through at 1920.
+for (const width of [1280, 375, 260, 1920]) for (const colorScheme of ["light", "dark"]) {
+  let ctx;
+  try {
+    const opened = await open({ width, colorScheme, reducedMotion: "reduce", tag: `expanded-${colorScheme}-${width}` });
+    ctx = opened.ctx;
+    const { page } = opened;
+    await runExpandedLayoutChecks({ page, width, check });
+  } catch (error) {
+    check(`expanded matrix completes (${colorScheme}, w=${width})`, false, String(error));
+  } finally {
+    if (ctx) {
+      try { await ctx.close(); }
+      catch (error) { check(`expanded context closes (${colorScheme}, w=${width})`, false, String(error)); }
+    }
+  }
+}
 check("no console errors across smoke run", out.errors.length === 0, out.errors);
 fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
 const passed = out.checks.filter((c) => c.pass).length;
 console.log("TOTAL", passed, "/", out.checks.length, engineName);
-await browser.close(); server.close();
+try { await browser.close(); } finally { server.close(); }
 if (passed !== out.checks.length || out.errors.length) process.exit(1);

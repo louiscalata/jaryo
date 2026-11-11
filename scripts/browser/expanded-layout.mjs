@@ -1,0 +1,158 @@
+// Shared native smoke checks for the selected expanded-card treatment.
+const timeout = 5000;
+const near = (a, b) => Math.abs(a - b) <= 1;
+const contained = (inner, outer) => inner.left >= outer.left - 1 && inner.right <= outer.right + 1 && inner.top >= outer.top - 1 && inner.bottom <= outer.bottom + 1;
+const overlaps = (a, b) => Math.min(a.right, b.right) > Math.max(a.left, b.left) + 1 && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top) + 1;
+function parseRgb(color, translucent = false) {
+  if (typeof color !== "string") return null;
+  // Only complete legacy CSSOM RGB calls are supported. Color spaces and
+  // partial numeric matches fail closed in both contrast paths.
+  const call = /^(rgb|rgba)\(([^()]*)\)$/i.exec(color);
+  if (!call || call[0] !== color) return null;
+  const tokens = call[2].split(",").map(token => token.trim());
+  const count = call[1].toLowerCase() === "rgba" ? 4 : 3;
+  const number = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+  if (tokens.length !== count || !tokens.every(token => number.test(token))) return null;
+  const rgb = tokens.map(Number);
+  if (!rgb.every(Number.isFinite) || rgb.slice(0, 3).some(n => n < 0 || n > 255)) return null;
+  const alpha = count === 4 ? rgb[3] : 1;
+  if (translucent ? alpha < 0 || alpha > 1 : alpha !== 1) return null;
+  return [...rgb.slice(0, 3), alpha];
+}
+function luminance(rgb) {
+  if (!rgb) return NaN;
+  const linear = rgb.slice(0, 3).map(n => n / 255).map(n => n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4);
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+}
+function ratio(x, y) {
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+export function contrast(a, b) {
+  return ratio(luminance(parseRgb(a)), luminance(parseRgb(b)));
+}
+export function contrastOverOpaqueSurface(foreground, background) {
+  const fg = parseRgb(foreground, true), bg = parseRgb(background);
+  if (!fg || !bg) return NaN;
+  const composite = fg.slice(0, 3).map((n, i) => n * fg[3] + bg[i] * (1 - fg[3]));
+  return ratio(luminance(composite), luminance(bg));
+}
+export function hasClippedOverflow(m) {
+  return (m.overflowX !== "visible" && m.scrollWidth > m.clientWidth + 1)
+    || (m.overflowY !== "visible" && m.scrollHeight > m.clientHeight + 1);
+}
+
+export function assessExpandedLayout(s, { width, wide, count }) {
+  const stacked = wide || width <= 980;
+  return {
+    expanded: s.cards.length === count && s.cards.every(c => c.ariaExpanded === "true"),
+    placement: s.cards.length === count && s.cards.every(c => c.notes.length >= 5 && c.title.bottom <= c.preview.top + 1 && (stacked
+      ? c.notes.every(n => n.top >= c.preview.bottom - 1)
+      : c.notes.every(n => n.left >= c.preview.right - 1) && c.notes[0].top < c.preview.bottom)),
+    width: s.cards.length === count && s.cards.every(c => wide
+      ? near(c.preview.left, c.title.left) && near(c.preview.right, c.title.right)
+      : width > 980 ? c.card.width > s.collapsedWidth + 1 : near(c.card.width, s.collapsedWidth)),
+    containment: s.cards.every(c => c.children.every(r => contained(r, c.body)) && c.clipped.length === 0),
+    separateCards: s.cards.every((c, i) => s.cards.slice(i + 1).every(other => !overlaps(c.card, other.card))),
+    rootFits: s.rootOverflow <= 1,
+    folios: s.cards.every(c => /IBM Plex Mono/.test(c.folioFamily) && c.folioSize >= c.titleSize && c.folioText === c.id),
+    titleContrast: s.cards.every(c => contrast(c.titleColor, c.background) >= 4.5),
+    forcedColors: s.cards.every(c => c.titleText.trim() && c.titleVisible && contrast(c.titleColor, c.background) >= 4.5 && c.borderStyle !== "none" && c.borderWidth > 0 && contrast(c.borderColor, c.background) >= 3),
+  };
+}
+
+async function clickReady(locator) {
+  await locator.scrollIntoViewIfNeeded({ timeout });
+  await locator.evaluate(el => el.scrollIntoView({ block: "center", inline: "nearest" }));
+  await locator.waitFor({ state: "visible", timeout });
+  await locator.click({ trial: true, timeout });
+  await locator.click({ timeout });
+}
+
+async function snapshot(page) {
+  // Wait for the preview's finite height transition, rather than sleeping.
+  await page.waitForFunction(() => [...document.querySelectorAll(".preview-stage.expanded")].every(el => el.getAnimations().every(a => a.playState !== "running")), null, { timeout });
+  const s = await page.evaluate(() => {
+    const rect = el => { const r = el.getBoundingClientRect(); return { left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width }; };
+    const collapsed = document.querySelector("#cards .opt-card:not(:has(.preview-stage.expanded))");
+    const root = document.documentElement, panel = document.querySelector("#panel-compare"), live = document.querySelector("#choice-live");
+    const label = el => el ? el.id || el.className || el.tagName : null;
+    const rootOverflow = root.scrollWidth - root.clientWidth;
+    return {
+      rootOverflow,
+      overflowDiagnostics: {
+        reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+        panelPosition:getComputedStyle(panel).position, panelTransform:getComputedStyle(panel).transform,
+        live: { rect:rect(live), offsetParent:label(live.offsetParent) },
+        rightEdgeOffenders:rootOverflow > 1 ? [...document.querySelectorAll("body *")].map(el => {
+          const r = rect(el), style = getComputedStyle(el);
+          return { node:label(el), rect:r, position:style.position, overflowX:style.overflowX, offsetParent:label(el.offsetParent) };
+        }).filter(n => n.rect.right > root.clientWidth + 1 && n.rect.width > 0)
+          .sort((a, b) => Number(b.position === "absolute") - Number(a.position === "absolute") || b.rect.right - a.rect.right).slice(0, 8) : [],
+      },
+      collapsedWidth: collapsed?.getBoundingClientRect().width || 0,
+      cards: [...document.querySelectorAll("#cards .opt-card:has(.preview-stage.expanded)")].map(card => {
+        const body = card.querySelector(":scope > .body"), title = body.querySelector(":scope > h3");
+        const preview = body.querySelector(":scope > .preview-stage"), folio = card.querySelector(".oid");
+        const ts = getComputedStyle(title), cs = getComputedStyle(card), fs = getComputedStyle(folio);
+        const children = [...body.children];
+        return {
+          id:card.dataset.id, card:rect(card), body:rect(body), title:rect(title), preview:rect(preview),
+          notes:[...body.querySelectorAll(":scope > .spec-foot, :scope > .small, :scope > .tradeoff")].map(rect),
+          children:children.map(rect), overflowMetrics:[body, ...children].map(el => {
+            const style = getComputedStyle(el);
+            return { name:label(el), overflowX:style.overflowX, overflowY:style.overflowY, scrollWidth:el.scrollWidth, clientWidth:el.clientWidth, scrollHeight:el.scrollHeight, clientHeight:el.clientHeight };
+          }),
+          ariaExpanded:card.querySelector(".expand-btn").getAttribute("aria-expanded"),
+          folioText:folio.textContent, folioFamily:fs.fontFamily, folioSize:parseFloat(fs.fontSize), titleSize:parseFloat(ts.fontSize),
+          titleText:title.textContent, titleVisible:ts.visibility !== "hidden" && Number(ts.opacity) !== 0,
+          titleColor:ts.color, background:cs.backgroundColor, borderColor:cs.borderTopColor, borderWidth:parseFloat(cs.borderTopWidth), borderStyle:cs.borderTopStyle,
+        };
+      }),
+    };
+  });
+  for (const card of s.cards) card.clipped = card.overflowMetrics.filter(hasClippedOverflow).map(m => m.name);
+  return s;
+}
+
+export async function runExpandedLayoutChecks({ page, width, check, forcedColors = false }) {
+  await page.waitForFunction(() => document.fonts.status === "loaded", null, { timeout });
+  if (forcedColors) check(`expanded forced-colors emulation active (w=${width})`, await page.evaluate(() => matchMedia("(forced-colors: active)").matches));
+  const mode = forcedColors ? "forced-colors" : await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme);
+  const inspect = async (family, wide, count) => {
+    const s = await snapshot(page), results = assessExpandedLayout(s, { width, wide, count });
+    for (const name of ["expanded", "placement", "width", "containment", "separateCards", "rootFits", "folios", "titleContrast"]) {
+      check(`expanded ${family} ${name} (${mode}, w=${width})`, results[name], s);
+    }
+    if (forcedColors) check(`expanded ${family} forced-colors title and rule (${mode}, w=${width})`, results.forcedColors, s);
+  };
+
+  await clickReady(page.locator('[data-fam="F02"]'));
+  const cards = page.locator("#cards .opt-card");
+  const firstId = await cards.nth(0).getAttribute("data-id");
+  await clickReady(cards.nth(0).locator(".expand-btn"));
+  await clickReady(cards.nth(1).locator(".expand-btn"));
+  await inspect("F02-multiple", false, 2);
+
+  const radio = cards.nth(0).locator('input[type="radio"]');
+  await radio.scrollIntoViewIfNeeded({ timeout });
+  await radio.focus({ timeout });
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(id => document.activeElement?.dataset.expand === id, firstId, { timeout });
+  const focus = await page.evaluate(() => {
+    const el = document.activeElement, s = getComputedStyle(el), r = el.getBoundingClientRect();
+    return { text:el.textContent.trim(), visible:el.matches(":focus-visible"), outline:s.outlineStyle, outlineWidth:parseFloat(s.outlineWidth), outlineColor:s.outlineColor, background:getComputedStyle(el.closest(".opt-card")).backgroundColor, shown:s.visibility !== "hidden" && Number(s.opacity) !== 0, inside:r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
+  });
+  focus.contrast = forcedColors ? contrastOverOpaqueSurface(focus.outlineColor, focus.background) : contrast(focus.outlineColor, focus.background);
+  check(`expanded keyboard focus visible (${mode}, w=${width})`, focus.text.length > 0 && focus.visible && focus.outline !== "none" && focus.outlineWidth >= 2 && focus.contrast >= 3 && focus.shown && focus.inside, focus);
+  await page.keyboard.press("Space");
+  const collapse = await page.evaluate(id => ({ first:document.querySelector(`[data-expand="${id}"]`).getAttribute("aria-expanded"), others:document.querySelectorAll("#cards .preview-stage.expanded").length, focused:document.activeElement?.dataset.expand === id }), firstId);
+  check(`expanded keyboard collapses only its card (${mode}, w=${width})`, collapse.first === "false" && collapse.others === 1 && collapse.focused, collapse);
+  await page.keyboard.press("Space");
+  await inspect("F02-keyboard-reexpanded", false, 2);
+
+  for (const family of ["F18", "F19"]) {
+    await clickReady(page.locator(`[data-fam="${family}"]`));
+    await clickReady(page.locator("#cards .expand-btn").first());
+    await inspect(family, true, 1);
+  }
+}

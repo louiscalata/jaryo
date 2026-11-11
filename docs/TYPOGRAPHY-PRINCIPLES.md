@@ -61,7 +61,7 @@ Libre Baskerville is an OFL transitional serif used where the booklet used Baske
 | `--fs-7` | 32px | Section titles |
 | `--fs-display` | 48px | Lab title |
 
-Body and controls stay at 14px. The 11px step is unused on screen. The card title stays IBM Plex Sans at 16px.
+Body and controls stay at 14px. The 11px step is unused on screen. The collapsed card title stays IBM Plex Sans at 16px. An expanded option uses a bold italic Sans title at 24px, or 32px above the existing 980px layout breakpoint; its large Mono folio is retained.
 
 ### Weight, leading, tracking
 | Token | Value | Use |
@@ -82,7 +82,7 @@ Body and controls stay at 14px. The 11px step is unused on screen. The card titl
 These rules apply to the shell, the docs, and every option card. They are not limited to F19.
 
 1. Family IDs and spec lines are mono, uppercase, tracked.
-2. Card titles are IBM Plex Sans bold. They are a different face and a larger size than the ID, which is the booklet’s classification contrast.
+2. Card titles are IBM Plex Sans bold; large IBM Plex Mono folios provide the classification contrast. Expanded titles add the booklet's italic display treatment without shrinking the folio.
 3. Reading copy is IBM Plex Sans regular, 14/21, left aligned.
 4. Each card and each family heading carries a spec line in the booklet’s recipe form (`14/21 · IBM Plex Sans · regular · 0 tracking`).
 5. The Docs tab shows the four roles together.
