@@ -62,9 +62,8 @@ const curated = JSON.parse(fs.readFileSync(path.join(LAB, "data/curated-85.json"
 }
 
 if (!JSDOM) {
-  console.log("dom-tests: SKIP (jsdom not installed on this host; HTML/source asserts above still PASS)");
-  console.log("test_lab_dom: PASS (static)");
-  process.exit(0);
+  console.error("dom-tests: FAIL (jsdom is not installed)");
+  process.exit(1);
 }
 
 function bootDom() {

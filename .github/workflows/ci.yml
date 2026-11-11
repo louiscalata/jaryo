@@ -14,7 +14,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install jsdom
+        run: npm install --prefix "$RUNNER_TEMP/jaryo-jsdom" --ignore-scripts --no-audit --no-fund jsdom@26.1.0
       - name: Lab checks
+        env:
+          JARYO_JSDOM_PATH: ${{ runner.temp }}/jaryo-jsdom/node_modules/jsdom
         run: |
           python3 scripts/validate_lab.py
           python3 scripts/export_tokens.py --check

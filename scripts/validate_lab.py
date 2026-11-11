@@ -122,8 +122,8 @@ if ext_path.exists():
             return sum(len(f["options"]) for f in fams if pred(f["id"]))
         expected_groups = [
             f"Monochrome set · {group_count(lambda i: re.match(r'F(0[1-9]|1[0-6])$', i))} options",
-            f"Color batch · {group_count(lambda i: i == 'F17')} options · optional",
-            f"Legacy studies · {group_count(lambda i: i == 'F18')} options",
+            f"Color batch · {group_count(lambda i: i == 'F17')} options",
+            f"Legacy studies · {group_count(lambda i: i == 'F18')} options · optional",
             f"Red interactive UI · {group_count(lambda i: i == 'F19')} options · optional",
         ]
         for label in expected_groups:

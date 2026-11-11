@@ -2,7 +2,7 @@
 
 ## Prior pass (legacy options + Red interactive UI)
 - F18.01–F18.08 Legacy studies; F19.01–F19.04 Red interactive UI
-- Original 85 byte-identical (sha256 `5726e220dfe735fde91fb9c9f9d3721ba968ce440dd81dace66f80966eea1f27`)
+- The 85 option IDs and their content are unchanged.
 - Smoke 34/34 · axe 0 violations
 - ZIP path (rebuilt this pass): see below
 
