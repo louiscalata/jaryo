@@ -60,13 +60,16 @@ The adaptor test creates private temporary fixtures; it does not rewrite the tra
 
 ## CI and browser boundary
 
-The workflow runs on push and pull_request. Its required jobs are:
+The workflow runs on push and pull_request. The first three rows describe the existing jobs. The final row is a separate CI coverage candidate and is not accepted yet:
 
 | Job | Same-repository event | Fork pull request | Coverage |
 | --- | --- | --- | --- |
 | `check` | self-hosted `mac-m5` | hosted `ubuntu-latest` | Python/Node/static/DOM checks and spec hashes |
 | `browsers` | self-hosted `pc-win` | hosted `ubuntu-24.04` | Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 |
 | `forced-colors` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium forced-colors emulation |
+| `chromium` (candidate) | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Existing Chromium smoke plus default-view axe checks in light/dark at 1280 and 375 |
+
+The candidate also groups PR runs by PR number and gives non-PR runs unique run-ID groups. This scheduling change and the fourth job remain proposed until that CI candidate is accepted. Recheck the final workflow and remove the pending label before publishing this guide after acceptance.
 
 Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks to the static and jsdom commands above. Use the workflow's platform-specific dependency and browser commands on its PC or hosted Linux runner.
 
