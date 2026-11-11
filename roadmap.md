@@ -5,7 +5,7 @@ Canonical roadmap for this repository.
 ## CI availability
 
 - [x] Route Chromium forced-colors emulation to GitHub-hosted Ubuntu 24.04.
-- [ ] Verify the required CI jobs on this revision before merge.
+- [x] Verify the three-job native CI matrix on the accepted maintenance revision (#45; receipt below).
 
 Static checks retain their existing Mac runner mapping. Firefox and WebKit
 retain their existing PC runner mapping. Fork pull requests use hosted runners.
@@ -14,21 +14,33 @@ retain their existing PC runner mapping. Fork pull requests use hosted runners.
 
 - [x] Adopt foreign localStorage writes without writing back; preserve visible choices for unreadable payloads and ignore sessionStorage changes.
 - [x] Drop cleared saved choices before a later local save, including storage-wide clear events.
-- [ ] Verify the required CI jobs on the integrated storage revision before merge.
+- [x] Verify the integrated storage revision in #29 and the cumulative maintenance revision in #45 (receipts below).
 
 ## Maintenance integration
 
 - [x] Integrate guarded click readiness and foreign-storage reconciliation from #35 and #29.
 - [x] Reconcile catalog identity and status documentation (#23, #27), apostrophe escaping (#30), shared pitch image references (#31), and curated/optional labels (#26).
 - [x] Require jsdom for DOM tests and install its pinned test dependency in CI (#25).
-- [ ] Verify the required CI jobs on the cumulative maintenance revision before merge.
-- [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout, then retain one current agent guide (#32, #39).
+- [x] Verify all six push/PR native checks on the cumulative maintenance revision (#45; receipt below).
+- [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout.
+- [ ] Review and retain one current agent guide from #32 and #39, then verify that guide revision's current-head CI before merge. The prepared guide remains a separate candidate.
 
 ## Additional CI coverage
 
 - [x] Add pull-request concurrency that cancels superseded PR runs and gives separate push runs unique groups (#33).
 - [x] Add hosted Chromium smoke and axe coverage with isolated dependencies and a Mac launch refusal (#41).
-- [ ] Verify the current native CI matrix, including the added Chromium job, before merge.
+- [x] Verify all eight push/PR native checks on the added-coverage revision, including the hosted Chromium job (#46; receipt below).
+
+## Accepted source and CI receipts
+
+These receipts apply to the tested heads listed here. An original proposal's
+ancestry or an older passing run does not validate a later revision.
+
+| PR | Tested head | Accepted merge | Native check result |
+| --- | --- | --- | --- |
+| [#29](https://github.com/louiscalata/jaryo/pull/29) | `c3d6453eb88f526eb3593809452c5ddf9d06dcc5` | `e5df3f238ec601b9ebf512605cb801ba9e07bfa3` | 6/6 SUCCESS: check, browsers and forced-colors on push and PR |
+| [#45](https://github.com/louiscalata/jaryo/pull/45) | `cef74771912a20d9f4d12e80e0dc02026c405565` | `5a0ed3f22c2875b8e882368c96240165c5fe7860` | 6/6 SUCCESS: check, browsers and forced-colors on push and PR |
+| [#46](https://github.com/louiscalata/jaryo/pull/46) | `a7fc8fbcdf232424a7ea1235c4478d060a11e986` | `ccc96b96eb345b7cb36930940945f7ca0266e265` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push and PR |
 
 ## Native checks
 
