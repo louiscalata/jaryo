@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     # Same-repo events use Louis's Mac runner (Python and Node checks only); fork pull requests stay
@@ -115,3 +119,21 @@ jobs:
       - name: Forced-colors emulation smoke
         if: runner.os != 'Windows'
         run: node scripts/browser/forced-colors-smoke.mjs "$PWD" /tmp/forced-colors-emulation.json
+
+  chromium:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright Chromium and axe-core
+        run: |
+          tmp="$RUNNER_TEMP/jaryo-pw"
+          npm install --prefix "$tmp" --ignore-scripts --no-audit --no-fund playwright@1.49.1 axe-core@4.10.3
+          ln -sfn "$tmp/node_modules" node_modules
+          "$tmp/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Chromium smoke and axe
+        run: |
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" "" chromium
+          node scripts/browser/axe-ci.mjs "$PWD" "$RUNNER_TEMP/axe-ci.json"
