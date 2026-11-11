@@ -338,3 +338,6 @@ await new Promise((r) => setTimeout(r, 50));
 }
 
 console.log("test_lab_dom: PASS");
+
+// Keep preview-state regressions in the existing Node DOM check.
+await import("./test_preview_state.mjs");

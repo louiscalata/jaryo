@@ -630,6 +630,7 @@
         </div>
       </article>`;
     }).join("");
+    if (window.JARYO_STAGE_UI) window.JARYO_STAGE_UI.restore(cards);
     updateRoving();
   }
 
