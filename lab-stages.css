@@ -143,6 +143,7 @@
 /* Hidden labels need a containing block even when reduced motion removes the
    panel animation; their static positions must not extend the root scroll area. */
 #panel-compare { position: relative; }
+#panel-compare > .sr-only { top: 0; left: 0; }
 
 /* Selected booklet/expanded-sheet treatment from #36/#37. Normal cards keep
    the current type scale, horizontal flow, folios and narrow family scroller. */

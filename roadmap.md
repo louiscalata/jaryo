@@ -48,11 +48,24 @@ not validate a later revision.
 
 ## Browser identity correction
 
-- [x] Preserve the historical green check counts while qualifying their engine coverage: audited #45 job `130317925273` and #46 job `130328444114` each logged `TOTAL 45 / 45 chromium` twice, despite Firefox/WebKit step labels.
+- [x] Preserve historical green check counts while qualifying engine coverage: all six audited accepted PC jobs listed below logged `TOTAL 45 / 45 chromium` twice, despite Firefox/WebKit step labels.
 - [x] Diagnose #47 head `d0d2bce014265a1929a9032fd654c6e22b809cbf`: PC browser job `130342121894` also ran Chromium in its first command; its failure prevented the second command from running. This is not Firefox/WebKit proof.
 - [x] Prepare validated explicit browser flags, browser-free CLI regression tests and requested/actual engine name plus version receipts. Preserve existing job names, runners, dependencies and assertions.
 - [ ] Verify fresh Firefox and WebKit native runs with matching requested/actual identities and versions on the corrected current head.
 - [ ] Verify the complete current-head CI matrix after the native failure corrections; historical job labels and synthetic checks do not satisfy this gate.
+
+| Accepted PR | Audited PC browser job | Native engine result |
+| --- | --- | --- |
+| #29 | `130310065781` | 45/45 Chromium, twice |
+| #35 | `130309511897` | 45/45 Chromium, twice |
+| #44 | `130305049485` | 45/45 Chromium, twice |
+| #45 | `130317925273` | 45/45 Chromium, twice |
+| #46 | `130328444114` | 45/45 Chromium, twice |
+| #32 | `130333836919` | 45/45 Chromium, twice |
+
+These native receipts directly establish Chromium execution. The command/parser
+source and a browser-free argv probe are consistent with legacy empty-argument
+loss; historical child argv and exact PowerShell versions were not captured.
 
 ## Visual reconciliation candidate
 
