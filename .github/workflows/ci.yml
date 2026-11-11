@@ -31,6 +31,7 @@ jobs:
           if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
           node scripts/test_persistence_rules.mjs
           node scripts/test_smoke_cli.mjs
+          node scripts/test_focus_coverage.mjs
           node scripts/test_lab_dom.mjs
       - name: Spec file hashes
         working-directory: spec

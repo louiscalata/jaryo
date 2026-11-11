@@ -1,7 +1,8 @@
 // Usage: node smoke.mjs <labDir> <outJson> [shotDir] --browser=chromium|firefox|webkit
 import fs from "node:fs"; import path from "node:path"; import http from "node:http";
-import { runExpandedLayoutChecks } from "./expanded-layout.mjs";
+import { runExpandedLayoutChecks, contrast } from "./expanded-layout.mjs";
 import { parseSmokeArgs, verifyBrowserIdentity } from "./smoke-cli.mjs";
+import { assessFocusCoverage, requiredLinks, readFocusedTarget } from "./focus-coverage.mjs";
 let options;
 try { options = parseSmokeArgs(process.argv.slice(2), process.env); }
 catch (error) { console.error(error.message); process.exit(1); }
@@ -170,26 +171,32 @@ for (const width of widths) {
 // 3) Focus-visible on every interactive element type, both themes; ring contrast vs page bg
 for (const scheme of ["light", "dark"]) for (const width of widths) {
   const { ctx, page } = await open({ colorScheme: scheme, width, tag: "focus-" + scheme });
-  const res = []; const seen = new Set();
-  await page.keyboard.press("Tab"); // skip link
+  const res = [];
   for (let i = 0; i < 60; i++) {
-    const r = await page.evaluate(() => {
-      const a = document.activeElement; if (!a || a === document.body) return null;
-      const tgt = a.matches("input[type=radio]") ? a.closest(".choose-label") : a;
-      const s = getComputedStyle(tgt);
-      const key = a.tagName + "." + (a.className || a.id || a.type);
-      return { key, fv: a.matches(":focus-visible"), style: s.outlineStyle, width: parseFloat(s.outlineWidth), color: s.outlineColor };
-    });
-    if (r && !seen.has(r.key)) { seen.add(r.key); res.push(r); }
     await page.keyboard.press("Tab");
+    const r = await page.evaluate(readFocusedTarget);
+    if (r) res.push(r); // Every sample participates, including repeated type keys.
   }
-  const bad = res.filter((r) => !(r.fv && r.style !== "none" && r.width >= 2));
+  const directLinks = [];
+  for (const spec of requiredLinks) {
+    const locator = page.locator(spec.selector), matchCount = await locator.count();
+    try {
+      if (matchCount !== 1) throw new Error("Expected one real link, found " + matchCount);
+      await page.keyboard.press("Tab"); // Establish keyboard modality, then test direct focus separately.
+      await locator.focus({ timeout: 5000 });
+      await page.waitForFunction(selector => document.activeElement?.matches(selector) && document.activeElement.matches(":focus-visible"), spec.selector, { timeout: 5000 });
+      directLinks.push({ ...await page.evaluate(readFocusedTarget, spec.selector), id:spec.id, matchCount });
+    } catch (error) { directLinks.push({ id:spec.id, matchCount, active:false, error:String(error) }); }
+  }
+  const coverage = assessFocusCoverage(res, directLinks);
+  const reachability = { scheme, width, tabSteps:60, links:requiredLinks.map(spec => ({ id:spec.id, reachedByTab:res.some(r => r.tag === "A" && r.href === spec.href) })) };
+  (out.focusReachability ||= []).push(reachability);
+  console.log("MEASURED natural Tab reachability", JSON.stringify(reachability));
   const bodyBg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   const ring = res.find((r) => r.key.startsWith("BUTTON"))?.color;
-  const rgb = (s) => s.match(/\d+/g).slice(0,3).map(Number).map((v)=>v/255).map((v)=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4));
-  const L = (s) => { const [r,g,b] = rgb(s); return 0.2126*r+0.7152*g+0.0722*b; };
-  const cr = ring ? (Math.max(L(ring),L(bodyBg))+0.05)/(Math.min(L(ring),L(bodyBg))+0.05) : 0;
-  check(`focus-visible ring on all tabbed element types (${scheme}, w=${width})`, bad.length === 0 && res.length >= 6, { types: res.map(r=>r.key), bad });
+  const cr = ring ? contrast(ring, bodyBg) : 0;
+  check(`focus-visible rings on observed Tab targets (${scheme}, w=${width})`, coverage.badTabbed.length === 0 && coverage.missingControls.length === 0, { types:[...new Set(res.map(r=>r.key))], controls:coverage.observedControls, missing:coverage.missingControls, bad:coverage.badTabbed });
+  check(`skip/header links focus-visible with contrast (${scheme}, w=${width})`, coverage.badLinks.length === 0, { mode:"direct focus after keyboard input", bad:coverage.badLinks, links:directLinks });
   check(`focus ring contrast >= 3:1 vs page (${scheme}, w=${width})`, cr >= 3, { ring, bodyBg, ratio: +cr.toFixed(2) });
   if (shotDir && width === 260) {
     await page.click('[data-fam="F04"]');
