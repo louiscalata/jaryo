@@ -44,7 +44,7 @@ node scripts/test_lab_dom.mjs
 
 Missing jsdom is a failure. Do not report a static-only result as a DOM pass. CI installs the pinned package under `$RUNNER_TEMP/jaryo-jsdom` with package scripts disabled and passes `JARYO_JSDOM_PATH` explicitly to Lab checks. Do not replace this with a shared fixed temporary directory or a global install.
 
-To inspect the static lab, `python3 -m http.server 8765` serves the repository. Opening `index.html` directly also supports embedded catalog data when fetch is unavailable. Do not start a server unless it is needed for the assigned task.
+To inspect the static lab, `python3 -m http.server 8765 --bind 127.0.0.1` serves the repository. Opening `index.html` directly also supports embedded catalog data when fetch is unavailable. Do not start a server unless it is needed for the assigned task.
 
 From `spec/`, these checks are also available:
 
