@@ -1160,5 +1160,88 @@
     setTab("compare");
   }
 
+  // The storage event fires in other tabs, not in the tab that wrote.
+  // Read writerId so a stale tab adopts that write instead of clobbering it
+  // on the next saveChoices(). This handler must not write back.
+  function foreignStorageDecision(selfId, raw) {
+    if (raw == null || raw === "") return "adopt-clear";
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (_) {
+      return "warn";
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return "warn";
+    if (typeof parsed.writerId === "string" && parsed.writerId === selfId) return "ignore";
+    const envelope = parsed.choices != null || parsed.schemaVersion != null || parsed.writerId != null;
+    if (envelope) {
+      if (!parsed.choices || typeof parsed.choices !== "object" || Array.isArray(parsed.choices)) return "warn";
+      return "adopt";
+    }
+    return "adopt";
+  }
+
+  function mapsEqual(a, b) {
+    const aKeys = Object.keys(a || {}).sort();
+    const bKeys = Object.keys(b || {}).sort();
+    if (aKeys.length !== bKeys.length) return false;
+    for (let i = 0; i < aKeys.length; i++) {
+      if (aKeys[i] !== bKeys[i]) return false;
+      if (a[aKeys[i]] !== b[bKeys[i]]) return false;
+    }
+    return true;
+  }
+
+  function paintStorageBanner() {
+    const el = $("#storage-banner");
+    if (!el) return;
+    el.textContent = storageMsg + " A saved choice is a preference, not a product change.";
+    const bad = !storageOk || persistenceStatus === "malformed" || persistenceStatus === "unavailable";
+    el.className = bad ? "banner err" : "banner warn";
+    el.hidden = false;
+  }
+
+  function applyForeignStorage(raw) {
+    const action = foreignStorageDecision(writerId, raw);
+    if (action === "ignore") return;
+    if (action === "warn") {
+      storageMsg = "Another tab wrote selections this tab could not read. They were not applied. A save here would overwrite that tab.";
+      paintStorageBanner();
+      if ($("#toast")) toast(storageMsg);
+      return;
+    }
+    const prior = Object.assign({}, choices);
+    if (action === "adopt-clear") {
+      choices = {};
+      persistenceRejects = [];
+      persistenceStatus = "missing";
+      envelopeCatalogVersion = null;
+      recoveryRaw = null;
+      storageMsg = "Another tab cleared saved selections. This tab dropped them so a later save does not write them back.";
+    } else {
+      const parsed = JSON.parse(raw);
+      const envelope = parsed.choices && typeof parsed.choices === "object" && !Array.isArray(parsed.choices);
+      choices = envelope ? parsed.choices : parsed;
+      envelopeCatalogVersion = envelope && typeof parsed.catalogVersion === "string" ? parsed.catalogVersion : null;
+      persistenceRejects = [];
+      persistenceStatus = "pending-catalog";
+      recoveryRaw = null;
+      if (DATA) normalizeAfterCatalog();
+      storageMsg = "Another tab saved selections. This tab loaded them so a later save does not overwrite that tab.";
+      if (persistenceStatus === "catalog-mismatch") {
+        storageMsg += " Catalog version differs from this lab.";
+      }
+    }
+    paintStorageBanner();
+    if (DATA && $("#cards")) refreshChoiceSurfaces();
+    if (!mapsEqual(prior, choices) && $("#toast")) toast(storageMsg);
+  }
+
+  window.addEventListener("storage", (e) => {
+    if (!e || (e.key !== STORAGE_KEY && e.key !== null)) return;
+    if (e.storageArea && e.storageArea !== localStorage) return;
+    applyForeignStorage(e.key === null ? null : e.newValue);
+  });
+
   document.addEventListener("DOMContentLoaded", boot);
 })();

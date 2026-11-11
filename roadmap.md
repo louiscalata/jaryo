@@ -10,6 +10,12 @@ Canonical roadmap for this repository.
 Static checks retain their existing Mac runner mapping. Firefox and WebKit
 retain their existing PC runner mapping. Fork pull requests use hosted runners.
 
+## Saved choices across tabs
+
+- [x] Adopt foreign localStorage writes without writing back; preserve visible choices for unreadable payloads and ignore sessionStorage changes.
+- [x] Drop cleared saved choices before a later local save, including storage-wide clear events.
+- [ ] Verify the required CI jobs on the integrated storage revision before merge.
+
 ## Native checks
 
 Real Safari on Apple hardware, Windows forced-colors on hardware, real screen
