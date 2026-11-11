@@ -60,16 +60,16 @@ The adaptor test creates private temporary fixtures; it does not rewrite the tra
 
 ## CI and browser boundary
 
-The workflow runs on push and pull_request. The first three rows describe the existing jobs. The final row is a separate CI coverage candidate and is not accepted yet:
+The workflow runs on push and pull_request with four jobs:
 
 | Job | Same-repository event | Fork pull request | Coverage |
 | --- | --- | --- | --- |
 | `check` | self-hosted `mac-m5` | hosted `ubuntu-latest` | Python/Node/static/DOM checks and spec hashes |
 | `browsers` | self-hosted `pc-win` | hosted `ubuntu-24.04` | Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 |
 | `forced-colors` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium forced-colors emulation |
-| `chromium` (candidate) | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Existing Chromium smoke plus default-view axe checks in light/dark at 1280 and 375 |
+| `chromium` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium smoke at 1280, 375 and 260 plus default-view axe checks in light/dark at 1280 and 375 |
 
-The candidate also groups PR runs by PR number and gives non-PR runs unique run-ID groups. This scheduling change and the fourth job remain proposed until that CI candidate is accepted. Recheck the final workflow and remove the pending label before publishing this guide after acceptance.
+Concurrency groups PR runs by PR number and cancels their superseded runs. Push runs use unique run-ID groups and are not cancelled by this rule. Keep the event name in the group so PR and push runs do not share a scheduling group. Accepted source revisions and their native CI receipts are recorded in `roadmap.md`; a later guide or source revision still needs its own current-head checks.
 
 Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks to the static and jsdom commands above. Use the workflow's platform-specific dependency and browser commands on its PC or hosted Linux runner.
 
@@ -79,6 +79,8 @@ On a prepared Linux runner, the browser scripts accept these commands:
 SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-firefox.json" "" firefox
 SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-webkit.json" "" webkit
 node scripts/browser/forced-colors-smoke.mjs "$PWD" "$RUNNER_TEMP/forced-colors-emulation.json"
+SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" "" chromium
+node scripts/browser/axe-ci.mjs "$PWD" "$RUNNER_TEMP/axe-ci.json"
 ```
 
 Keep the 97-option and 19-family assertions and ordinary click hit testing. Do not use force clicks, sleep workarounds or weaker assertions to make CI green. Current-head CI must pass before merge; historical passing heads do not validate a new revision.
