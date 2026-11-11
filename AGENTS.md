@@ -92,6 +92,7 @@ Escape catalog and storage text with `esc()` before inserting it into HTML. Choi
 
 - Typography reference: https://louiscalata.myportfolio.com/typography-1
 - F19 is Red interactive UI, derived from that booklet; booklet red is `#C21A27`.
+- Preserve the contrast-checked pairs in `data/red-interactive-ui.json`; recheck and record contrast when changing a pair.
 - Card titles and reading text use IBM Plex Sans. Machine IDs and spec labels use IBM Plex Mono. The comparison page includes the Libre Baskerville study.
 - F18 references are Mendacity, Plague, Brawler and Contrails 2.0.
 - Preserve current card flow, the named narrow family scroller, visible large IDs and the comparison specimen when reconciling later typography work. Do not load a broad override stylesheet to resolve a small change.
