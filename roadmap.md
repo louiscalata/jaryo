@@ -26,7 +26,7 @@ retain their existing PC runner mapping. Fork pull requests use hosted runners.
 
 ## Additional CI coverage
 
-- [x] Add pull-request concurrency that cancels superseded PR runs while preserving push runs (#33).
+- [x] Add pull-request concurrency that cancels superseded PR runs and gives separate push runs unique groups (#33).
 - [x] Add hosted Chromium smoke and axe coverage with isolated dependencies and a Mac launch refusal (#41).
 - [ ] Verify the current native CI matrix, including the added Chromium job, before merge.
 
