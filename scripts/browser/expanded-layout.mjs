@@ -3,10 +3,19 @@ const timeout = 5000;
 const near = (a, b) => Math.abs(a - b) <= 1;
 const contained = (inner, outer) => inner.left >= outer.left - 1 && inner.right <= outer.right + 1 && inner.top >= outer.top - 1 && inner.bottom <= outer.bottom + 1;
 const overlaps = (a, b) => Math.min(a.right, b.right) > Math.max(a.left, b.left) + 1 && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top) + 1;
-function contrast(a, b) {
+export function contrast(a, b) {
   const luminance = color => {
-    const rgb = color.match(/[\d.]+/g)?.map(Number);
-    if (!rgb || rgb.length < 3 || (rgb.length === 4 && rgb[3] !== 1)) return NaN;
+    if (typeof color !== "string") return NaN;
+    // Accept only the legacy comma-separated RGB forms emitted by CSSOM here.
+    // Unknown color spaces and partial numeric matches must fail the assertion.
+    const call = /^(rgb|rgba)\(([^()]*)\)$/i.exec(color);
+    if (!call || call[0] !== color) return NaN;
+    const tokens = call[2].split(",").map(token => token.trim());
+    const count = call[1].toLowerCase() === "rgba" ? 4 : 3;
+    const number = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+    if (tokens.length !== count || !tokens.every(token => number.test(token))) return NaN;
+    const rgb = tokens.map(Number);
+    if (!rgb.every(Number.isFinite) || rgb.slice(0, 3).some(n => n < 0 || n > 255) || (count === 4 && rgb[3] !== 1)) return NaN;
     const linear = rgb.slice(0, 3).map(n => n / 255).map(n => n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4);
     return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
   };
