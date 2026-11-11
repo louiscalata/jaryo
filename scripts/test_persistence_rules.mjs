@@ -114,6 +114,22 @@ function importMerge(prior, incomingMap, incomingCatalog) {
   assert.doesNotMatch(html, /<label class="btn" for="import-file">/);
   assert.match(js, /refreshChoiceSurfaces/);
   assert.match(js, /schemaVersion:\s*1/);
+  assert.ok(js.includes(".replace(/'/g, \"&#39;\")"));
+}
+
+// esc() is used in attributes and text. A single quote must not survive raw.
+{
+  const start = js.indexOf("function esc(s) {");
+  assert.ok(start >= 0);
+  const end = js.indexOf("\n  }", start);
+  assert.ok(end > start);
+  const esc = new Function(`${js.slice(start, end + 4)}\nreturn esc;`)();
+  assert.equal(esc(null), "");
+  assert.equal(esc(undefined), "");
+  assert.equal(esc("a'b"), "a&#39;b");
+  assert.equal(esc("a&b<c>d\"e'f"), "a&amp;b&lt;c&gt;d&quot;e&#39;f");
+  assert.equal(esc("it's"), "it&#39;s");
+  console.log("esc-quotes: PASS");
 }
 
 // empty import must not wipe
