@@ -30,6 +30,7 @@ jobs:
           node --check lab.js
           if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
           node scripts/test_persistence_rules.mjs
+          node scripts/test_smoke_cli.mjs
           node scripts/test_lab_dom.mjs
       - name: Spec file hashes
         working-directory: spec
@@ -79,17 +80,17 @@ jobs:
       - name: Smoke on Firefox and WebKit
         if: runner.os != 'Windows'
         run: |
-          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json "" firefox
-          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json "" webkit
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json --browser=firefox
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json --browser=webkit
       - name: Smoke on Firefox and WebKit
         if: runner.os == 'Windows'
         shell: powershell
         run: |
           $env:SMOKE_WIDTHS = '1280,375,260'
           $out = $env:RUNNER_TEMP
-          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-firefox.json') '' firefox
+          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-firefox.json') --browser=firefox
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-webkit.json') '' webkit
+          node scripts/browser/smoke.mjs $pwd.Path (Join-Path $out 'smoke-webkit.json') --browser=webkit
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   forced-colors:
@@ -135,5 +136,5 @@ jobs:
           "$tmp/node_modules/.bin/playwright" install --with-deps chromium
       - name: Chromium smoke and axe
         run: |
-          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" "" chromium
+          SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" --browser=chromium
           node scripts/browser/axe-ci.mjs "$PWD" "$RUNNER_TEMP/axe-ci.json"

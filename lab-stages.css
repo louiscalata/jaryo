@@ -140,6 +140,10 @@
 .glyph.round { border-radius: 50%; }
 .glyph.solid { background: currentColor; }
 
+/* Hidden labels need a containing block even when reduced motion removes the
+   panel animation; their static positions must not extend the root scroll area. */
+#panel-compare { position: relative; }
+
 /* Selected booklet/expanded-sheet treatment from #36/#37. Normal cards keep
    the current type scale, horizontal flow, folios and narrow family scroller. */
 .opt-card:has(.preview-stage.expanded) { border-top: 4px solid var(--red); }

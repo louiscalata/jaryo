@@ -38,6 +38,7 @@ python3 scripts/check_assets.py
 node --check lab.js
 node --check lab-stages.js
 node scripts/test_persistence_rules.mjs
+node scripts/test_smoke_cli.mjs
 node scripts/test_lab_dom.mjs
 ( cd spec && shasum -a 256 -c HASHES.txt )
 ```
@@ -60,7 +61,7 @@ The adaptor test creates private temporary fixtures; it does not rewrite the tra
 
 ## CI and browser boundary
 
-The workflow runs on push and pull_request with four jobs:
+The workflow runs on push and pull_request with four jobs. This table describes configured coverage; engine identity must also be verified in native receipts:
 
 | Job | Same-repository event | Fork pull request | Coverage |
 | --- | --- | --- | --- |
@@ -69,6 +70,8 @@ The workflow runs on push and pull_request with four jobs:
 | `forced-colors` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium forced-colors emulation |
 | `chromium` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium smoke at 1280, 375 and 260 plus default-view axe checks in light/dark at 1280 and 375 |
 
+Audited historical `browsers` jobs for #45 and #46 actually ran Chromium twice because legacy Windows PowerShell dropped the empty positional argument. Their successful job counts remain facts, but those receipts do not prove Firefox or WebKit. The corrected CLI uses `--browser=firefox`, `--browser=webkit` or `--browser=chromium`, prints requested/actual engine and version, and fails an identity mismatch. Fresh Firefox/WebKit proof remains pending in `roadmap.md`.
+
 Concurrency groups PR runs by PR number and cancels their superseded runs. Push runs use unique run-ID groups and are not cancelled by this rule. Keep the event name in the group so PR and push runs do not share a scheduling group. Accepted source revisions and their native CI receipts are recorded in `roadmap.md`; a later guide or source revision still needs its own current-head checks.
 
 Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks to the static and jsdom commands above. Use the workflow's platform-specific dependency and browser commands on its PC or hosted Linux runner.
@@ -76,12 +79,14 @@ Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks 
 On a prepared Linux runner, the browser scripts accept these commands:
 
 ```bash
-SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-firefox.json" "" firefox
-SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-webkit.json" "" webkit
+SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-firefox.json" --browser=firefox
+SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-webkit.json" --browser=webkit
 node scripts/browser/forced-colors-smoke.mjs "$PWD" "$RUNNER_TEMP/forced-colors-emulation.json"
-SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" "" chromium
+SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" --browser=chromium
 node scripts/browser/axe-ci.mjs "$PWD" "$RUNNER_TEMP/axe-ci.json"
 ```
+
+The optional screenshot directory precedes the explicit browser flag. Legacy four-positional-argument calls remain supported, but CI must not rely on an empty placeholder; an ambiguous shifted browser argument is rejected. `test_smoke_cli.mjs` checks parsing and identity failure paths without importing Playwright.
 
 Keep the 97-option and 19-family assertions and ordinary click hit testing. Do not use force clicks, sleep workarounds or weaker assertions to make CI green. Current-head CI must pass before merge; historical passing heads do not validate a new revision.
 
@@ -95,6 +100,7 @@ Escape catalog and storage text with `esc()` before inserting it into HTML. Choi
 
 ## Design
 
+- Use US English in lab copy.
 - Typography reference: https://louiscalata.myportfolio.com/typography-1
 - F19 is Red interactive UI, derived from that booklet; booklet red is `#C21A27`.
 - Preserve the contrast-checked pairs in `data/red-interactive-ui.json`; recheck and record contrast when changing a pair.

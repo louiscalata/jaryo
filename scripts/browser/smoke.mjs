@@ -1,14 +1,17 @@
-// Usage: node smoke.mjs <labDir> <outJson> [shotDir]
-import { chromium, firefox, webkit } from "playwright";
+// Usage: node smoke.mjs <labDir> <outJson> [shotDir] --browser=chromium|firefox|webkit
 import fs from "node:fs"; import path from "node:path"; import http from "node:http";
 import { runExpandedLayoutChecks } from "./expanded-layout.mjs";
-const [labDir, outJson, shotDir, browserName] = process.argv.slice(2);
-const engineName = browserName || process.env.SMOKE_BROWSER || "chromium";
-const engines = { chromium, firefox, webkit };
-if (!engines[engineName]) {
-  console.error("unknown browser", engineName);
+import { parseSmokeArgs, verifyBrowserIdentity } from "./smoke-cli.mjs";
+let options;
+try { options = parseSmokeArgs(process.argv.slice(2), process.env); }
+catch (error) { console.error(error.message); process.exit(1); }
+if (process.platform === "darwin") {
+  console.error("Browser smoke runs on the PC or hosted Linux, not on the Mac.");
   process.exit(1);
 }
+const { labDir, outJson, shotDir, engineName } = options;
+const { chromium, firefox, webkit } = await import("playwright");
+const engines = { chromium, firefox, webkit };
 const widths = (process.env.SMOKE_WIDTHS || "1280,260").split(",").map((n) => Number(n.trim())).filter((n) => n > 0);
 const types = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png" };
 const server = http.createServer((req, res) => {
@@ -32,6 +35,15 @@ const launchOpts = engineName === "chromium"
   ? { args: ["--use-mock-keychain", "--password-store=basic"] }
   : {};
 const browser = await engines[engineName].launch(launchOpts);
+try {
+  const identity = verifyBrowserIdentity(browser, engineName, value => console.log("BROWSER", JSON.stringify(value)));
+  check("requested browser matches launched engine and reports version", true, identity);
+} catch (error) {
+  check("requested browser matches launched engine and reports version", false, String(error));
+  fs.writeFileSync(outJson, JSON.stringify(out, null, 2));
+  try { await browser.close(); } finally { server.close(); }
+  throw error;
+}
 async function open(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.colorScheme || "light", reducedMotion: opts.reducedMotion || "no-preference" });
   try {

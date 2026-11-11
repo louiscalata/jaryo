@@ -3,24 +3,42 @@ const timeout = 5000;
 const near = (a, b) => Math.abs(a - b) <= 1;
 const contained = (inner, outer) => inner.left >= outer.left - 1 && inner.right <= outer.right + 1 && inner.top >= outer.top - 1 && inner.bottom <= outer.bottom + 1;
 const overlaps = (a, b) => Math.min(a.right, b.right) > Math.max(a.left, b.left) + 1 && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top) + 1;
-export function contrast(a, b) {
-  const luminance = color => {
-    if (typeof color !== "string") return NaN;
-    // Accept only the legacy comma-separated RGB forms emitted by CSSOM here.
-    // Unknown color spaces and partial numeric matches must fail the assertion.
-    const call = /^(rgb|rgba)\(([^()]*)\)$/i.exec(color);
-    if (!call || call[0] !== color) return NaN;
-    const tokens = call[2].split(",").map(token => token.trim());
-    const count = call[1].toLowerCase() === "rgba" ? 4 : 3;
-    const number = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
-    if (tokens.length !== count || !tokens.every(token => number.test(token))) return NaN;
-    const rgb = tokens.map(Number);
-    if (!rgb.every(Number.isFinite) || rgb.slice(0, 3).some(n => n < 0 || n > 255) || (count === 4 && rgb[3] !== 1)) return NaN;
-    const linear = rgb.slice(0, 3).map(n => n / 255).map(n => n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4);
-    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
-  };
-  const x = luminance(a), y = luminance(b);
+function parseRgb(color, translucent = false) {
+  if (typeof color !== "string") return null;
+  // Only complete legacy CSSOM RGB calls are supported. Color spaces and
+  // partial numeric matches fail closed in both contrast paths.
+  const call = /^(rgb|rgba)\(([^()]*)\)$/i.exec(color);
+  if (!call || call[0] !== color) return null;
+  const tokens = call[2].split(",").map(token => token.trim());
+  const count = call[1].toLowerCase() === "rgba" ? 4 : 3;
+  const number = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+  if (tokens.length !== count || !tokens.every(token => number.test(token))) return null;
+  const rgb = tokens.map(Number);
+  if (!rgb.every(Number.isFinite) || rgb.slice(0, 3).some(n => n < 0 || n > 255)) return null;
+  const alpha = count === 4 ? rgb[3] : 1;
+  if (translucent ? alpha < 0 || alpha > 1 : alpha !== 1) return null;
+  return [...rgb.slice(0, 3), alpha];
+}
+function luminance(rgb) {
+  if (!rgb) return NaN;
+  const linear = rgb.slice(0, 3).map(n => n / 255).map(n => n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4);
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+}
+function ratio(x, y) {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+export function contrast(a, b) {
+  return ratio(luminance(parseRgb(a)), luminance(parseRgb(b)));
+}
+export function contrastOverOpaqueSurface(foreground, background) {
+  const fg = parseRgb(foreground, true), bg = parseRgb(background);
+  if (!fg || !bg) return NaN;
+  const composite = fg.slice(0, 3).map((n, i) => n * fg[3] + bg[i] * (1 - fg[3]));
+  return ratio(luminance(composite), luminance(bg));
+}
+export function hasClippedOverflow(m) {
+  return (m.overflowX !== "visible" && m.scrollWidth > m.clientWidth + 1)
+    || (m.overflowY !== "visible" && m.scrollHeight > m.clientHeight + 1);
 }
 
 export function assessExpandedLayout(s, { width, wide, count }) {
@@ -53,11 +71,24 @@ async function clickReady(locator) {
 async function snapshot(page) {
   // Wait for the preview's finite height transition, rather than sleeping.
   await page.waitForFunction(() => [...document.querySelectorAll(".preview-stage.expanded")].every(el => el.getAnimations().every(a => a.playState !== "running")), null, { timeout });
-  return page.evaluate(() => {
+  const s = await page.evaluate(() => {
     const rect = el => { const r = el.getBoundingClientRect(); return { left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width }; };
     const collapsed = document.querySelector("#cards .opt-card:not(:has(.preview-stage.expanded))");
+    const root = document.documentElement, panel = document.querySelector("#panel-compare"), live = document.querySelector("#choice-live");
+    const label = el => el ? el.id || el.className || el.tagName : null;
+    const rootOverflow = root.scrollWidth - root.clientWidth;
     return {
-      rootOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      rootOverflow,
+      overflowDiagnostics: {
+        reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+        panelPosition:getComputedStyle(panel).position, panelTransform:getComputedStyle(panel).transform,
+        live: { rect:rect(live), offsetParent:label(live.offsetParent) },
+        rightEdgeOffenders:rootOverflow > 1 ? [...document.querySelectorAll("body *")].map(el => {
+          const r = rect(el), style = getComputedStyle(el);
+          return { node:label(el), rect:r, position:style.position, overflowX:style.overflowX, offsetParent:label(el.offsetParent) };
+        }).filter(n => n.rect.right > root.clientWidth + 1 && n.rect.width > 0)
+          .sort((a, b) => Number(b.position === "absolute") - Number(a.position === "absolute") || b.rect.right - a.rect.right).slice(0, 8) : [],
+      },
       collapsedWidth: collapsed?.getBoundingClientRect().width || 0,
       cards: [...document.querySelectorAll("#cards .opt-card:has(.preview-stage.expanded)")].map(card => {
         const body = card.querySelector(":scope > .body"), title = body.querySelector(":scope > h3");
@@ -67,7 +98,10 @@ async function snapshot(page) {
         return {
           id:card.dataset.id, card:rect(card), body:rect(body), title:rect(title), preview:rect(preview),
           notes:[...body.querySelectorAll(":scope > .spec-foot, :scope > .small, :scope > .tradeoff")].map(rect),
-          children:children.map(rect), clipped:[body, ...children].filter(el => el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1).map(el => el.className || el.tagName),
+          children:children.map(rect), overflowMetrics:[body, ...children].map(el => {
+            const style = getComputedStyle(el);
+            return { name:label(el), overflowX:style.overflowX, overflowY:style.overflowY, scrollWidth:el.scrollWidth, clientWidth:el.clientWidth, scrollHeight:el.scrollHeight, clientHeight:el.clientHeight };
+          }),
           ariaExpanded:card.querySelector(".expand-btn").getAttribute("aria-expanded"),
           folioText:folio.textContent, folioFamily:fs.fontFamily, folioSize:parseFloat(fs.fontSize), titleSize:parseFloat(ts.fontSize),
           titleText:title.textContent, titleVisible:ts.visibility !== "hidden" && Number(ts.opacity) !== 0,
@@ -76,6 +110,8 @@ async function snapshot(page) {
       }),
     };
   });
+  for (const card of s.cards) card.clipped = card.overflowMetrics.filter(hasClippedOverflow).map(m => m.name);
+  return s;
 }
 
 export async function runExpandedLayoutChecks({ page, width, check, forcedColors = false }) {
@@ -106,7 +142,8 @@ export async function runExpandedLayoutChecks({ page, width, check, forcedColors
     const el = document.activeElement, s = getComputedStyle(el), r = el.getBoundingClientRect();
     return { text:el.textContent.trim(), visible:el.matches(":focus-visible"), outline:s.outlineStyle, outlineWidth:parseFloat(s.outlineWidth), outlineColor:s.outlineColor, background:getComputedStyle(el.closest(".opt-card")).backgroundColor, shown:s.visibility !== "hidden" && Number(s.opacity) !== 0, inside:r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
   });
-  check(`expanded keyboard focus visible (${mode}, w=${width})`, focus.text.length > 0 && focus.visible && focus.outline !== "none" && focus.outlineWidth >= 2 && contrast(focus.outlineColor, focus.background) >= 3 && focus.shown && focus.inside, focus);
+  focus.contrast = forcedColors ? contrastOverOpaqueSurface(focus.outlineColor, focus.background) : contrast(focus.outlineColor, focus.background);
+  check(`expanded keyboard focus visible (${mode}, w=${width})`, focus.text.length > 0 && focus.visible && focus.outline !== "none" && focus.outlineWidth >= 2 && focus.contrast >= 3 && focus.shown && focus.inside, focus);
   await page.keyboard.press("Space");
   const collapse = await page.evaluate(id => ({ first:document.querySelector(`[data-expand="${id}"]`).getAttribute("aria-expanded"), others:document.querySelectorAll("#cards .preview-stage.expanded").length, focused:document.activeElement?.dataset.expand === id }), firstId);
   check(`expanded keyboard collapses only its card (${mode}, w=${width})`, collapse.first === "false" && collapse.others === 1 && collapse.focused, collapse);
