@@ -91,9 +91,11 @@ Base: `jaryo-adaptive-design-lab-20261109-grokbot1.zip` (Grok's Bot 1 polish). W
 - `scripts/browser/smoke.mjs` and `audit.mjs` updated for 97 options and F18/F19 views.
 - Rerun smoke + axe (light/dark/reduced-motion × 260/375/768/1280); results under `verification/`.
 
+The live lab is published at https://louiscalata.github.io/jaryo/.
+
 ## Not done
-- Nothing published.
-- Real screen readers / phones / Firefox / Safari still not claimed.
+- Real screen readers and real phones are still not claimed.
+- Real Safari on Apple hardware is still not claimed. Playwright Firefox and WebKit run in CI.
 
 
 # CHANGES — 2026-11-09 typography-1 reference (lab-wide)
