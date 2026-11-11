@@ -16,7 +16,9 @@
   let demoState = "idle";
   /** @type {{key:string,value:unknown,reason:string}[]} */
   let persistenceRejects = [];
-  let persistenceStatus = "missing"; // missing|valid|partial|malformed|unavailable|catalog-mismatch
+  /** @typedef {"missing"|"pending-catalog"|"valid"|"partial"|"malformed"|"unavailable"|"catalog-mismatch"} PersistenceStatus */
+  /** @type {PersistenceStatus} pending-catalog is internal until catalog validation finishes. */
+  let persistenceStatus = "missing";
   /** @type {string|null} raw localStorage text retained for recovery download when load fails */
   let recoveryRaw = null;
   /** @type {string|null} catalogVersion from loaded/imported envelope when present */
@@ -46,53 +48,103 @@
     toast._t = setTimeout(() => el.classList.remove("show"), 3200);
   }
 
+  const preferenceNotice = " A saved choice is a preference, not a product change.";
+  const browserStorageWords = "Selections save in this browser only (localStorage).";
+  /** @type {Record<PersistenceStatus, {value: PersistenceStatus, words: string, className: string}>} */
+  const persistenceView = Object.freeze({
+    missing: { value: "missing", words: browserStorageWords, className: "banner warn" },
+    "pending-catalog": { value: "pending-catalog", words: browserStorageWords, className: "banner warn" },
+    valid: { value: "valid", words: browserStorageWords, className: "banner warn" },
+    partial: { value: "partial", words: browserStorageWords, className: "banner warn" },
+    malformed: { value: "malformed", words: "Stored selections were not an object map and were not applied. Raw bytes retained — use Download recovery raw.", className: "banner err" },
+    unavailable: { value: "unavailable", words: "Could not save selections (kept in memory only): ", className: "banner err" },
+    "catalog-mismatch": { value: "catalog-mismatch", words: "Catalog version in envelope differs from this lab. Valid entries kept; confirm before treating as authoritative.", className: "banner warn" },
+  });
+
+  // The only writer of persistence state and its associated evidence. Validated
+  // content and failed persistence have separate evidence; a failed write stays
+  // unavailable until a successful save or foreign event establishes stored state.
+  /** @param {PersistenceStatus|"normalized"|"saved"|"imported"} next */
+  function setPersistence(next, detail = {}) {
+    if ("rejects" in detail) persistenceRejects = detail.rejects;
+    if ("raw" in detail) recoveryRaw = detail.raw;
+    if ("catalogVersion" in detail) envelopeCatalogVersion = detail.catalogVersion;
+    const event = next;
+    const count = Object.keys(choices).length;
+    if (next === "normalized" || next === "saved" || next === "imported") {
+      next = persistenceRejects.some((r) => r.reason === "catalog-mismatch") && count ? "catalog-mismatch"
+        : persistenceRejects.length ? (count || next !== "normalized" ? "partial" : "malformed")
+        : count ? "valid" : "missing";
+    }
+    const view = persistenceView[next];
+    if (!view) throw new Error("Unknown persistence state: " + next);
+    persistenceStatus = next;
+    storageOk = next !== "unavailable";
+    let words = view.words;
+    // Normalization keeps the load diagnosis; an object with rejected IDs is
+    // different from a non-object payload even when both map to malformed.
+    if (event === "normalized") words = storageMsg;
+    if (next === "catalog-mismatch") {
+      if (event === "normalized") words = "Catalog version in stored/imported envelope differs from this lab (" + envelopeCatalogVersion + " ≠ " + DATA.version + "). Valid entries kept; confirm before treating as authoritative.";
+      else if (event === "imported") words = "Imported envelope catalogVersion differs from this lab. Valid entries merged; not treated as authoritative without review.";
+      else if (storageMsg.includes("catalogVersion")) words = storageMsg;
+    }
+    if (detail.source === "json") words = "Stored selections were malformed and were not applied. Raw bytes retained — use Download recovery raw.";
+    if (detail.source === "load-error") words = "Storage unavailable or blocked — choices will not persist: " + detail.error;
+    if (detail.source === "save-error") words += detail.error;
+    if (detail.source === "foreign-warn") words = "Another tab wrote selections this tab could not read. They were not applied. A save here would overwrite that tab.";
+    if (detail.source === "foreign-clear") words = "Another tab cleared saved selections. This tab dropped them so a later save does not write them back.";
+    if (detail.source === "foreign-adopt") {
+      words = "Another tab saved selections. This tab loaded them so a later save does not overwrite that tab.";
+      if (next === "catalog-mismatch") words += " Catalog version differs from this lab.";
+    }
+    if (detail.keepMessage) words = storageMsg;
+    if (detail.reportRejects && persistenceRejects.length) words += ` Rejected ${persistenceRejects.length} invalid stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (status=${view.value}).`;
+    storageMsg = words;
+    if (event === "normalized" && !persistenceRejects.length) recoveryRaw = null;
+    const banner = $("#storage-banner");
+    if (banner) {
+      banner.textContent = words + (detail.source === "save-error" || detail.withoutNotice ? "" : preferenceNotice);
+      banner.className = view.className;
+      banner.hidden = false;
+    }
+    updateRecoveryButton();
+  }
+
   function loadChoices() {
-    persistenceRejects = [];
-    persistenceStatus = "missing";
-    recoveryRaw = null;
-    envelopeCatalogVersion = null;
+    setPersistence("missing", { rejects: [], raw: null, catalogVersion: null });
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      storageOk = true;
-      storageMsg = "Selections save in this browser only (localStorage).";
       if (raw == null || raw === "") {
         choices = {};
-        persistenceStatus = "missing";
         return;
       }
-      recoveryRaw = raw;
       let parsed;
       try {
         parsed = JSON.parse(raw);
       } catch (e) {
         choices = {};
-        persistenceStatus = "malformed";
-        persistenceRejects.push({ key: "(root)", value: raw.slice(0, 120), reason: "json-parse-failed" });
-        storageMsg = "Stored selections were malformed and were not applied. Raw bytes retained — use Download recovery raw.";
+        setPersistence("malformed", { raw, source: "json", rejects: [{ key: "(root)", value: raw.slice(0, 120), reason: "json-parse-failed" }] });
         return;
       }
       // Accept legacy bare map or envelope {schemaVersion, choices}
       let map = parsed;
+      let catalogVersion = null;
       if (parsed && typeof parsed === "object" && !Array.isArray(parsed) && parsed.choices && typeof parsed.choices === "object") {
         map = parsed.choices;
-        if (typeof parsed.catalogVersion === "string") envelopeCatalogVersion = parsed.catalogVersion;
+        if (typeof parsed.catalogVersion === "string") catalogVersion = parsed.catalogVersion;
       }
       if (!map || typeof map !== "object" || Array.isArray(map)) {
         choices = {};
-        persistenceStatus = "malformed";
-        persistenceRejects.push({ key: "(root)", value: typeof parsed, reason: "expected-object-map" });
-        storageMsg = "Stored selections were not an object map and were not applied. Raw bytes retained — use Download recovery raw.";
+        setPersistence("malformed", { raw, catalogVersion, rejects: [{ key: "(root)", value: typeof parsed, reason: "expected-object-map" }] });
         return;
       }
       // Defer catalog validation until DATA is loaded (normalizeAfterCatalog).
       choices = map;
-      persistenceStatus = "pending-catalog";
+      setPersistence("pending-catalog", { raw, catalogVersion });
     } catch (e) {
-      storageOk = false;
-      persistenceStatus = "unavailable";
-      storageMsg = "Storage unavailable or blocked — choices will not persist: " + (e && e.message ? e.message : String(e));
       choices = {};
-      recoveryRaw = null;
+      setPersistence("unavailable", { raw: null, source: "load-error", error: e && e.message ? e.message : String(e) });
     }
   }
 
@@ -131,19 +183,10 @@
         reason: "catalog-mismatch",
       });
     }
-    persistenceRejects = rejects;
-    if (persistenceStatus === "pending-catalog" || persistenceStatus === "missing") {
-      persistenceStatus = rejects.length && Object.keys(accepted).length ? "partial" : rejects.length ? "malformed" : Object.keys(accepted).length ? "valid" : "missing";
-    } else if (rejects.length && Object.keys(accepted).length) {
-      persistenceStatus = "partial";
-    }
-    if (rejects.some((r) => r.reason === "catalog-mismatch") && Object.keys(accepted).length) {
-      persistenceStatus = "catalog-mismatch";
-      storageMsg = "Catalog version in stored/imported envelope differs from this lab (" + envelopeCatalogVersion + " ≠ " + DATA.version + "). Valid entries kept; confirm before treating as authoritative.";
-    }
+    setPersistence(persistenceStatus === "unavailable" ? "unavailable" : "normalized", { rejects, keepMessage: persistenceStatus === "unavailable" });
   }
 
-  function saveChoices() {
+  function saveChoices(clearRecovery = false) {
     try {
       const envelope = {
         schemaVersion: 1,
@@ -153,30 +196,10 @@
         choices,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
-      storageOk = true;
-      const hasCatalogMismatch = persistenceRejects.some((r) => r.reason === "catalog-mismatch");
-      if (hasCatalogMismatch && Object.keys(choices).length) {
-        persistenceStatus = "catalog-mismatch";
-        if (!storageMsg || storageMsg.indexOf("catalogVersion") === -1) {
-          storageMsg = "Catalog version in envelope differs from this lab. Valid entries kept; confirm before treating as authoritative.";
-        }
-      } else {
-        persistenceStatus = persistenceRejects.length ? "partial" : (Object.keys(choices).length ? "valid" : "missing");
-        storageMsg = "Selections save in this browser only (localStorage).";
-      }
-      if ($("#storage-banner")) {
-        $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
-        $("#storage-banner").className = hasCatalogMismatch ? "banner warn" : "banner warn";
-        $("#storage-banner").hidden = false;
-      }
+      setPersistence("saved", { raw: clearRecovery ? null : recoveryRaw });
       return true;
     } catch (e) {
-      storageOk = false;
-      persistenceStatus = "unavailable";
-      storageMsg = "Could not save selections (kept in memory only): " + (e && e.message ? e.message : String(e));
-      $("#storage-banner").textContent = storageMsg;
-      $("#storage-banner").className = "banner err";
-      $("#storage-banner").hidden = false;
+      setPersistence("unavailable", { source: "save-error", error: e && e.message ? e.message : String(e) });
       return false;
     }
   }
@@ -747,7 +770,7 @@
     const n = acceptedChoiceCount();
     let extra = "";
     if (persistenceRejects.length) {
-      extra = ` · ${persistenceRejects.length} rejected stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (${persistenceStatus})`;
+      extra = ` · ${persistenceRejects.length} rejected stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (${persistenceView[persistenceStatus].value})`;
     }
     $("#summary-count").textContent = `${n} / ${DATA.families.length} families chosen (validated)${extra}`;
   }
@@ -760,7 +783,7 @@
       writerId,
       notice: "A saved choice is a preference, not a product change. Demo data is fictional.",
       exported_at_utc: new Date().toISOString(),
-      persistenceStatus,
+      persistenceStatus: persistenceView[persistenceStatus].value,
       acceptedCount: acceptedChoiceCount(),
       copper_note: "Copper is an example palette in the color set, not the default.",
       choices,
@@ -805,9 +828,6 @@
       };
     }
     const previous = Object.assign({}, choices);
-    const previousRejects = persistenceRejects.slice();
-    const previousStatus = persistenceStatus;
-    const previousEnvelopeCatalog = envelopeCatalogVersion;
     // Dry-run normalize on incoming map only (do not assign to choices yet).
     const famIds = new Set(DATA.families.map((f) => f.id));
     const optByFam = {};
@@ -854,20 +874,9 @@
       else changed += 1;
       choices[k] = incomingAccepted[k];
     });
-    persistenceRejects = incomingRejects.slice();
-    envelopeCatalogVersion = incomingCatalog || envelopeCatalogVersion;
-    if (incomingRejects.some((r) => r.reason === "catalog-mismatch")) {
-      persistenceStatus = "catalog-mismatch";
-      storageMsg = "Imported envelope catalogVersion differs from this lab. Valid entries merged; not treated as authoritative without review.";
-    } else {
-      persistenceStatus = incomingRejects.length ? "partial" : "valid";
-    }
-    const ok = saveChoices();
-    if (!ok) {
-      // save failed: keep merged memory (intent applied) but banner already honest from saveChoices
-    } else {
-      recoveryRaw = null; // successful persist replaces prior recovery need
-    }
+    setPersistence("imported", { rejects: incomingRejects.slice(), catalogVersion: incomingCatalog || envelopeCatalogVersion });
+    const ok = saveChoices(true);
+    // Failed saves keep merged memory (intent applied) and report unavailable.
     renderNav();
     refreshChoiceSurfaces();
     return {
@@ -961,23 +970,17 @@
   function resetChoices() {
     const previous = Object.assign({}, choices);
     const previousRejects = persistenceRejects.slice();
-    const previousStatus = persistenceStatus;
     const previousEnvelopeCatalog = envelopeCatalogVersion;
     choices = {};
-    persistenceRejects = [];
-    persistenceStatus = "missing";
-    envelopeCatalogVersion = null;
-    const ok = saveChoices();
+    setPersistence("missing", { rejects: [], catalogVersion: null });
+    const ok = saveChoices(true);
     if (!ok) {
       choices = previous;
-      persistenceRejects = previousRejects;
-      persistenceStatus = previousStatus;
-      envelopeCatalogVersion = previousEnvelopeCatalog;
+      setPersistence("unavailable", { rejects: previousRejects, catalogVersion: previousEnvelopeCatalog, keepMessage: true, withoutNotice: true });
       refreshChoiceSurfaces();
       toast("Persistent reset failed; existing selections preserved in memory.");
       return;
     }
-    recoveryRaw = null;
     refreshChoiceSurfaces();
     toast("Selections reset and cleared from storage.");
   }
@@ -1124,10 +1127,6 @@
 
   async function boot() {
     loadChoices();
-    $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
-    $("#storage-banner").className = (!storageOk || persistenceStatus === "malformed") ? "banner err" : "banner warn";
-    $("#storage-banner").hidden = false;
-    updateRecoveryButton();
 
     try {
       const res = await fetch(DATA_URL);
@@ -1147,11 +1146,8 @@
     $("#lab-version").textContent = catalogPhrase();
     normalizeAfterCatalog();
     if (persistenceRejects.length) {
-      storageMsg += ` Rejected ${persistenceRejects.length} invalid stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (status=${persistenceStatus}).`;
-      $("#storage-banner").textContent = storageMsg + " A saved choice is a preference, not a product change.";
-      $("#storage-banner").className = persistenceStatus === "malformed" || persistenceStatus === "unavailable" ? "banner err" : "banner warn";
+      setPersistence(persistenceStatus, { keepMessage: true, reportRejects: true });
     }
-    updateRecoveryButton();
     renderNav();
     renderCompare();
     renderJourneys();
@@ -1193,47 +1189,27 @@
     return true;
   }
 
-  function paintStorageBanner() {
-    const el = $("#storage-banner");
-    if (!el) return;
-    el.textContent = storageMsg + " A saved choice is a preference, not a product change.";
-    const bad = !storageOk || persistenceStatus === "malformed" || persistenceStatus === "unavailable";
-    el.className = bad ? "banner err" : "banner warn";
-    el.hidden = false;
-  }
-
   function applyForeignStorage(raw) {
     const action = foreignStorageDecision(writerId, raw);
     if (action === "ignore") return;
     if (action === "warn") {
-      storageMsg = "Another tab wrote selections this tab could not read. They were not applied. A save here would overwrite that tab.";
-      paintStorageBanner();
+      setPersistence("malformed", { raw, source: "foreign-warn" });
+      if (DATA) renderSummary();
       if ($("#toast")) toast(storageMsg);
       return;
     }
     const prior = Object.assign({}, choices);
     if (action === "adopt-clear") {
       choices = {};
-      persistenceRejects = [];
-      persistenceStatus = "missing";
-      envelopeCatalogVersion = null;
-      recoveryRaw = null;
-      storageMsg = "Another tab cleared saved selections. This tab dropped them so a later save does not write them back.";
+      setPersistence("missing", { rejects: [], raw: null, catalogVersion: null, source: "foreign-clear" });
     } else {
       const parsed = JSON.parse(raw);
       const envelope = parsed.choices && typeof parsed.choices === "object" && !Array.isArray(parsed.choices);
       choices = envelope ? parsed.choices : parsed;
-      envelopeCatalogVersion = envelope && typeof parsed.catalogVersion === "string" ? parsed.catalogVersion : null;
-      persistenceRejects = [];
-      persistenceStatus = "pending-catalog";
-      recoveryRaw = null;
+      setPersistence("pending-catalog", { rejects: [], raw: null, catalogVersion: envelope && typeof parsed.catalogVersion === "string" ? parsed.catalogVersion : null });
       if (DATA) normalizeAfterCatalog();
-      storageMsg = "Another tab saved selections. This tab loaded them so a later save does not overwrite that tab.";
-      if (persistenceStatus === "catalog-mismatch") {
-        storageMsg += " Catalog version differs from this lab.";
-      }
+      setPersistence(persistenceStatus, { source: "foreign-adopt" });
     }
-    paintStorageBanner();
     if (DATA && $("#cards")) refreshChoiceSurfaces();
     if (!mapsEqual(prior, choices) && $("#toast")) toast(storageMsg);
   }
