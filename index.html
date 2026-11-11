@@ -20,8 +20,7 @@
       <span class="meta" id="lab-version">19 families · 85 curated + 12 optional (97 total)</span>
     </div>
     <div id="storage-banner" class="banner warn">Selections save in this browser only (localStorage). A saved choice is a preference, not a product change.</div>
-    <div class="toolbar">
-      <span class="spacer"></span>
+    <div class="header-tools">
       <label class="theme-field" for="theme-select">Theme
         <select id="theme-select" class="btn">
           <option value="system">System</option>
@@ -29,20 +28,13 @@
           <option value="dark">Dark</option>
         </select>
       </label>
-      <button type="button" class="btn" id="btn-copy">Copy JSON</button>
-      <button type="button" class="btn" id="btn-download">Download JSON</button>
-      <button type="button" class="btn" id="btn-import" aria-controls="import-file">Import JSON</button>
-      <input id="import-file" type="file" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true" />
-      <button type="button" class="btn" id="btn-recovery" hidden>Download recovery raw</button>
-      <button type="button" class="btn" id="btn-reset">Reset choices</button>
     </div>
-    <p class="meta notice">This is a design demo. A saved choice is a preference, not a product change. Copper is an example palette, not the default.</p>
+    <p class="meta notice">Copper is an example palette, not the default.</p>
     <p class="meta notice"><a href="https://github.com/louiscalata/jaryo">Repository</a> · <a href="https://louiscalata.github.io/jaryo/">Live lab</a> · <a href="https://fortheloveof.studio/code/jaryo/">Project page</a></p>
   </header>
 
   <div class="layout">
     <nav class="sidebar" aria-label="Design families">
-      <h2 id="catalog-count">19 families · 85 curated + 12 optional (97 total)</h2>
       <div id="family-nav">
         <p class="navgroup" id="ng-mono">Monochrome set · 80 options</p>
         <button type="button" class="navbtn" data-fam="F01" title="F01 · Layout / composition" aria-current="true"><span class="fid">F01</span><span class="ftitle"><span class="sep"> · </span>Layout / composition</span></button>
@@ -100,6 +92,7 @@
         <p class="sr-only" id="cards-help">Option radio group: arrow keys move the selection, Home and End jump to the first and last option, Space selects the focused option. Tab moves on to the Expand buttons.</p>
         <div class="cards" id="cards" role="radiogroup" aria-labelledby="section-title" aria-describedby="cards-help"></div>
         <div class="sr-only" id="choice-live" aria-live="polite"></div>
+        <p class="serif-read">Reading copy is set in a serif when the booklet asks for Baskerville. Libre Baskerville is the face shipped here. Body text in the cards stays IBM Plex Sans.</p>
         <p class="footer-note">Desktop: five cards side-by-side when width allows. Narrow (down to ~260px cover screens): stacked scroll. Keyboard: Tab into the option group, arrows / Home / End move the choice, Space selects. Expand a preview for a larger stage. Selecting records a preference only.</p>
       </section>
 
@@ -125,6 +118,14 @@
       <section id="panel-summary" class="panel" role="tabpanel" aria-labelledby="tab-summary">
         <h2>Selection summary</h2>
         <p class="meta" id="summary-count">0 / 19 families chosen (validated)</p>
+        <div class="toolbar" aria-label="Selection file">
+          <button type="button" class="btn" id="btn-copy">Copy JSON</button>
+          <button type="button" class="btn" id="btn-download">Download JSON</button>
+          <button type="button" class="btn" id="btn-import" aria-controls="import-file">Import JSON</button>
+          <input id="import-file" type="file" accept="application/json,.json" class="sr-only" tabindex="-1" aria-hidden="true" />
+          <button type="button" class="btn" id="btn-recovery" hidden>Download recovery raw</button>
+          <button type="button" class="btn" id="btn-reset">Reset choices</button>
+        </div>
         <div class="table-wrap"><table class="summary-table">
           <caption class="sr-only">Chosen option per design family</caption>
           <thead><tr><th scope="col">ID</th><th scope="col">Family</th><th scope="col">Choice</th><th scope="col">Name</th></tr></thead>

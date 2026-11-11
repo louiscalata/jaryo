@@ -252,7 +252,8 @@ function extractFunction(source, name) {
   assert.match(js, /function foreignStorageDecision\(selfId, raw\)/);
   assert.match(js, /const action = foreignStorageDecision\(writerId, raw\)/);
   assert.match(js, /window\.addEventListener\("storage"/);
-  assert.match(js, /applyForeignStorage\(e\.newValue\)/);
+  assert.match(js, /e\.storageArea && e\.storageArea !== localStorage/);
+  assert.match(js, /applyForeignStorage\(e\.key === null \? null : e\.newValue\)/);
   assert.match(js, /Another tab saved selections/);
   assert.match(js, /could not read/);
   const decide = extractFunction(js, "foreignStorageDecision");
@@ -268,7 +269,7 @@ function extractFunction(source, name) {
   assert.equal(decide(self, "[]"), "warn");
   assert.equal(decide(self, null), "adopt-clear");
   assert.equal(decide(self, ""), "adopt-clear");
-  assert.equal(decide(self, "   "), "adopt-clear");
+  assert.equal(decide(self, "   "), "warn");
   assert.equal(decide(self, JSON.stringify({ F01: "F01.01" })), "adopt");
   assert.equal(decide(self, JSON.stringify({ schemaVersion: 1, writerId: "lab-other" })), "warn");
   assert.equal(decide(self, JSON.stringify({ schemaVersion: 1, choices: [] })), "warn");

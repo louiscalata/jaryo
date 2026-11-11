@@ -256,6 +256,18 @@ await new Promise((r) => setTimeout(r, 50));
     writerId: "lab-other",
     choices: { F02: "F02.03" },
   });
+  window.sessionStorage.setItem("jaryo-adaptive-lab-choices-v1", foreignRaw);
+  window.dispatchEvent(new window.StorageEvent("storage", {
+    key: "jaryo-adaptive-lab-choices-v1",
+    newValue: foreignRaw,
+    storageArea: window.sessionStorage,
+  }));
+  assert.equal(window.localStorage.getItem("jaryo-adaptive-lab-choices-v1"), JSON.stringify(before), "sessionStorage must not change saved choices");
+  showFam("F02");
+  assert.equal(document.querySelector('.opt-card[data-id="F02.03"]').classList.contains("chosen"), false, "sessionStorage must not change displayed choices");
+  showFam("F01");
+  assert.ok(document.querySelector('.opt-card[data-id="F01.01"]').classList.contains("chosen"));
+
   window.localStorage.setItem("jaryo-adaptive-lab-choices-v1", foreignRaw);
   window.dispatchEvent(new window.StorageEvent("storage", {
     key: "jaryo-adaptive-lab-choices-v1",
@@ -292,14 +304,37 @@ await new Promise((r) => setTimeout(r, 50));
   showFam("F01");
   assert.ok(document.querySelector('.opt-card[data-id="F01.02"]').classList.contains("chosen"), "own writerId is ignored");
 
-  window.localStorage.setItem("jaryo-adaptive-lab-choices-v1", "{");
+  const unreadableWrites = [
+    "{", "[]", "null", "   ",
+    JSON.stringify({ schemaVersion: 1, writerId: "lab-other" }),
+    JSON.stringify({ schemaVersion: 1, choices: [] }),
+  ];
+  for (const unreadable of unreadableWrites) {
+    window.localStorage.setItem("jaryo-adaptive-lab-choices-v1", unreadable);
+    window.dispatchEvent(new window.StorageEvent("storage", {
+      key: "jaryo-adaptive-lab-choices-v1",
+      newValue: unreadable,
+      storageArea: window.localStorage,
+    }));
+    assert.match(document.getElementById("storage-banner").textContent, /could not read/);
+    assert.equal(window.localStorage.getItem("jaryo-adaptive-lab-choices-v1"), unreadable, "unreadable write must not be overwritten");
+    assert.ok(document.querySelector('.opt-card[data-id="F01.02"]').classList.contains("chosen"), "unreadable write must preserve displayed choices");
+  }
+
+  window.localStorage.clear();
   window.dispatchEvent(new window.StorageEvent("storage", {
-    key: "jaryo-adaptive-lab-choices-v1",
-    newValue: "{",
+    key: null,
+    newValue: null,
+    storageArea: window.localStorage,
   }));
-  assert.match(document.getElementById("storage-banner").textContent, /could not read/);
-  assert.equal(window.localStorage.getItem("jaryo-adaptive-lab-choices-v1"), "{");
-  assert.ok(document.querySelector('.opt-card[data-id="F01.02"]').classList.contains("chosen"));
+  assert.match(document.getElementById("storage-banner").textContent, /Another tab cleared/);
+  assert.equal(document.querySelectorAll('.opt-card.chosen').length, 0);
+  assert.equal(window.localStorage.getItem("jaryo-adaptive-lab-choices-v1"), null, "clear event must not write back");
+  pick("F01.03");
+  await new Promise((r) => setTimeout(r, 10));
+  const afterClear = JSON.parse(window.localStorage.getItem("jaryo-adaptive-lab-choices-v1"));
+  assert.equal(afterClear.choices.F01, "F01.03");
+  assert.equal(afterClear.choices.F02, undefined, "a later save must not restore cleared foreign choices");
   console.log("dom-foreign-storage: PASS");
 }
 

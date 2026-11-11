@@ -1164,7 +1164,7 @@
   // Read writerId so a stale tab adopts that write instead of clobbering it
   // on the next saveChoices(). This handler must not write back.
   function foreignStorageDecision(selfId, raw) {
-    if (raw == null || String(raw).trim() === "") return "adopt-clear";
+    if (raw == null || raw === "") return "adopt-clear";
     let parsed;
     try {
       parsed = JSON.parse(raw);
@@ -1238,8 +1238,9 @@
   }
 
   window.addEventListener("storage", (e) => {
-    if (!e || e.key !== STORAGE_KEY) return;
-    applyForeignStorage(e.newValue);
+    if (!e || (e.key !== STORAGE_KEY && e.key !== null)) return;
+    if (e.storageArea && e.storageArea !== localStorage) return;
+    applyForeignStorage(e.key === null ? null : e.newValue);
   });
 
   document.addEventListener("DOMContentLoaded", boot);

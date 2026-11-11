@@ -129,7 +129,7 @@ def build() -> dict:
             "$type": "typography",
             "$value": {
                 "fontFamily": "{fontFamily.font-display}",
-                "fontSize": "{dimension.fs-6}",
+                "fontSize": "{dimension.fs-display}",
                 "fontWeight": "{fontWeight.bold}",
                 "letterSpacing": "{dimension.track-display}",
                 "lineHeight": float(light["lh-tight"]),

@@ -24,7 +24,11 @@ const check = (name, pass, detail) => {
   console.log(pass ? "PASS" : "FAIL", name, detail !== undefined ? JSON.stringify(detail) : "");
 };
 
-const browser = await chromium.launch(process.env.SMOKE_CHANNEL ? { channel: process.env.SMOKE_CHANNEL } : {});
+const launchOpts = {
+  args: ["--use-mock-keychain", "--password-store=basic"],
+  ...(process.env.SMOKE_CHANNEL ? { channel: process.env.SMOKE_CHANNEL } : {}),
+};
+const browser = await chromium.launch(launchOpts);
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, forcedColors: "active" });
 const page = await ctx.newPage();
 page.on("pageerror", (e) => out.errors.push(String(e)));

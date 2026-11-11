@@ -43,7 +43,7 @@ The lab is a screen, so 8pt body and a 5pt Fibonacci step are not used. The less
 |---|---|---|---|
 | Machine | `--font-machine` | IBM Plex Mono | IDs, nav, tabs, spec lines, section titles |
 | Reading | `--font-reading` | IBM Plex Sans | Body, mechanisms, tradeoffs, card titles |
-| Display | `--font-display` | IBM Plex Mono | Section titles. Size and caps, not a second color |
+| Display | `--font-display` | IBM Plex Sans | Lab title and section titles, in booklet red. Size, not a second face |
 | Study serif | `--font-serif-study` | Libre Baskerville | Docs specimen and the F19 reading column |
 
 Libre Baskerville is an OFL transitional serif used where the booklet used Baskerville. Baskerville is not shipped. Antique Olive, Didot, Futura, Univers, and Helvetica are not shipped.
@@ -51,16 +51,17 @@ Libre Baskerville is an OFL transitional serif used where the booklet used Baske
 ### Scale
 | Token | Size | Use |
 |---|---|---|
-| `--fs-0` | 11px | Non-essential chrome only |
-| `--fs-1` | 12px | Spec labels, chips |
-| `--fs-2` | 13px | Nav, buttons |
-| `--fs-3` | 14px | Reading body |
-| `--fs-4` | 16px | Card titles |
+| `--fs-0` | 11px | Kept in the token file. Not used for visible lab text |
+| `--fs-1` | 12px | Spec line on a card |
+| `--fs-2` | 13px | Nav, meta, chips |
+| `--fs-3` | 14px | Reading body and controls |
+| `--fs-4` | 16px | Card titles. The card face is unchanged |
 | `--fs-5` | 20px | Panel titles |
-| `--fs-6` | 24px | Section titles |
-| `--fs-7` | 32px | Rare display |
+| `--fs-6` | 24px | Section titles on a narrow screen |
+| `--fs-7` | 32px | Section titles |
+| `--fs-display` | 48px | Lab title |
 
-Body and interactive labels stay at least 12px. The 11px step is chrome, not reading text.
+Body and controls stay at 14px. The 11px step is unused on screen. The card title stays IBM Plex Sans at 16px.
 
 ### Weight, leading, tracking
 | Token | Value | Use |
@@ -85,8 +86,8 @@ These rules apply to the shell, the docs, and every option card. They are not li
 3. Reading copy is IBM Plex Sans regular, 14/21, left aligned.
 4. Each card and each family heading carries a spec line in the booklet’s recipe form (`14/21 · IBM Plex Sans · regular · 0 tracking`).
 5. The Docs tab shows the four roles together.
-6. Red (`#9B1B1B` on white, `#FF6B6B` on `#0C0C0C`) is reserved for F19, Red interactive UI. It marks identity. It is not body text and it is not the only status signal.
+6. Red is the booklet sample `#C21A27`, used for headlines, display type, numbers, markers, and the wordmark. Body text stays ink. `#C21A27` on `#ffffff` is 6.05:1, so it passes AA for large and small text on the light paper. On `#0c0c0c` it is 3.23:1, which passes large text only, so dark paper uses `#F62131` (same hue, 4.62:1 on the `#121212` surface and 4.83:1 on `#0c0c0c`). Filled chips use white on `#C21A27` (6.05:1) and `#0c0c0c` on `#F62131` (4.83:1).
 7. Justified, centered, and shaped text are available inside the Red Spec Title study. They are not the default chrome.
 
 ### Contrast floors
-Body and meta text in the lab tokens are at least 4.5:1. `#4d4d4d` on white is 8.45:1. `#ababab` on `#0c0c0c` is 8.52:1. The F19 pairs used by the interactive option are 8.18:1 (`#9B1B1B` / white) and 7.05:1 (`#FF6B6B` / `#0C0C0C`). Hit targets stay at least 44px. `prefers-reduced-motion` removes transitions. These ratios were calculated from the token hex values; they are not a full-page audit. Measured axe results are in [VERIFICATION.md](../VERIFICATION.md) when that file has been updated for a pass.
+Body and meta text in the lab tokens are at least 4.5:1. `#4d4d4d` on white is 8.45:1. `#ababab` on `#0c0c0c` is 8.52:1. Booklet red `#C21A27` on white is 6.05:1. Dark small red `#F62131` on `#121212` is 4.62:1 and on `#0c0c0c` is 4.83:1. Hit targets stay at least 44px. `prefers-reduced-motion` removes transitions. These ratios were calculated from the token hex values; they are not a full-page audit. Measured axe results are in [VERIFICATION.md](../VERIFICATION.md) when that file has been updated for a pass.
