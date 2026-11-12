@@ -53,6 +53,7 @@ not validate a later revision.
 - [x] Prepare validated explicit browser flags, browser-free CLI regression tests and requested/actual engine name plus version receipts. Preserve existing job names, runners, dependencies and assertions.
 - [ ] Verify fresh Firefox and WebKit native runs with matching requested/actual identities and versions on the corrected current head.
 - [ ] Verify the complete current-head CI matrix after the native failure corrections; historical job labels and synthetic checks do not satisfy this gate.
+- [ ] Verify card-wide selection and native Firefox/WebKit smoke on the revised head. Job `131363037421` recorded Firefox 132.0 at 323/324, with F07.03 and F15.02 clicks landing on non-selecting card DIVs at 1280; the job exited before WebKit ran. Browser-free regression covers card selection and control exclusions, not native hit testing.
 
 | Accepted PR | Audited PC browser job | Native engine result |
 | --- | --- | --- |
