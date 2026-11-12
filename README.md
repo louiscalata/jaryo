@@ -55,11 +55,11 @@ node scripts/test_persistence_rules.mjs
 node --check lab.js
 ```
 
-Browser smoke and axe scripts live under `scripts/browser/` and need Playwright.
+Browser smoke and axe scripts live under `scripts/browser/` and need Playwright. Run browser checks on the PC or hosted Linux runners; Mac checks stay browser-free (see [AGENTS.md](AGENTS.md#ci-and-browser-boundary)).
 
 ## Tested
 
-Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md).
+Historical verification recorded 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATION.md). These results do not establish a current-head pass.
 
 - The 85 option IDs and their content are unchanged in `data/curated-85.json`.
 - Extended catalog: 19 families · 85 curated + 12 optional (97 total), in `data/curated-extended.json` and `data/embedded-data.js`
@@ -70,8 +70,9 @@ Verified 2026-11-09 in headless Chromium. Details: [VERIFICATION.md](VERIFICATIO
 
 - Real screen readers (VoiceOver, NVDA, TalkBack)
 - Real phones, cover screens, touch, OS zoom / text scaling
-- Real Safari on Apple hardware: NOT_RUN. Playwright Firefox and WebKit run in CI at 1280, 375, and 260.
-- Windows forced-colors on hardware: not tested. Chromium forced-colors emulation runs in CI.
+- Real Safari on Apple hardware: NOT_RUN.
+- Fresh Firefox/WebKit engine-identity and version proof remains pending. CI configures smoke at 1280, 375 and 260, but the audited historical PC jobs logged Chromium twice; see [the browser identity correction](roadmap.md#browser-identity-correction).
+- Windows forced-colors on hardware: NOT_RUN. Chromium forced-colors emulation is configured in CI and does not establish hardware results.
 - Import through a real OS file picker (jsdom covers wiring)
 
 ## Known limits
