@@ -1045,7 +1045,15 @@
     if (window.JARYO_STAGE_UI) window.JARYO_STAGE_UI.bind($("#cards"));
     $("#cards").addEventListener("click", (e) => {
       const exp = e.target.closest("[data-expand]");
-      if (!exp) return;
+      if (!exp) {
+        // Let the native label/radio and preview controls handle their own clicks.
+        // A click elsewhere on the card activates the same radio change path.
+        if (e.defaultPrevented || e.target.closest('button, input, select, textarea, label, a[href], summary, [contenteditable]:not([contenteditable="false"])')) return;
+        const card = e.target.closest(".opt-card");
+        const radio = card && card.querySelector('input[type="radio"][data-choice]');
+        if (radio && !radio.checked) radio.click();
+        return;
+      }
       const card = exp.closest(".opt-card");
       const stage = card.querySelector(".preview-stage");
       const on = stage.classList.toggle("expanded");

@@ -64,20 +64,45 @@ const famIds = await (async () => { const { ctx, page } = await open(); const f 
 for (const width of widths) {
   const { ctx, page } = await open({ width, tag: "click-" + width });
   const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), monoBase: d.families.filter(f=>/^F(0[1-9]|1[0-6])$/.test(f.id)).reduce((n,f)=>n+f.options.length,0), color: (d.families.find(f=>f.id==="F17")||{options:[]}).options.length, legacy: (d.families.find(f=>f.id==="F18")||{options:[]}).options.length, red: (d.families.find(f=>f.id==="F19")||{options:[]}).options.length }; });
-  let domTotal = 0, clicked = 0, fails = [];
+  let domTotal = 0, clicked = 0, fails = [], selectionFailures = [];
   for (const fam of famIds) {
     await clickReady(page.locator(`[data-fam="${fam}"]`));
     const ids = await page.$$eval("#cards .opt-card", (c) => c.map((x) => x.dataset.id));
     domTotal += ids.length;
     for (const id of ids) {
+      await page.evaluate(() => {
+        const events = [];
+        const record = (event) => events.push({
+          type: event.type,
+          tag: event.target.tagName,
+          card: event.target.closest?.(".opt-card")?.dataset.id ?? null,
+          choice: event.target.dataset?.choice ?? null,
+          trusted: event.isTrusted,
+        });
+        document.addEventListener("click", record, true);
+        document.addEventListener("change", record, true);
+        window.__smokeSelectionEvents = { events, record };
+      });
       await clickReady(page.locator(`.opt-card[data-id="${id}"] .choose-label`));
-      const ok = await page.evaluate((id) => {
+      const state = await page.evaluate((id) => {
+        const { events, record } = window.__smokeSelectionEvents;
+        document.removeEventListener("click", record, true);
+        document.removeEventListener("change", record, true);
+        delete window.__smokeSelectionEvents;
         const card = document.querySelector(`.opt-card[data-id="${id}"]`);
-        const r = card.querySelector('input[type=radio]');
+        const r = card?.querySelector('input[type=radio]');
         const stored = JSON.parse(localStorage.getItem("jaryo-adaptive-lab-choices-v1") || "{}");
-        return card.classList.contains("chosen") && r.checked && /CHOSEN/.test(card.querySelector(".chosen-marker").textContent) && stored.choices && stored.choices[id.slice(0,3)] === id && document.querySelectorAll("#cards .opt-card.chosen").length === 1;
+        return {
+          chosen: !!card?.classList.contains("chosen"),
+          checked: !!r?.checked,
+          marker: card?.querySelector(".chosen-marker")?.textContent ?? "",
+          storedChoice: stored.choices?.[id.slice(0, 3)] ?? null,
+          chosenCards: [...document.querySelectorAll("#cards .opt-card.chosen")].map((el) => el.dataset.id),
+          events,
+        };
       }, id);
-      if (ok) clicked++; else fails.push(id);
+      const ok = state.chosen && state.checked && /CHOSEN/.test(state.marker) && state.storedChoice === id && state.chosenCards.length === 1;
+      if (ok) clicked++; else { fails.push(id); selectionFailures.push({ id, ...state }); }
     }
     // expand toggle on first card
     const b = page.locator("#cards .expand-btn").first();
@@ -103,7 +128,7 @@ for (const width of widths) {
   const groups = await page.evaluate(() => ({ monoBase: [...document.querySelectorAll("#family-nav [data-fam]")].filter(e=>/^F(0[1-9]|1[0-6])$/.test(e.dataset.fam)).length, color: document.querySelectorAll('#family-nav [data-fam="F17"]').length, legacy: document.querySelectorAll('#family-nav [data-fam="F18"]').length, red: document.querySelectorAll('#family-nav [data-fam="F19"]').length, labels: [...document.querySelectorAll("#family-nav .navgroup")].map(e => e.textContent) }));
   const labelOk = groups.labels.some(t=>/Monochrome set/.test(t)) && groups.labels.some(t=>/Color batch/.test(t)) && (expectedFams<19 || (groups.labels.some(t=>/Legacy studies/.test(t)) && groups.labels.some(t=>/Red interactive UI/.test(t))));
   check(`nav groups present (w=${width})`, groups.monoBase === 16 && groups.color === 1 && labelOk, groups);
-  check(`all options selectable by click (w=${width})`, clicked === expectedOpts && fails.length === 0, { clicked, fails, expectedOpts });
+  check(`all options selectable by click (w=${width})`, clicked === expectedOpts && fails.length === 0, { clicked, fails, expectedOpts, selectionFailures });
   const sumN = expectedFams; check(`summary shows ${sumN}/${sumN} (w=${width})`, new RegExp(`^${sumN} / ${sumN}`).test(summary), summary);
   const hs = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(`no horizontal overflow after click-through (w=${width})`, hs <= 0, hs);

@@ -341,7 +341,7 @@ await new Promise((r) => setTimeout(r, 50));
 // No resource loader, network, browser engine, or application test double is used.
 const storageKey = "jaryo-adaptive-lab-choices-v1";
 const defaultBanner = "Selections save in this browser only (localStorage). A saved choice is a preference, not a product change.";
-async function persistenceDom({ raw = null, readFails = false, catalogFails = false } = {}) {
+async function persistenceDom({ raw = null, readFails = false, catalogFails = false, stages = false } = {}) {
   const dom = new JSDOM(html, { url: "https://jaryo.test/", runScripts: "outside-only" });
   const { window } = dom;
   if (raw !== null) window.localStorage.setItem(storageKey, raw);
@@ -360,8 +360,11 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
     return setItem.call(this, key, value);
   };
   window.fetch = async () => { throw new Error("offline fixture"); };
-  if (!catalogFails) window.JARYO_LAB_DATA = curated;
+  if (!catalogFails) window.JARYO_LAB_DATA = stages
+    ? JSON.parse(fs.readFileSync(path.join(LAB, "data/curated-extended.json"), "utf8"))
+    : curated;
   window.setTimeout = () => 0;
+  if (stages) window.eval(fs.readFileSync(path.join(LAB, "lab-stages.js"), "utf8"));
   window.eval(labJs.replace('document.addEventListener("DOMContentLoaded", boot);', `
     window.__persistenceTest = { boot, saveChoices, resetChoices, importPayloadText, exportPayload,
       snapshot: () => ({ status: persistenceStatus, storageOk, recoveryRaw,
@@ -405,6 +408,50 @@ function stateIs(c, status, { storageOk = status !== "unavailable", bannerClass 
   }
 }
 const envelope = (choices, catalogVersion = curated.version) => JSON.stringify({ schemaVersion: 1, catalogVersion, revision: 1, writerId: "lab-other", choices });
+
+await persistenceCase("card background selects without hijacking controls", { stages: true }, (c) => {
+  const { document, window } = c;
+  const go = (family) => document.querySelector(`[data-fam="${family}"]`).click();
+  const card = (id) => document.querySelector(`.opt-card[data-id="${id}"]`);
+  const saved = (family) => JSON.parse(window.localStorage.getItem(storageKey)).choices[family];
+  const assertSelected = (id) => {
+    const selected = card(id);
+    assert.equal(saved(id.slice(0, 3)), id);
+    assert.ok(selected.classList.contains("chosen"));
+    assert.equal(selected.querySelector("input[type=radio]").checked, true);
+    assert.equal(selected.querySelector("input[type=radio]").tabIndex, 0);
+    assert.equal(document.querySelectorAll("#cards input[type=radio]:checked").length, 1);
+    assert.equal(selected.querySelector(".chosen-marker").textContent, "CHOSEN");
+  };
+  for (const id of ["F07.03", "F15.02"]) {
+    go(id.slice(0, 3));
+    card(id).querySelector(".body").click();
+    assertSelected(id);
+  }
+  go("F01");
+  card("F01.01").click();
+  assertSelected("F01.01");
+  card("F01.02").querySelector(".preview-stage svg").dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+  assertSelected("F01.02");
+  const label = card("F01.03").querySelector(".choose-label");
+  const before = c.writes.length;
+  label.querySelector(".choose-text").click();
+  assertSelected("F01.03");
+  assert.equal(c.writes.length - before, 1, "label activation saves only once");
+  card("F01.04").querySelector("input[type=radio]").click();
+  assertSelected("F01.04");
+  const expand = card("F01.01").querySelector(".expand-btn");
+  expand.click();
+  assert.equal(expand.getAttribute("aria-expanded"), "true");
+  assertSelected("F01.04");
+  go("F19");
+  const previewButton = card("F19.04").querySelectorAll("[data-pick]")[1];
+  assert.ok(previewButton);
+  assert.equal(previewButton.getAttribute("aria-pressed"), "false");
+  previewButton.querySelector("span").click();
+  assert.equal(previewButton.getAttribute("aria-pressed"), "true");
+  assert.equal(c.api.exportPayload().choices.F19, undefined, "preview control must not choose its card");
+});
 
 // Characterization: these cases pass on untouched main as well as the explicit machine.
 for (const [name, raw, status, choices, reasons] of [
