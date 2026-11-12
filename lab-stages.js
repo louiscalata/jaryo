@@ -342,6 +342,79 @@
     }
   }
 
+  // Widget state is in-memory per card, like expandedByFamily in the lab.
+  const WIDGET_STATE = Object.freeze({
+    FRAME: Object.freeze(["phone", "fold", "tablet", "desk"]),
+    TONE: Object.freeze(["light", "dark"]),
+    ALIGN: Object.freeze(["left", "center", "justify"]),
+    DISCLOSURE: Object.freeze({ OPEN: true, CLOSED: false })
+  });
+  const WIDGET_ACTION = Object.freeze({ INTERACT: "interact", RESTORE: "restore" });
+  const widgetByCard = Object.create(null);
+
+  function deriveWidgetState(stage) {
+    const selected = function (selector, values) {
+      const button = stage.querySelector(selector + '[aria-pressed="true"]');
+      const value = button && button.getAttribute(selector.slice(1, -1));
+      return values.includes(value) ? value : null;
+    };
+    const ui = stage.querySelector(".jstage-ui");
+    const people = ui.querySelector("[data-people]");
+    const disclosure = ui.querySelector("[data-disclose]");
+    const live = ui.querySelector("[data-live]");
+    return {
+      frame: selected("[data-frame-set]", WIDGET_STATE.FRAME),
+      tone: selected("[data-tone-set]", WIDGET_STATE.TONE),
+      align: selected("[data-align]", WIDGET_STATE.ALIGN),
+      picks: Array.from(ui.querySelectorAll("[data-pick]"), function (button) {
+        return button.getAttribute("aria-pressed") === "true";
+      }),
+      index: (people || ui).hasAttribute("data-i") ? Number((people || ui).getAttribute("data-i")) : null,
+      disclosed: disclosure ? (disclosure.getAttribute("aria-expanded") === "true" ? WIDGET_STATE.DISCLOSURE.OPEN : WIDGET_STATE.DISCLOSURE.CLOSED) : null,
+      live: live ? live.textContent : null
+    };
+  }
+
+  // This is the only writer of the per-card record. Replaying the same control
+  // transitions also keeps the rendered attributes, content and ARIA in sync.
+  function transitionWidget(stage, action, target) {
+    if (action === WIDGET_ACTION.INTERACT) {
+      onClickFixed({ target: target });
+      widgetByCard[stage.getAttribute("data-stage")] = deriveWidgetState(stage);
+      return;
+    }
+    if (action !== WIDGET_ACTION.RESTORE) return;
+    const state = widgetByCard[stage.getAttribute("data-stage")];
+    if (!state) return;
+    function activate(button) {
+      if (button) transitionWidget(stage, WIDGET_ACTION.INTERACT, button);
+    }
+    [["data-frame-set", state.frame], ["data-tone-set", state.tone], ["data-align", state.align]].forEach(function (entry) {
+      if (entry[1] === null) return;
+      const button = Array.from(stage.querySelectorAll("button[" + entry[0] + "]")).find(function (item) {
+        return item.getAttribute(entry[0]) === entry[1];
+      });
+      if (button && button.getAttribute("aria-pressed") !== "true") activate(button);
+    });
+    const picks = stage.querySelectorAll("[data-pick]");
+    state.picks.forEach(function (pressed, i) {
+      if (pressed && picks[i] && picks[i].getAttribute("aria-pressed") !== "true") activate(picks[i]);
+    });
+    const cycle = stage.querySelector("[data-cycle], [data-advance], [data-step=\"1\"]");
+    let steps = state.index || 0;
+    if (cycle && state.index === 0) {
+      const people = stage.querySelector("[data-people]");
+      const values = cycle.getAttribute("data-cycle") || cycle.getAttribute("data-advance") || (people && people.getAttribute("data-people"));
+      steps = values ? values.split("|").length : 0;
+    }
+    for (let i = 0; cycle && i < steps; i += 1) activate(cycle);
+    const disclosure = stage.querySelector("[data-disclose]");
+    if (disclosure && (disclosure.getAttribute("aria-expanded") === "true") !== state.disclosed) activate(disclosure);
+    const live = stage.querySelector("[data-live]");
+    if (live && state.live !== null) live.textContent = state.live;
+    widgetByCard[stage.getAttribute("data-stage")] = deriveWidgetState(stage);
+  }
+
   window.JARYO_STAGE_UI = {
     has: function (id) { return Object.prototype.hasOwnProperty.call(stages, id); },
     render: function (opt) {
@@ -350,8 +423,17 @@
     },
     wideFamilies: { F18: true, F19: true },
     bind: function (root) {
-      root.addEventListener("click", onClickFixed);
+      root.addEventListener("click", function (event) {
+        const stage = event.target.closest(".jstage");
+        if (stage) transitionWidget(stage, WIDGET_ACTION.INTERACT, event.target);
+        else onClickFixed(event);
+      });
       root.addEventListener("keydown", onKey);
+    },
+    restore: function (root) {
+      root.querySelectorAll(".jstage").forEach(function (stage) {
+        transitionWidget(stage, WIDGET_ACTION.RESTORE);
+      });
     },
     _stages: stages
   };

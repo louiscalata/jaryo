@@ -594,3 +594,6 @@ for (const [raw, status, choices] of [[null, "missing", {}], [envelope({ F02: "F
 console.log(`TOTAL ${persistencePassed} / ${persistencePassed + persistenceFailed} persistence DOM cases`);
 if (persistenceFailed) process.exitCode = 1;
 console.log(`test_lab_dom: ${persistenceFailed ? "FAIL" : "PASS"}`);
+
+// Keep preview-state regressions in the existing Node DOM check.
+await import("./test_preview_state.mjs");
