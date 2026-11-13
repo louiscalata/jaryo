@@ -95,7 +95,7 @@ The live lab is published at https://louiscalata.github.io/jaryo/.
 
 ## Not done
 - Real screen readers and real phones are still not claimed.
-- Real Safari on Apple hardware is still not claimed. Playwright Firefox and WebKit run in CI.
+- Real Safari on Apple hardware is not claimed. CI configures Playwright Firefox and WebKit checks, but the audited historical PC jobs ran Chromium twice. Those passing counts do not establish Firefox or WebKit coverage; see [roadmap.md](roadmap.md#browser-identity-correction) for the current acceptance gates.
 
 
 # CHANGES — 2026-11-09 typography-1 reference (lab-wide)

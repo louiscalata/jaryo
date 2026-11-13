@@ -206,4 +206,4 @@ These checks ran in the Chromium pane on 2026-11-07, each against the build name
 2. **Fork default on phones:** **Next opens a branch chooser**. It never silently takes the first branch.
 3. **Copper on the website:** **the same as the app**. The dark Copper skin is used across marketing pages, with copper only on the mark and one primary action per page.
 4. **Event tick:** **resets per run**. The count shown is for the current run.
-5. **Repo home:** the spec and both reference screens move **into the lab's repo** (e.g. `docs/spec/` and `reference/`) once it exists. Notion stays the readable home, and both stay separate from AGIW Suite.
+5. **Repo home:** the spec and both reference screens move **into the lab's repo** (e.g. `docs/spec/` and `reference/`) once it exists. Notion stays the readable home, and both stay separate from AGIW Suite. **Status 2026-11-13:** done; the spec, reference screens, adaptor and tests now live in this repository under `spec/`.

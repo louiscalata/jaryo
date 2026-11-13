@@ -661,7 +661,7 @@
   "authorship": {
     "v1": "Grok Bot synthesis (no machine critique shaped v1)",
     "v2_critique_dedupe_fixes_tokens_studies": "Grok Bot executor synthesis (this run); contrast + CVD numbers computed by scripts in v2/",
-    "machine_critique": "NO Mac/PC critique received (v1 opencode runs timed out; v2 direct-request attempts 2 per lane all failed) \u2014 see critique/LANES.md. Zero machine contribution.",
+    "machine_critique": "No Mac or PC critique was received for this color batch: v1 runs timed out and v2 direct requests (2 per lane) failed. Zero machine contribution.",
     "codex": "not called"
   }
 }
