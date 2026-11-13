@@ -6,10 +6,9 @@ The counts and measurements below are historical records, not a fresh current-he
 - F18.01–F18.08 Legacy studies; F19.01–F19.04 Red interactive UI
 - The 85 option IDs and their content are unchanged.
 - Smoke 34/34 · axe 0 violations
-- ZIP path (rebuilt this pass): see below
 
 ## Typography-1 lab-wide apply
-- Principles: `docs/TYPOGRAPHY-PRINCIPLES.md` (and `docs/TYPOGRAPHY-PRINCIPLES.md`)
+- Principles: [Typography principles](docs/TYPOGRAPHY-PRINCIPLES.md).
 - Shared tokens in `lab.css` only; curated-85 untouched
 - `python3 scripts/validate_lab.py` → OK
 - Smoke: `verification/smoke-typography.json` → 34/34
@@ -19,8 +18,7 @@ The counts and measurements below are historical records, not a fresh current-he
 ### Legacy/Red compare (earlier)
 - `verification/compare/after-F18-legacy-light-1280.png`
 - `verification/compare/after-F19-red-light-1280.png`
-- `verification/compare/before-contrails-tactical.jpg`
-- `verification/compare/before-typography-toc.jpg`
+- Portfolio source captures are not published. The repository includes the lab’s after screenshots and the typography comparison files listed below.
 
 ### Typography-apply before/after (F01, F02 existing · F19 new · 375 & 1280)
 - before: `verification/typography-apply/before/{F01,F02,F19}-{375,1280}.png`

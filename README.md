@@ -1,12 +1,10 @@
 # Jaryo
 
-Jaryo is an adaptive black-and-white design language used across [AGIW Suite](https://github.com/louiscalata/agiw-suite), [OPOS](https://github.com/louiscalata/old-phone-os), and [Nisi](https://github.com/louiscalata/nisi).
+Jaryo is a work-in-progress interface design lab for comparing layouts, typography and controls, saving choices in your browser, and exporting preferences. Its designs include monochrome, color and red-accent studies. It is a documentation and design tool, not a production product.
 
-This repository is the interactive design lab: a static local page for comparing curated options, saving choices, and exporting JSON. It is a documentation and design tool, not a production product.
+The lab explores interface ideas for [AGIW Suite](https://github.com/louiscalata/agiw-suite), [Old Phone OS](https://github.com/louiscalata/old-phone-os) and [Nisi](https://github.com/louiscalata/nisi); choosing an option here does not change those projects.
 
 Live lab: [louiscalata.github.io/jaryo](https://louiscalata.github.io/jaryo/) · Project page: [fortheloveof.studio/code/jaryo](https://fortheloveof.studio/code/jaryo/)
-
-Jaryo is a work in progress.
 
 Interface spec, reference screens, and a read-only adaptor spike: [`spec/`](spec/).
 
@@ -15,11 +13,9 @@ Interface spec, reference screens, and a read-only adaptor spike: [`spec/`](spec
 ```bash
 git clone https://github.com/louiscalata/jaryo.git
 cd jaryo
-python3 -m http.server 8765
-# open http://127.0.0.1:8765/
 ```
 
-You can also open `index.html` directly. Embedded data loads if fetch is blocked.
+Open `index.html` in your browser. Embedded data loads if fetch is blocked.
 
 ## What’s in the lab
 

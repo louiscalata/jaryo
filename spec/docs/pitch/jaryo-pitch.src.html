@@ -225,7 +225,7 @@ load_wh        ERR  no credential</pre></div>
             <li><b>Accessibility is partly proven.</b> Contrast and keyboard paths are measured. No screen reader has been used, and the border contrast margin is thin (3.007:1 against a 3:1 minimum).</li>
             <li><b>No physical iPhone.</b> The home-screen (standalone) launch has not been run; its safe-area padding rests on a code review.</li>
             <li><b>Rule not met everywhere.</b> The reference screen still shows a few inert placeholder buttons (Change, Set credential) that its sample adaptor does not declare.</li>
-            <li><b>Open lab items.</b> No repository yet. The native file-picker Esc check is still by hand. Two lab-tool candidates (accessibility, multi-tab) await adoption by the canonical lab's writer; they are not Jaryo features.</li>
+            <li><b>Open checks.</b> The native file-picker Esc check remains manual. Screen-reader and physical-device checks remain unverified.</li>
           </ul>
         </div>
       </div>
@@ -250,7 +250,7 @@ load_wh        ERR  no credential</pre></div>
         <div class="box"><h3>Consequential actions get a review</h3><p>The design requires run, deploy, delete and overwrite to pass a summary that states what will happen and what is blocked, with Cancel focused. Only Run is shown so far.</p></div>
         <div class="box"><h3>A layer, not a platform</h3><p>The intent is an interface over the pipeline you already run, not a canvas where you rebuild it. This is the claim most in need of proof.</p></div>
         <div class="box"><h3>Built for hands and eyes</h3><p>44px targets, a 56px one-handed thumb bar, full keyboard paths, visible focus, state as word plus glyph, and a pure black-and-white mode.</p></div>
-        <div class="box"><h3>Design picks are made</h3><p>17 design picks and 5 owner decisions are recorded, with 15 review rounds and 21 passing jsdom tests. Install route, repository and first pipeline are still open.</p></div>
+        <div class="box"><h3>Design picks are made</h3><p>17 design picks and 5 owner decisions are recorded. The spec, reference screens and tests are in this repository. The install route and first independent pipeline remain open.</p></div>
         <div class="box"><h3>Gaps are written down</h3><p>The spec lists what it has not covered, and so does this page. Reviewer approval is recorded as advice, not as proof that users want it.</p></div>
       </div>
       <div class="cols2">
@@ -299,7 +299,7 @@ load_wh        ERR  no credential</pre></div>
       <div style="display:grid;gap:8px"><h2 id="plan-h">The plan</h2>
       <p class="sub">A proposal, in order, with an exit test for each stage. There are no dates: each stage starts when the one before it passes.</p></div>
       <div class="plan">
-        <div class="stg"><div class="num">0</div><div class="body"><h3>Tidy the base <span class="chip run">▶ [IN PROGRESS]</span></h3><p>Claims re-checked, stale text fixed, phone overflow fixed and reviewed. Left: the owner naming a repository.</p><p class="exit"><b>Exit</b> The spec, screens and tests live in a named repository.</p></div></div>
+        <div class="stg"><div class="num">0</div><div class="body"><h3>Publish the design source <span class="chip run">[COMPLETE]</span></h3><p>The spec, reference screens, adaptor and tests are published in this repository under <code>spec/</code>.</p></div></div>
         <div class="stg"><div class="num">1</div><div class="body"><h3>Close the checks that need no backend</h3><p>Use the reference screens with VoiceOver and NVDA. Run them on a physical iPhone, including the home-screen launch. Do the native file-picker Esc check by hand.</p><p class="exit"><b>Exit</b> Each check has a written pass or fail, and every failure is fixed or listed.</p></div></div>
         <div class="stg"><div class="num">2</div><div class="body"><h3>One real pipeline, read-only</h3><p>Write down the host, adaptor and state boundaries, and choose the install route. Define what an adaptor must declare: steps, links between them, inputs, runs, logs, actions and the reason for any it lacks. Connect one real pipeline and render it. Started: a spike on a self-authored sample pipeline already holds the rule in code. Not yet done: a pipeline written independently.</p><p class="exit"><b>Exit</b> For a named real pipeline, a fixture that omits one referenced step and one status from the adaptor output renders them as UNKNOWN. Every step and state shown matches the pipeline's own run record, and a deliberate guess-a-status change makes a test fail.</p></div></div>
         <div class="stg"><div class="num">3</div><div class="body"><h3>Test with people</h3><p>Proposed: five visually oriented users who don't use a terminal. Five is a starting number, not a sample size. Give each a fixed set of tasks, such as finding why a run is blocked and cancelling a review.</p><p class="exit"><b>Exit</b> Each task has a pass rule written beforehand (for example, 4 of 5 complete it unaided). Failures are fixed before stage 4.</p></div></div>
@@ -309,10 +309,10 @@ load_wh        ERR  no credential</pre></div>
       <div class="box">
         <h3>Decisions needed from the owner</h3>
         <ul>
-          <li><b>Repository and owner</b> for the spec, screens and tests.</li>
+          <li><b>Maintenance ownership:</b> confirm who maintains the spec, screens and tests.</li>
           <li><b>Install route:</b> CLI, MCP, or an MCP-Apps-style host. The landscape suggests riding an existing protocol.</li>
           <li><b>First pipeline: not chosen.</b> Spec decision 5 keeps the lab separate from AGIW Suite, so a pipeline outside it is the default. The AGIW inference monitor fits only if that separation is lifted, and the lab notes disagree on it.</li>
-          <li><b>Lab-tool candidates:</b> the canonical lab's writer adopts or rejects the accessibility and multi-tab candidates. They belong to the design-picking lab, not to Jaryo.</li>
+          <li><b>Lab maintenance:</b> use the repository README and canonical roadmap for the lab’s implemented behavior and outstanding checks.</li>
           <li><b>Go or hold.</b> Recommended: go to stage 1 and then stage 2, and build no more screens before a real pipeline is connected.</li>
         </ul>
       </div>

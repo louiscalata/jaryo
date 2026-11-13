@@ -13,4 +13,4 @@ Non-browser validator: `python3 scripts/validate_lab.py` (expect PASS). Catalog 
 - [ ] Copper is labeled as an example palette, not the default
 
 ## Rollback
-Before applying lab patches: copy files from `astra-1103/scope-b/backups/`. Restore if validate_lab fails.
+Before changing the lab, preserve your uncommitted work and record the current commit. If validation fails, inspect the failure and revert only the changes from that patch.
