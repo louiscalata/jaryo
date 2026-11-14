@@ -2,6 +2,7 @@
  * Pure DOM unit checks (jsdom) — no Shell GUI / no browser automation.
  * Covers Import Tab-order markup, reset surface clear, recovery download binding.
  */
+import "./test_lab_visual_contract.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -348,6 +349,7 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
   const proto = window.Storage.prototype;
   const getItem = proto.getItem;
   const setItem = proto.setItem;
+  const removeItem = proto.removeItem;
   const writes = [];
   let saveFails = false;
   proto.getItem = function (key) {
@@ -358,6 +360,10 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
     if (saveFails && key === storageKey) throw new Error("quota");
     writes.push(key);
     return setItem.call(this, key, value);
+  };
+  proto.removeItem = function (key) {
+    if (saveFails && key === storageKey) throw new Error("quota");
+    return removeItem.call(this, key);
   };
   window.fetch = async () => { throw new Error("offline fixture"); };
   if (!catalogFails) window.JARYO_LAB_DATA = stages
@@ -453,6 +459,34 @@ await persistenceCase("card background selects without hijacking controls", { st
   assert.equal(c.api.exportPayload().choices.F19, undefined, "preview control must not choose its card");
 });
 
+await persistenceCase("text selection inside card does not choose", {}, (c) => {
+  const body = c.document.querySelector('.opt-card[data-id="F01.01"] .body');
+  const text = body.querySelector('*').firstChild;
+  const range = c.document.createRange();
+  range.setStart(text, 0); range.setEnd(text, 1);
+  const selection = c.window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+  body.click();
+  assert.equal(c.window.localStorage.getItem(storageKey), null);
+  selection.removeAllRanges(); body.click();
+  assert.equal(JSON.parse(c.window.localStorage.getItem(storageKey)).choices.F01, "F01.01");
+});
+await persistenceCase("mismatch load then save agrees with envelope", { raw: envelope({ F01: "F01.01" }, "old") }, (c) => {
+  c.document.querySelector('input[value="F01.02"]').click();
+  stateIs(c, "valid", { rejects: [], recoveryRaw: envelope({ F01: "F01.01" }, "old") });
+  const stored = JSON.parse(c.window.localStorage.getItem(storageKey));
+  assert.equal(stored.catalogVersion, curated.version);
+  assert.deepEqual(JSON.parse(JSON.stringify(c.api.exportPayload().choices)), stored.choices);
+});
+await persistenceCase("reset produces clear event for another tab", { raw: envelope({ F01: "F01.01" }) }, async (a) => {
+  const b = await persistenceDom({ raw: envelope({ F01: "F01.01" }) });
+  try {
+    a.api.resetChoices();
+    const value = a.window.localStorage.getItem(storageKey);
+    assert.equal(value, null); b.foreign(value);
+    stateIs(b, "missing", { choices: {}, banner: "Another tab cleared saved selections. This tab dropped them so a later save does not write them back. A saved choice is a preference, not a product change." });
+  } finally { b.close(); }
+});
+
 // Characterization: these cases pass on untouched main as well as the explicit machine.
 for (const [name, raw, status, choices, reasons] of [
   ["missing", null, "missing", {}, []],
@@ -475,12 +509,21 @@ for (const [name, raw, status, choices, reasons] of [
         : name === "non-object" ? "Stored selections were not an object map and were not applied. Raw bytes retained — use Download recovery raw."
         : name === "catalog mismatch" ? `Catalog version in stored/imported envelope differs from this lab (old ≠ ${curated.version}). Valid entries kept; confirm before treating as authoritative.`
         : "Selections save in this browser only (localStorage).";
-      assert.equal(c.state().banner, `${diagnosis} Rejected ${reasons.length} invalid stored entr${reasons.length === 1 ? "y" : "ies"} (status=${status}). A saved choice is a preference, not a product change.`);
+      const n = c.state().rejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
+      assert.equal(c.state().banner, `${diagnosis}${n ? ` Rejected ${n} invalid stored entr${n === 1 ? "y" : "ies"} (status=${status}).` : ""} A saved choice is a preference, not a product change.`);
+      if (!n) assert.doesNotMatch(c.document.getElementById("summary-count").textContent, /rejected stored/);
     }
     if (reasons.length) assert.equal(c.state().recoveryRaw, raw);
     assert.equal(c.writes.length, 0, "loading never writes storage");
   });
 }
+// What Reset wrote before it removed the key: an empty envelope that becomes a
+// catalog mismatch once the catalog version moves. Nothing is malformed.
+await persistenceCase("load/normalize empty envelope with old catalog version", { raw: envelope({}, "old") }, (c) => {
+  stateIs(c, "missing", { choices: {}, rejects: [], recoveryRaw: null, banner: defaultBanner });
+  assert.equal(c.document.getElementById("btn-recovery").hidden, true, "no recovery download");
+  assert.equal(c.writes.length, 0, "loading never writes storage");
+});
 await persistenceCase("load storage unavailable", { readFails: true }, (c) => {
   stateIs(c, "unavailable", { recoveryRaw: null, choices: {}, banner: "Storage unavailable or blocked — choices will not persist: read blocked A saved choice is a preference, not a product change." });
 });
@@ -535,7 +578,7 @@ await persistenceCase("save failure and retry", {}, (c) => {
 await persistenceCase("reset success", { raw: envelope({ F01: "F01.01" }) }, (c) => {
   c.api.resetChoices();
   stateIs(c, "missing", { choices: {}, rejects: [], recoveryRaw: null, envelopeCatalogVersion: null, banner: defaultBanner });
-  assert.deepEqual(JSON.parse(c.window.localStorage.getItem(storageKey)).choices, {});
+  assert.equal(c.window.localStorage.getItem(storageKey), null);
   assert.equal(c.document.getElementById("toast").textContent, "Selections reset and cleared from storage.");
 });
 await persistenceCase("imports reject without mutation and merge valid families", { raw: envelope({ F02: "F02.01" }) }, (c) => {
@@ -547,17 +590,25 @@ await persistenceCase("imports reject without mutation and merge valid families"
   const result = c.api.importPayloadText(envelope({ F01: "F01.02", F99: "x" }));
   assert.equal(result.ok, true);
   assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 1 rejected. Prior families not in import kept. Saved.");
-  stateIs(c, "partial", { choices: { F02: "F02.01", F01: "F01.02" }, recoveryRaw: null, banner: defaultBanner });
+  stateIs(c, "valid", { choices: { F02: "F02.01", F01: "F01.02" }, rejects: [], recoveryRaw: null, banner: defaultBanner });
 });
-await persistenceCase("import mismatch survives successful save", {}, (c) => {
+await persistenceCase("import mismatch clears after successful save", {}, (c) => {
   c.api.importPayloadText(envelope({ F01: "F01.01" }, "old"));
-  stateIs(c, "catalog-mismatch", { banner: "Imported envelope catalogVersion differs from this lab. Valid entries merged; not treated as authoritative without review. A saved choice is a preference, not a product change." });
+  stateIs(c, "valid", { rejects: [], banner: defaultBanner });
+  assert.equal(JSON.parse(c.window.localStorage.getItem(storageKey)).catalogVersion, curated.version);
+});
+await persistenceCase("import mismatch is reported in the import message, not as a rejected entry", {}, (c) => {
+  const result = c.api.importPayloadText(envelope({ F01: "F01.01" }, "old"));
+  assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 0 rejected. Import catalog version differs from this lab; review before treating as authoritative. Prior families not in import kept. Saved.");
+  const mixed = c.api.importPayloadText(envelope({ F01: "F01.02", F99: "x" }, "old"));
+  assert.equal(mixed.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 1 rejected. Import catalog version differs from this lab; review before treating as authoritative. Prior families not in import kept. Saved.");
 });
 await persistenceCase("ordinary save keeps rejected raw; successful import clears recovery", { raw: "{" }, (c) => {
   const radio = c.document.querySelector('input[value="F01.01"]');
   radio.checked = true;
   radio.dispatchEvent(new c.window.Event("change", { bubbles: true }));
-  stateIs(c, "partial", { recoveryRaw: "{", choices: { F01: "F01.01" }, banner: defaultBanner });
+  stateIs(c, "valid", { recoveryRaw: "{", rejects: [], choices: { F01: "F01.01" }, banner: defaultBanner });
+  assert.deepEqual(JSON.parse(JSON.stringify(c.api.exportPayload().rejects)), []);
   c.api.importPayloadText(envelope({ F02: "F02.01" }));
   stateIs(c, "valid", { recoveryRaw: null, choices: { F01: "F01.01", F02: "F02.01" } });
 });
@@ -565,7 +616,7 @@ await persistenceCase("failed import save intentionally keeps merge and mismatch
   c.failSaves();
   const result = c.api.importPayloadText(envelope({ F01: "F01.01" }, "old"));
   assert.equal(result.ok, true);
-  assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 1 rejected. Prior families not in import kept. Kept in memory only (save failed).");
+  assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 0 rejected. Import catalog version differs from this lab; review before treating as authoritative. Prior families not in import kept. Kept in memory only (save failed).");
   stateIs(c, "unavailable", { choices: { F02: "F02.01", F01: "F01.01" }, banner: "Could not save selections (kept in memory only): quota" });
   assert.equal(c.state().rejects[0].reason, "catalog-mismatch");
   assert.deepEqual(JSON.parse(c.window.localStorage.getItem(storageKey)).choices, { F02: "F02.01" });

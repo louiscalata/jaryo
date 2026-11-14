@@ -242,10 +242,10 @@ for (const rm of ["no-preference", "reduce"]) {
     const d = document.querySelector("#cards .dash"); const s = d && getComputedStyle(d);
     const btn = getComputedStyle(document.querySelector(".btn"));
     const note = document.querySelector(".motion-note"); 
-    return { anim: s && s.animationName, dur: s && s.animationDuration, btnTransition: btn.transitionDuration, scroll: getComputedStyle(document.documentElement).scrollBehavior, noteShown: note ? getComputedStyle(note).display !== "none" : null };
+    return { anim: s && s.animationName, dur: s && s.animationDuration, iterations: s && s.animationIterationCount, fill: s && s.animationFillMode, btnTransition: btn.transitionDuration, scroll: getComputedStyle(document.documentElement).scrollBehavior, noteShown: note ? getComputedStyle(note).display !== "none" : null };
   });
   if (rm === "reduce") check("reduced-motion: dash animation off, transitions ~0, smooth scroll off, note shown", r.anim === "none" && parseFloat(r.btnTransition) < 0.01 && r.scroll === "auto" && r.noteShown === true, r);
-  else check("default motion: dash animates, transitions on", r.anim === "dashmove" && parseFloat(r.btnTransition) > 0 && r.noteShown === false, r);
+  else check("default motion: dash animates, transitions on", r.anim === "dashmove" && r.iterations === "1" && r.fill === "forwards" && parseFloat(r.btnTransition) > 0 && r.noteShown === false, r);
   if (shotDir && rm === "reduce") await page.screenshot({ path: path.join(shotDir, "reduced-motion-F13-1280.png") });
   await ctx.close();
 }
@@ -253,6 +253,8 @@ for (const rm of ["no-preference", "reduce"]) {
 // 5) Narrow usability: hit targets at 260
 {
   const { ctx, page } = await open({ width: 260, tag: "w260" });
+  for (const family of ["F01", "F18", "F19"]) {
+  await page.click(`[data-fam="${family}"]`);
   const small = await page.evaluate(() => [...document.querySelectorAll("button, select, .choose-label")].filter((e) => e.offsetParent).map((e) => {
     const r = e.getBoundingClientRect();
     let scroller = false;
@@ -261,7 +263,8 @@ for (const rm of ["no-preference", "reduce"]) {
     }
     return { t: (e.id || e.className || e.tagName) + "", w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right), left: Math.round(r.left), scroller };
   }).filter((x) => x.h < 44 || x.w < 44 || (!x.scroller && (x.right > 260 || x.left < 0))));
-  check("w=260: all visible controls >=44x44 and inside viewport", small.length === 0, small.slice(0, 10));
+  check(`w=260: ${family} visible controls >=44x44 and inside viewport`, small.length === 0, small.slice(0, 10));
+  }
   if (shotDir) { await page.click('[data-fam="F17"]'); await page.locator("#section-title").scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shotDir, "light-260-F17-cards.png") }); }
   await ctx.close();
 }
