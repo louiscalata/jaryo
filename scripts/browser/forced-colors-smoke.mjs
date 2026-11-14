@@ -89,6 +89,15 @@ const focused = await page.evaluate(() => {
 });
 check("focused control stays visible and keeps its text", landed && focused.focusVisible && focused.text.length > 0 && focused.w >= 44 && focused.h >= 44 && focused.visibility !== "hidden" && focused.outline !== "none", focused);
 
+await page.click('[data-fam="F19"]');
+const pressed = await page.evaluate(() => [...document.querySelectorAll('.jstage button[aria-pressed="true"]')].map((on) => {
+  const off = on.parentElement.querySelector('button[aria-pressed="false"]');
+  const a = getComputedStyle(on), b = off && getComputedStyle(off);
+  return { group: on.parentElement.className, text: on.textContent.trim(), onBackground: a.backgroundColor, offBackground: b ? b.backgroundColor : null, onColor: a.color };
+}));
+const pressedSame = pressed.filter((p) => !p.text || p.offBackground === null || p.onBackground === p.offBackground);
+check("every pressed preview control has visible text and a background unlike its unpressed sibling", pressed.some((p) => p.group.includes("toolrow")) && pressed.some((p) => p.group.includes("jstage-bar")) && pressedSame.length === 0, { count: pressed.length, same: pressedSame.slice(0, 10) });
+
 const lost = await page.evaluate(() => {
   const nodes = [...document.querySelectorAll("h1, h2, h3, .choose-text, .chosen-marker, .btn, .navbtn")];
   return nodes.filter((el) => {

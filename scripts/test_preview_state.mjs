@@ -191,8 +191,9 @@ for (const rebuild of ["reset", "foreign", "import"]) {
       assert.equal(c.querySelector(".jstage-view").getAttribute("data-frame"), "desk");
       assert.equal(c.querySelector('[data-frame-set="desk"]').getAttribute("aria-pressed"), "true");
       assert.equal(c.querySelector(".red").getAttribute("data-tone"), "dark");
-      const saved = JSON.parse(localStorage.getItem("jaryo-adaptive-lab-choices-v1"));
-      assert.deepEqual(Object.keys(saved), ["schemaVersion", "catalogVersion", "revision", "writerId", "choices"]);
+      const saved = localStorage.getItem("jaryo-adaptive-lab-choices-v1");
+      if (rebuild === "reset") assert.equal(saved, null);
+      else assert.deepEqual(Object.keys(JSON.parse(saved)), ["schemaVersion", "catalogVersion", "revision", "writerId", "choices"]);
     } finally { dom.window.close(); }
   });
 }
