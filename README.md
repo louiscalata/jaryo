@@ -22,7 +22,7 @@ Open `index.html` in your browser. Embedded data loads if fetch is blocked.
 - 19 families · 85 curated + 12 optional (97 total). The 85 curated options are 80 monochrome (F01–F16) and 5 color (F17). The 12 optional options are 8 legacy studies (F18) and 4 Red interactive UI (F19).
 - Theme: System / Light / Dark (persisted separately from choices)
 - Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md)). Latin OFL faces load from `assets/fonts/`; licenses are in [docs/FONTS.md](docs/FONTS.md).
-- Token export: `tokens/jaryo.tokens.json` (DTCG 2025.10), written by `scripts/export_tokens.py` from `lab.css`. Export only; AGIW Suite and OPOS do not consume this file yet.
+- Token export: `tokens/jaryo.tokens.json` (DTCG-inspired string-value format; not DTCG 2025.10 conformant), written by `scripts/export_tokens.py` from `lab.css`. Export only; AGIW Suite and OPOS do not consume this file yet.
 - Layouts from about 260px wide to desktop
 - Keyboard support for option groups and tabs (arrow keys, Home/End, Space)
 - Reduced-motion support via `prefers-reduced-motion`
@@ -47,9 +47,18 @@ Open `index.html` in your browser. Embedded data loads if fetch is blocked.
 
 ```bash
 python3 scripts/validate_lab.py
-node scripts/test_persistence_rules.mjs
+python3 scripts/export_tokens.py --check
+python3 scripts/test_export_tokens.py
+python3 scripts/check_assets.py
 node --check lab.js
+node --check lab-stages.js
+node scripts/test_persistence_rules.mjs
+node scripts/test_smoke_cli.mjs
+node scripts/test_focus_coverage.mjs
+node scripts/test_lab_dom.mjs
 ```
+
+The DOM check requires jsdom; see [AGENTS.md](AGENTS.md#static-and-dom-checks) for setup and spec checks.
 
 Browser smoke and axe scripts live under `scripts/browser/` and need Playwright. Run browser checks on the PC or hosted Linux runners; Mac checks stay browser-free (see [AGENTS.md](AGENTS.md#ci-and-browser-boundary)).
 
