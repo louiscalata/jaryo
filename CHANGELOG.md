@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - A save re-reads stored choices first and adopts another tab's newer write instead of overwriting it; the change is kept on screen until it is made again. The envelope format is unchanged and the re-read and write are not atomic.
+- On narrow screens the next tap or key press dismisses the toast, and while it shows the page reserves its height so focused controls and the page end can scroll clear of it.
+- The F06.08 hatched preview label sits on a solid plate instead of the stripes; a source check now rejects text placed directly on a gradient.
 
 ## [0.2.0] - 2026-11-09
 

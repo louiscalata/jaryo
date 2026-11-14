@@ -83,9 +83,9 @@ Historical verification recorded 2026-11-09 in headless Chromium. Details: [VERI
 ## Known limits
 
 - Two open tabs share one saved envelope. After another tab's storage event arrives, this tab adopts those saved choices before its next save. Each save also re-reads storage first. If another tab wrote since this tab last read it, this tab loads that write instead of overwriting it, keeps its own change on screen only, and saves it when the change is made again. Any later successful save from this tab also writes the kept change, because a save writes every displayed choice. If the other tab wrote twice before this tab's save, the storage event for its first write arrives after that save and does not match what this tab loaded, so this tab briefly shows the first write and drops its kept change; the event for the second write then loads the latest write. Nothing stored is lost, but the kept change has to be made again. An unreadable write is left in place and the banner warns that saving would overwrite it. The re-read and the write are two separate storage calls, not one atomic step, so a write from another tab that lands between them can still be overwritten. Reset is not checked this way; it clears whatever is stored.
-- On narrow screens the toast covers content for about 3 seconds
+- On narrow screens (480px and below) the full-width toast still overlaps the bottom of the screen until the next tap or key press, or for about 3 seconds. Taps pass through it, and while it shows the page reserves its height so focused controls and the end of the page can scroll clear of it. That behavior is checked in jsdom only; browser rendering of the reserved space is NOT_RUN.
 - Preview mocks stay light “paper” in dark theme by design
-- Text over gradients was not hand-checked for contrast
+- Text in the lab no longer sits directly on a CSS gradient: hatch strips are padded clear of their text, and the F06.08 hatched preview puts its label on a solid #000-on-#fff plate (21:1). `scripts/test_lab_visual_contract.mjs` fails on any new gradient that is not one of these two cases. This is a source check of `lab.css`, `lab-stages.css` and the lab markup, not a rendered-pixel measurement, and it does not cover `spec/`.
 
 ## License
 

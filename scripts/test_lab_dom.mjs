@@ -345,7 +345,7 @@ const defaultBanner = "Selections save in this browser only (localStorage). A sa
 // sharedStore (a Map) stands in for the one localStorage area that two tabs of
 // the same origin share: both windows read and write the choices key there, and
 // no storage event is delivered unless the test forwards one with foreign().
-async function persistenceDom({ raw = null, readFails = false, catalogFails = false, stages = false, sharedStore = null } = {}) {
+async function persistenceDom({ raw = null, readFails = false, catalogFails = false, stages = false, sharedStore = null, narrow = false } = {}) {
   const dom = new JSDOM(html, { url: "https://jaryo.test/", runScripts: "outside-only" });
   const { window } = dom;
   if (raw !== null) {
@@ -379,7 +379,11 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
   if (!catalogFails) window.JARYO_LAB_DATA = stages
     ? JSON.parse(fs.readFileSync(path.join(LAB, "data/curated-extended.json"), "utf8"))
     : curated;
-  window.setTimeout = () => 0;
+  // Timers never fire on their own; runTimers() fires the ones queued so far.
+  const timers = [];
+  window.setTimeout = (fn) => { timers.push(fn); return timers.length; };
+  // jsdom has no matchMedia. A narrow test answers the lab's 480px query as a phone would.
+  if (narrow) window.matchMedia = (query) => ({ matches: query === "(max-width: 480px)", media: query, addEventListener() {}, removeEventListener() {} });
   if (stages) window.eval(fs.readFileSync(path.join(LAB, "lab-stages.js"), "utf8"));
   window.eval(labJs.replace('document.addEventListener("DOMContentLoaded", boot);', `
     window.__persistenceTest = { boot, saveChoices, resetChoices, importPayloadText, exportPayload,
@@ -400,6 +404,7 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
       banner: window.document.getElementById("storage-banner").textContent,
       bannerClass: window.document.getElementById("storage-banner").className,
     })),
+    runTimers: () => { for (const fn of timers.splice(0)) if (typeof fn === "function") fn(); },
     close: () => window.close(),
   };
 }
@@ -843,6 +848,58 @@ await persistenceCase("regression: own Reset then pick saves without a false con
     assert.equal(a.document.getElementById("toast").textContent, "Chose F02.01. Preference only — not production validation.");
     stateIs(a, "valid", { banner: defaultBanner });
   } finally { a.close(); }
+});
+// Narrow toast: on a phone-width screen the next tap or key press dismisses the
+// toast, and while it shows the page reserves its height so focus and the page
+// end can scroll clear of it. Wide screens keep the timed corner toast.
+const toastState = (c) => ({
+  shown: c.document.getElementById("toast").classList.contains("show"),
+  open: c.document.documentElement.classList.contains("toast-open"),
+  clear: c.document.documentElement.style.getPropertyValue("--toast-clear"),
+});
+await persistenceCase("narrow toast: the next tap dismisses it and releases the reserved space", { narrow: true }, async (c) => {
+  pickIn(c, "F02.01");
+  const before = toastState(c);
+  assert.equal(before.shown, true);
+  assert.equal(before.open, true, "the page reserves space while the narrow toast shows");
+  assert.match(before.clear, /^\d+px$/);
+  c.document.body.dispatchEvent(new c.window.Event("pointerdown", { bubbles: true }));
+  assert.deepEqual(toastState(c), { shown: false, open: false, clear: "" });
+});
+await persistenceCase("narrow toast: Escape or any key dismisses it", { narrow: true }, async (c) => {
+  pickIn(c, "F02.01");
+  c.document.body.dispatchEvent(new c.window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  assert.deepEqual(toastState(c), { shown: false, open: false, clear: "" });
+});
+await persistenceCase("narrow toast: a key that itself chooses leaves the new toast up", { narrow: true }, async (c) => {
+  pickIn(c, "F02.01");
+  const radio = c.document.querySelector('input[value="F02.01"]');
+  radio.dispatchEvent(new c.window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+  const next = c.document.querySelector('#cards input[type="radio"]:checked').value;
+  assert.notEqual(next, "F02.01", "ArrowRight moved the choice");
+  assert.equal(c.document.getElementById("toast").textContent, `Chose ${next}. Preference only — not production validation.`);
+  assert.equal(toastState(c).shown, true);
+  assert.equal(toastState(c).open, true);
+});
+await persistenceCase("narrow toast: the timeout also releases the reserved space", { narrow: true }, async (c) => {
+  pickIn(c, "F02.01");
+  c.runTimers();
+  assert.deepEqual(toastState(c), { shown: false, open: false, clear: "" });
+});
+await persistenceCase("wide toast: a tap does not dismiss it and nothing is reserved", {}, async (c) => {
+  pickIn(c, "F02.01");
+  c.document.body.dispatchEvent(new c.window.Event("pointerdown", { bubbles: true }));
+  assert.deepEqual(toastState(c), { shown: true, open: false, clear: "" });
+  c.runTimers();
+  assert.equal(toastState(c).shown, false);
+});
+await persistenceCase("F06.08 hatched preview: its text sits on the solid plate, not the stripes", {}, async (c) => {
+  c.document.querySelector('[data-fam="F06"]').click();
+  const hatched = c.document.querySelector('.preview-stage[data-preview="F06.08"] .hatched');
+  assert.ok(hatched, "F06.08 renders its hatched preview");
+  const loose = [...hatched.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim());
+  assert.deepEqual(loose.map((n) => n.textContent), [], "no text directly on the stripes");
+  assert.equal(hatched.querySelector(":scope > .hatch-label").textContent, "/ n/a /");
 });
 console.log(`TOTAL ${persistencePassed} / ${persistencePassed + persistenceFailed} persistence DOM cases`);
 if (persistenceFailed) process.exitCode = 1;

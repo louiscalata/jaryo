@@ -417,6 +417,8 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 .color-preview .bar { height: 18px; margin: 2px 0; border: 1px solid #000; }
 .color-preview .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .hatched { background: repeating-linear-gradient(-45deg, #fff 0 5px, #000 5px 6px); }
+/* Text never sits on the stripes: it gets a solid paper plate (#000 on #fff, 21:1). */
+.hatch-label { background: #ffffff; color: #000000; border: 1px solid #000000; padding: 2px 6px; }
 
 /* ============ Native choice radios ============ */
 .choose-label {
@@ -469,6 +471,9 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
   .summary-table th, .summary-table td { padding: var(--s1) 6px; font-size: var(--fs-1); }
   .frame { min-height: 0; }
   .toast { left: var(--s2); right: var(--s2); bottom: var(--s2); max-width: none; }
+  /* lab.js sets --toast-clear while the narrow toast shows; the next tap or key dismisses it. */
+  html.toast-open { scroll-padding-bottom: var(--toast-clear, 0px); }
+  html.toast-open body { padding-bottom: var(--toast-clear, 0px); }
 }
 @media (max-width: 300px) {
   .opt-card .body { padding: var(--s2); }
