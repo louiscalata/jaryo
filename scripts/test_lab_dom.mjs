@@ -342,27 +342,37 @@ await new Promise((r) => setTimeout(r, 50));
 // No resource loader, network, browser engine, or application test double is used.
 const storageKey = "jaryo-adaptive-lab-choices-v1";
 const defaultBanner = "Selections save in this browser only (localStorage). A saved choice is a preference, not a product change.";
-async function persistenceDom({ raw = null, readFails = false, catalogFails = false, stages = false } = {}) {
+// sharedStore (a Map) stands in for the one localStorage area that two tabs of
+// the same origin share: both windows read and write the choices key there, and
+// no storage event is delivered unless the test forwards one with foreign().
+async function persistenceDom({ raw = null, readFails = false, catalogFails = false, stages = false, sharedStore = null } = {}) {
   const dom = new JSDOM(html, { url: "https://jaryo.test/", runScripts: "outside-only" });
   const { window } = dom;
-  if (raw !== null) window.localStorage.setItem(storageKey, raw);
+  if (raw !== null) {
+    if (sharedStore) sharedStore.set(storageKey, raw);
+    else window.localStorage.setItem(storageKey, raw);
+  }
   const proto = window.Storage.prototype;
   const getItem = proto.getItem;
   const setItem = proto.setItem;
   const removeItem = proto.removeItem;
   const writes = [];
   let saveFails = false;
+  const shared = (area, key) => sharedStore && key === storageKey && area === window.localStorage;
   proto.getItem = function (key) {
     if (readFails && key === storageKey) throw new Error("read blocked");
+    if (shared(this, key)) return sharedStore.has(key) ? sharedStore.get(key) : null;
     return getItem.call(this, key);
   };
   proto.setItem = function (key, value) {
     if (saveFails && key === storageKey) throw new Error("quota");
     writes.push(key);
+    if (shared(this, key)) { sharedStore.set(key, String(value)); return undefined; }
     return setItem.call(this, key, value);
   };
   proto.removeItem = function (key) {
     if (saveFails && key === storageKey) throw new Error("quota");
+    if (shared(this, key)) { sharedStore.delete(key); return undefined; }
     return removeItem.call(this, key);
   };
   window.fetch = async () => { throw new Error("offline fixture"); };
@@ -689,6 +699,151 @@ for (const [raw, status, choices] of [[null, "missing", {}], [envelope({ F02: "F
     assert.equal(c.writes.length, 0);
   });
 }
+
+// Concurrent saves: two windows share one storage area. Tab B saves after tab A
+// loaded and before A's storage event arrives. A's save must not clobber B.
+const conflictBanner = "Another tab saved selections before this save. This tab loaded them and did not write. Your change is kept on screen only; make it again to save it. A saved choice is a preference, not a product change.";
+const pickIn = (c, id) => {
+  c.document.querySelector(`[data-fam="${id.slice(0, 3)}"]`).click();
+  c.document.querySelector(`input[value="${id}"]`).click();
+};
+await persistenceCase("regression: concurrent save does not overwrite another tab", {}, async () => {
+  const store = new Map();
+  store.set(storageKey, envelope({ F03: "F03.01" }));
+  const a = await persistenceDom({ sharedStore: store });
+  const b = await persistenceDom({ sharedStore: store });
+  try {
+    pickIn(b, "F02.03");
+    const bRaw = store.get(storageKey);
+    assert.deepEqual(JSON.parse(bRaw).choices, { F03: "F03.01", F02: "F02.03" });
+    const bWriter = JSON.parse(bRaw).writerId;
+    pickIn(a, "F01.02");
+    assert.equal(store.get(storageKey), bRaw, "tab A must not overwrite tab B's newer save");
+    stateIs(a, "valid", { choices: { F03: "F03.01", F02: "F02.03", F01: "F01.02" }, banner: conflictBanner });
+    assert.equal(a.document.getElementById("toast").textContent, "Chose F01.02 on screen only: another tab saved first. Choose it again to save.");
+    assert.ok(a.document.querySelector('.opt-card[data-id="F01.02"]').classList.contains("chosen"), "the unsaved pick stays visible");
+    // The delayed storage event for B's write must not drop A's kept pick.
+    a.foreign(bRaw);
+    assert.deepEqual(a.state().choices, { F03: "F03.01", F02: "F02.03", F01: "F01.02" });
+    // Retry: A has now seen B's write, so its save goes through and keeps B's family.
+    pickIn(a, "F01.02");
+    const merged = JSON.parse(store.get(storageKey));
+    assert.notEqual(merged.writerId, bWriter);
+    assert.deepEqual(merged.choices, { F03: "F03.01", F02: "F02.03", F01: "F01.02" });
+    assert.equal(merged.revision, 1, "envelope format is unchanged");
+    stateIs(a, "valid", { banner: defaultBanner });
+  } finally { a.close(); b.close(); }
+});
+await persistenceCase("regression: concurrent save after the same tab wrote twice", {}, async () => {
+  // B writes, A adopts B through its event, B writes again with the same writerId
+  // before A hears of it: comparing writerId alone would miss the second write.
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store });
+  const b = await persistenceDom({ sharedStore: store });
+  try {
+    pickIn(b, "F02.01");
+    a.foreign(store.get(storageKey));
+    pickIn(b, "F02.04");
+    const bRaw = store.get(storageKey);
+    pickIn(a, "F01.01");
+    assert.equal(store.get(storageKey), bRaw);
+    assert.deepEqual(a.state().choices, { F02: "F02.04", F01: "F01.01" });
+  } finally { a.close(); b.close(); }
+});
+await persistenceCase("regression: concurrent clear and unreadable write are not overwritten silently", {}, async () => {
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store, raw: envelope({ F01: "F01.01" }) });
+  try {
+    store.delete(storageKey);
+    pickIn(a, "F02.01");
+    assert.equal(store.has(storageKey), false, "a clear from another tab is not undone by a stale save");
+    assert.deepEqual(a.state().choices, { F02: "F02.01" }, "cleared families are dropped; the new pick is kept");
+    assert.equal(a.state().banner, "Another tab cleared saved selections before this save. This tab did not write. Your change is kept on screen only; make it again to save it. A saved choice is a preference, not a product change.");
+    pickIn(a, "F02.01");
+    assert.deepEqual(JSON.parse(store.get(storageKey)).choices, { F02: "F02.01" });
+    store.set(storageKey, "{");
+    pickIn(a, "F03.01");
+    assert.equal(store.get(storageKey), "{", "an unreadable write is not overwritten without a warning first");
+    assert.equal(a.state().banner, "Another tab wrote selections this tab could not read. This tab did not write. A save here would overwrite that tab. A saved choice is a preference, not a product change.");
+    assert.deepEqual(a.state().choices, { F02: "F02.01", F03: "F03.01" });
+    pickIn(a, "F03.01");
+    assert.deepEqual(JSON.parse(store.get(storageKey)).choices, { F02: "F02.01", F03: "F03.01" }, "after the warning a retry overwrites, as the banner said");
+  } finally { a.close(); }
+});
+await persistenceCase("regression: concurrent import is kept on screen, not written", {}, async () => {
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store });
+  const b = await persistenceDom({ sharedStore: store });
+  try {
+    pickIn(b, "F02.05");
+    const bRaw = store.get(storageKey);
+    const result = a.api.importPayloadText(envelope({ F01: "F01.03" }));
+    assert.equal(result.ok, true);
+    assert.equal(result.message, "Merged 1 validated choice(s) (1 changed, 0 already same); 0 rejected. Prior families not in import kept. Not saved: another tab saved first. Its selections were loaded and this import is kept on screen; import again to save.");
+    assert.equal(store.get(storageKey), bRaw);
+    assert.deepEqual(a.state().choices, { F02: "F02.05", F01: "F01.03" });
+  } finally { a.close(); b.close(); }
+});
+await persistenceCase("stored text with this tab's own writerId is not a conflict", {}, async () => {
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store });
+  try {
+    const self = a.api.exportPayload().writerId;
+    store.set(storageKey, JSON.stringify({ schemaVersion: 1, catalogVersion: curated.version, revision: 1, writerId: self, choices: { F03: "F03.01" } }));
+    pickIn(a, "F01.01");
+    assert.deepEqual(JSON.parse(store.get(storageKey)).choices, { F01: "F01.01" }, "this tab's own write is replaced, not adopted");
+    stateIs(a, "valid", { banner: defaultBanner });
+  } finally { a.close(); }
+});
+await persistenceCase("legacy bare map loads and saves without a conflict", { raw: '{"F01":"F01.01"}' }, (c) => {
+  pickIn(c, "F02.01");
+  const stored = JSON.parse(c.window.localStorage.getItem(storageKey));
+  assert.deepEqual(stored.choices, { F01: "F01.01", F02: "F02.01" });
+  stateIs(c, "valid", { banner: defaultBanner });
+});
+// A pick kept on screen after a conflict is already checked, so its radio fires
+// no change event. Each retry path below must save it on its own.
+async function keptPickAfterConflict(run) {
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store });
+  const b = await persistenceDom({ sharedStore: store });
+  try {
+    pickIn(b, "F02.03");
+    const bRaw = store.get(storageKey);
+    pickIn(a, "F01.02");
+    assert.equal(store.get(storageKey), bRaw, "the first save is a conflict and does not write");
+    a.foreign(bRaw);
+    const radio = a.document.querySelector('input[value="F01.02"]');
+    assert.equal(radio.checked, true, "the kept pick is checked on screen");
+    await run(a, radio);
+    assert.deepEqual(JSON.parse(store.get(storageKey)).choices, { F02: "F02.03", F01: "F01.02" }, "the retry saves the kept pick on top of the other tab");
+    stateIs(a, "valid", { banner: defaultBanner });
+  } finally { a.close(); b.close(); }
+}
+await persistenceCase("regression: Space on the kept radio saves it after a conflict", {}, async () => {
+  await keptPickAfterConflict((a, radio) => {
+    const event = new a.window.KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true });
+    radio.dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true);
+  });
+});
+await persistenceCase("regression: card background on the kept pick saves it after a conflict", {}, async () => {
+  await keptPickAfterConflict((a) => {
+    a.document.querySelector('.opt-card[data-id="F01.02"] .body').click();
+  });
+});
+await persistenceCase("regression: own Reset then pick saves without a false conflict", {}, async () => {
+  const store = new Map();
+  const a = await persistenceDom({ sharedStore: store, raw: envelope({ F01: "F01.01" }) });
+  try {
+    a.document.getElementById("btn-reset").click();
+    assert.equal(store.has(storageKey), false, "Reset clears the shared store");
+    pickIn(a, "F02.01");
+    assert.deepEqual(JSON.parse(store.get(storageKey)).choices, { F02: "F02.01" }, "the first save after an own Reset writes");
+    assert.equal(a.document.getElementById("toast").textContent, "Chose F02.01. Preference only — not production validation.");
+    stateIs(a, "valid", { banner: defaultBanner });
+  } finally { a.close(); }
+});
 console.log(`TOTAL ${persistencePassed} / ${persistencePassed + persistenceFailed} persistence DOM cases`);
 if (persistenceFailed) process.exitCode = 1;
 console.log(`test_lab_dom: ${persistenceFailed ? "FAIL" : "PASS"}`);

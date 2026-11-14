@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `spec/`: interface spec v0.5e (a design spec, not a production build), reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page.
 - Explicit saved-choice persistence status keeps reset failures, unreadable foreign writes, recovery controls and exported status consistent.
 
+### Fixed
+
+- A save re-reads stored choices first and adopts another tab's newer write instead of overwriting it; the change is kept on screen until it is made again. The envelope format is unchanged and the re-read and write are not atomic.
+
 ## [0.2.0] - 2026-11-09
 
 ### Added

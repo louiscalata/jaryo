@@ -102,7 +102,7 @@ Real Safari on Apple hardware, physical phones, screen readers and Windows force
 
 The catalog phrase is `19 families · 85 curated + 12 optional (97 total)`. F01–F17 are curated; F18/F19 are optional. Keep README, static navigation, generated navigation and validation consistent with the catalog.
 
-Escape catalog and storage text with `esc()` before inserting it into HTML. Choices use `jaryo-adaptive-lab-choices-v1` in localStorage with a writerId. A received foreign localStorage event adopts the saved choices without writing back; unreadable payloads keep displayed choices and warn. Ignore sessionStorage events. Clear events drop saved choices so a later save does not resurrect them. Simultaneous saves can still overwrite each other.
+Escape catalog and storage text with `esc()` before inserting it into HTML. Choices use `jaryo-adaptive-lab-choices-v1` in localStorage with a writerId. A received foreign localStorage event adopts the saved choices without writing back; unreadable payloads keep displayed choices and warn. Ignore sessionStorage events. Clear events drop saved choices so a later save does not resurrect them. Each save re-reads the stored text and, if another tab wrote since this tab last read, wrote or adopted it, takes the foreign-adopt path without writing and keeps the pending change on screen until it is made again. Only the late storage event whose text matches the adopted write is skipped; if the other tab wrote twice first, the earlier event re-adopts the older write and drops the kept change (see README Known limits). The re-read and the write are not atomic, so a write landing between them can still be overwritten; Reset is unchecked.
 
 ## Design
 
