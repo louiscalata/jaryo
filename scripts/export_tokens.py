@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write tokens/jaryo.tokens.json from the custom properties in lab.css.
 
-DTCG format dated 2025.10: each token has $type and $value.
+DTCG-inspired string-value export; this is not a DTCG 2025.10 conformant file.
 Groups: color (light and dark), dimension, fontFamily, fontWeight, typography.
 Font stacks are copied from the CSS. This script does not choose a face.
 """
@@ -15,6 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CSS = ROOT / "lab.css"
 OUT = ROOT / "tokens" / "jaryo.tokens.json"
+
+IGNORED = {"lh", "lh-tight", "lh-body", "lh-ui", "dur", "dur-2", "ease", "hatch"}
 
 DESCRIPTION = "Export only. AGIW Suite and OPOS do not consume this file yet."
 
@@ -34,7 +36,7 @@ def brace_block(css: str, marker: str) -> str:
 
 def declarations(block: str) -> dict[str, str]:
     found: dict[str, str] = {}
-    for name, value in re.findall(r"--([A-Za-z0-9-]+)\s*:\s*([^;]+);", block):
+    for name, value in re.findall(r"--([^\s:;{}]+)\s*:\s*([^;]+)(?:;|\Z)", block):
         found[name] = " ".join(value.split())
     return found
 
@@ -74,6 +76,9 @@ def build() -> dict:
     css = css_text()
     light = declarations(brace_block(css, ":root {"))
     dark = declarations(brace_block(css, ':root[data-theme="dark"]'))
+    system_dark = declarations(brace_block(css, ':root:not([data-theme="light"])'))
+    if system_dark != dark:
+        raise SystemExit("system-dark declarations differ from explicit dark declarations")
 
     colors_light = {}
     colors_dark = {}
@@ -99,10 +104,15 @@ def build() -> dict:
             ref = re.search(r"var\(--([A-Za-z0-9-]+)\)", value)
             if ref:
                 families[name] = {"$type": "fontFamily", "$value": "{fontFamily." + ref.group(1) + "}"}
+                continue
+        if name not in IGNORED:
+            raise SystemExit(f"unclassified light declaration: --{name}: {value}")
 
     for name, value in dark.items():
         if re.fullmatch(r"#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?", value):
             colors_dark[name] = color_token(value)
+        else:
+            raise SystemExit(f"unclassified dark declaration: --{name}: {value}")
 
     typography = {
         "body": {

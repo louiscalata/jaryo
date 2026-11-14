@@ -10,7 +10,7 @@ Report the checks that actually ran. Use NOT_RUN with a reason for missing evide
 - `data/curated-85.json` — the original 17 families and 85 option records. Preserve their IDs and content; whole-file byte identity is not a historical guarantee.
 - `data/curated-extended.json` and `data/embedded-data.js` — 19 families and 97 options, including optional F18/F19.
 - `assets/fonts/` — bundled IBM Plex Sans, IBM Plex Mono and Libre Baskerville. Licenses: `docs/FONTS.md`.
-- `tokens/jaryo.tokens.json` — DTCG export from `scripts/export_tokens.py`. An export is not proof that another product consumes it.
+- `tokens/jaryo.tokens.json` — DTCG-inspired string-value export from `scripts/export_tokens.py`. An export is not proof that another product consumes it.
 - `scripts/` — validators, persistence and DOM tests; browser scripts are under `scripts/browser/`.
 - `spec/` — interface spec, reference screens, read-only adaptor and sample pipeline, separate from the lab.
 - `spec/HASHES.txt` — tracked reference, adaptor and pipeline hashes. Update it in the same change that edits a listed file.
@@ -34,11 +34,13 @@ Then run:
 ```bash
 python3 scripts/validate_lab.py
 python3 scripts/export_tokens.py --check
+python3 scripts/test_export_tokens.py
 python3 scripts/check_assets.py
 node --check lab.js
 node --check lab-stages.js
 node scripts/test_persistence_rules.mjs
 node scripts/test_smoke_cli.mjs
+node scripts/test_focus_coverage.mjs
 node scripts/test_lab_dom.mjs
 ( cd spec && shasum -a 256 -c HASHES.txt )
 ```
@@ -47,12 +49,16 @@ Missing jsdom is a failure. Do not report a static-only result as a DOM pass. CI
 
 To inspect the static lab, `python3 -m http.server 8765 --bind 127.0.0.1` serves the repository. Opening `index.html` directly also supports embedded catalog data when fetch is unavailable. Do not start a server unless it is needed for the assigned task.
 
-From `spec/`, these checks are also available:
+From `spec/`, CI also runs these checks:
 
 ```bash
 node pipeline/check-tokens.mjs
 node pipeline/check-contrast.mjs
+node tests/check-tokens.test.mjs
 node tests/adaptor.test.mjs
+JSDOM="$JARYO_JSDOM_PATH" node tests/decisions.test.mjs reference/index.html
+JSDOM="$JARYO_JSDOM_PATH" node tests/render.test.mjs
+JSDOM="$JARYO_JSDOM_PATH" node tests/reference-a11y.test.mjs
 ```
 
 The adaptor test creates private temporary fixtures; it does not rewrite the tracked pipeline runs.
@@ -65,7 +71,7 @@ The workflow runs on push and pull_request with four jobs. This table describes 
 
 | Job | Same-repository event | Fork pull request | Coverage |
 | --- | --- | --- | --- |
-| `check` | self-hosted `mac-m5` | hosted `ubuntu-latest` | Python/Node/static/DOM checks and spec hashes |
+| `check` | self-hosted `mac-m5` | hosted `ubuntu-latest` | Python/Node/static/DOM checks, spec checks and spec hashes |
 | `browsers` | self-hosted `pc-win` | hosted `ubuntu-24.04` | Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 |
 | `forced-colors` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium forced-colors emulation |
 | `chromium` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium smoke at 1280, 375 and 260 plus default-view axe checks in light/dark at 1280 and 375 |
