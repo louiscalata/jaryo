@@ -24,6 +24,16 @@
   /** @type {string|null} catalogVersion from loaded/imported envelope when present */
   let envelopeCatalogVersion = null;
   const writerId = "lab-" + Math.random().toString(36).slice(2, 10);
+  // Compare-and-swap baseline: the stored text this tab last loaded, wrote or
+  // adopted. A save first re-reads storage; different text means another tab
+  // wrote since, so this tab adopts that write instead of overwriting it.
+  /** @type {string|null} */
+  let lastSeenRaw = null;
+  /** @type {string|null|undefined} text adopted by a save conflict; its late storage event is skipped once */
+  let conflictRaw;
+  let lastSaveConflict = false;
+  /** @type {Record<string,string>} picks kept on screen after a conflict; choosing one again saves it */
+  let unsavedChoices = {};
   /** @type {Record<string, Set<string>>} */
   let expandedByFamily = {};
 
@@ -101,6 +111,13 @@
       words = "Another tab saved selections. This tab loaded them so a later save does not overwrite that tab.";
       if (next === "catalog-mismatch") words += " Catalog version differs from this lab.";
     }
+    const keptOnScreen = " Your change is kept on screen only; make it again to save it.";
+    if (detail.source === "conflict-adopt") {
+      words = "Another tab saved selections before this save. This tab loaded them and did not write." + keptOnScreen;
+      if (next === "catalog-mismatch") words += " Catalog version differs from this lab.";
+    }
+    if (detail.source === "conflict-clear") words = "Another tab cleared saved selections before this save. This tab did not write." + keptOnScreen;
+    if (detail.source === "conflict-warn") words = "Another tab wrote selections this tab could not read. This tab did not write. A save here would overwrite that tab.";
     if (detail.keepMessage) words = storageMsg;
     const rejectedEntries = persistenceRejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
     if (detail.reportRejects && rejectedEntries) words += ` Rejected ${rejectedEntries} invalid stored entr${rejectedEntries === 1 ? "y" : "ies"} (status=${view.value}).`;
@@ -119,6 +136,7 @@
     setPersistence("missing", { rejects: [], raw: null, catalogVersion: null });
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      lastSeenRaw = raw === "" ? null : raw;
       if (raw == null || raw === "") {
         choices = {};
         return;
@@ -190,8 +208,19 @@
     setPersistence(persistenceStatus === "unavailable" ? "unavailable" : "normalized", { rejects, keepMessage: persistenceStatus === "unavailable" });
   }
 
-  function saveChoices(clearRecovery = false) {
+  /** @param {Record<string,string>|null} pending the families this save is meant to change */
+  function saveChoices(clearRecovery = false, pending = null) {
+    lastSaveConflict = false;
     try {
+      // Compare-and-swap: re-read just before writing. The read and the write
+      // are two separate storage calls, so a write landing between them is
+      // still not detected.
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const current = stored === "" ? null : stored;
+      if (current !== lastSeenRaw && foreignStorageDecision(writerId, current) !== "ignore") {
+        takeSaveConflict(current, pending);
+        return false;
+      }
       const envelope = {
         schemaVersion: 1,
         catalogVersion: DATA && DATA.version ? DATA.version : "unknown",
@@ -199,13 +228,34 @@
         writerId,
         choices,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
+      const text = JSON.stringify(envelope);
+      localStorage.setItem(STORAGE_KEY, text);
+      lastSeenRaw = text;
+      unsavedChoices = {};
       setPersistence("saved", { rejects: [], catalogVersion: envelope.catalogVersion, raw: clearRecovery ? null : recoveryRaw });
       return true;
     } catch (e) {
       setPersistence("unavailable", { source: "save-error", error: e && e.message ? e.message : String(e) });
       return false;
     }
+  }
+
+  // Another tab wrote between this tab's last read and this save. Take the
+  // foreign-adopt path without writing, then keep this tab's intended change
+  // on screen so choosing it again saves it on top of the adopted write.
+  function takeSaveConflict(current, pending) {
+    lastSaveConflict = true;
+    conflictRaw = current;
+    const action = foreignStorageDecision(writerId, current);
+    applyForeignStorage(current, true);
+    const kept = pending || {};
+    Object.keys(kept).forEach((famId) => {
+      choices[famId] = kept[famId];
+      unsavedChoices[famId] = kept[famId];
+    });
+    const source = action === "warn" ? "conflict-warn" : action === "adopt-clear" ? "conflict-clear" : "conflict-adopt";
+    setPersistence(persistenceStatus, { source });
+    if (DATA && $("#cards")) refreshChoiceSurfaces();
   }
 
   function esc(s) {
@@ -669,6 +719,12 @@
     radios.forEach((r) => { r.tabIndex = r === checked ? 0 : -1; });
   }
 
+  // A checked radio fires no change event, so a pick kept on screen after a
+  // save conflict is saved by choosing it again through click or Space.
+  function isUnsavedPick(radio) {
+    return !!radio && radio.checked && unsavedChoices[radio.value.slice(0, 3)] === radio.value;
+  }
+
   function onRadioKey(e) {
     const radio = e.target;
     if (!radio || !radio.matches || !radio.matches('input[type="radio"][data-choice]')) return;
@@ -684,6 +740,7 @@
       case " ": case "Spacebar":
         e.preventDefault();
         if (!radio.checked) { radio.checked = true; choose(radio.value); }
+        else if (isUnsavedPick(radio)) choose(radio.value);
         return;
       default: return;
     }
@@ -881,7 +938,7 @@
       choices[k] = incomingAccepted[k];
     });
     setPersistence("imported", { rejects: incomingRejects.slice(), catalogVersion: incomingCatalog || envelopeCatalogVersion });
-    const ok = saveChoices(true);
+    const ok = saveChoices(true, incomingAccepted);
     // Failed saves keep merged memory (intent applied) and report unavailable.
     renderNav();
     refreshChoiceSurfaces();
@@ -891,7 +948,9 @@
     const rejectedN = incomingRejects.filter((r) => r.key !== "(catalogVersion)").length;
     return {
       ok: true,
-      message: `Merged ${acceptedN} validated choice(s) (${changed} changed, ${unchanged} already same); ${rejectedN} rejected.${mismatch ? " Import catalog version differs from this lab; review before treating as authoritative." : ""} Prior families not in import kept. ` + (ok ? "Saved." : "Kept in memory only (save failed)."),
+      message: `Merged ${acceptedN} validated choice(s) (${changed} changed, ${unchanged} already same); ${rejectedN} rejected.${mismatch ? " Import catalog version differs from this lab; review before treating as authoritative." : ""} Prior families not in import kept. ` + (ok ? "Saved."
+        : lastSaveConflict ? "Not saved: another tab saved first. Its selections were loaded and this import is kept on screen; import again to save."
+        : "Kept in memory only (save failed)."),
     };
   }
 
@@ -954,11 +1013,12 @@
       return;
     }
     choices[famId] = optId;
-    const ok = saveChoices();
+    const ok = saveChoices(false, { [famId]: optId });
     syncChoiceUI(famId);
     renderSummary();
     toast(ok
       ? `Chose ${optId}. Preference only — not production validation.`
+      : lastSaveConflict ? `Chose ${optId} on screen only: another tab saved first. Choose it again to save.`
       : `Chose ${optId} in-memory only (storage failed).`);
     const live = $("#choice-live");
     if (live) live.textContent = `Selected ${optId}`;
@@ -985,6 +1045,8 @@
     let ok = false;
     try {
       localStorage.removeItem(STORAGE_KEY);
+      lastSeenRaw = null;
+      unsavedChoices = {};
       setPersistence("missing", { rejects: [], raw: null, catalogVersion: null });
       ok = true;
     } catch (e) {
@@ -1061,6 +1123,11 @@
     $("#cards").addEventListener("click", (e) => {
       const exp = e.target.closest("[data-expand]");
       if (!exp) {
+        if (e.target.matches && e.target.matches('input[type="radio"][data-choice]')) {
+          // Clicking the radio of a pick kept on screen after a save conflict retries it.
+          if (!e.defaultPrevented && isUnsavedPick(e.target)) choose(e.target.value);
+          return;
+        }
         // Let the native label/radio and preview controls handle their own clicks.
         // A click elsewhere on the card activates the same radio change path.
         if (e.defaultPrevented || e.target.closest('button, input, select, textarea, label, a[href], summary, [contenteditable]:not([contenteditable="false"])')) return;
@@ -1069,6 +1136,7 @@
         if (card && selection && !selection.isCollapsed && (card.contains(selection.anchorNode) || card.contains(selection.focusNode))) return;
         const radio = card && card.querySelector('input[type="radio"][data-choice]');
         if (radio && !radio.checked) radio.click();
+        else if (isUnsavedPick(radio)) choose(radio.value);
         return;
       }
       const card = exp.closest(".opt-card");
@@ -1215,13 +1283,16 @@
     return true;
   }
 
-  function applyForeignStorage(raw) {
+  // quiet: called from a save conflict, which reports the outcome itself.
+  function applyForeignStorage(raw, quiet = false) {
     const action = foreignStorageDecision(writerId, raw);
     if (action === "ignore") return;
+    lastSeenRaw = raw === "" ? null : raw;
+    unsavedChoices = {};
     if (action === "warn") {
       setPersistence("malformed", { raw, source: "foreign-warn" });
       if (DATA) renderSummary();
-      if ($("#toast")) toast(storageMsg);
+      if (!quiet && $("#toast")) toast(storageMsg);
       return;
     }
     const prior = Object.assign({}, choices);
@@ -1236,14 +1307,20 @@
       if (DATA) normalizeAfterCatalog();
       setPersistence(persistenceStatus, { source: "foreign-adopt" });
     }
-    if (DATA && $("#cards")) refreshChoiceSurfaces();
-    if (!mapsEqual(prior, choices) && $("#toast")) toast(storageMsg);
+    if (DATA && $("#cards") && !quiet) refreshChoiceSurfaces();
+    if (!quiet && !mapsEqual(prior, choices) && $("#toast")) toast(storageMsg);
   }
 
   window.addEventListener("storage", (e) => {
     if (!e || (e.key !== STORAGE_KEY && e.key !== null)) return;
     if (e.storageArea && e.storageArea !== localStorage) return;
-    applyForeignStorage(e.key === null ? null : e.newValue);
+    const raw = e.key === null ? null : e.newValue;
+    // A save conflict already adopted this write; applying its late event
+    // again would drop the pick kept on screen.
+    const already = conflictRaw !== undefined && raw === conflictRaw;
+    conflictRaw = undefined;
+    if (already) return;
+    applyForeignStorage(raw);
   });
 
   document.addEventListener("DOMContentLoaded", boot);

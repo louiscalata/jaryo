@@ -269,7 +269,11 @@ function extractFunction(source, name) {
   assert.match(js, /const action = foreignStorageDecision\(writerId, raw\)/);
   assert.match(js, /window\.addEventListener\("storage"/);
   assert.match(js, /e\.storageArea && e\.storageArea !== localStorage/);
-  assert.match(js, /applyForeignStorage\(e\.key === null \? null : e\.newValue\)/);
+  assert.match(js, /const raw = e\.key === null \? null : e\.newValue;/);
+  assert.match(js, /applyForeignStorage\(raw\);/);
+  // Compare-and-swap: saveChoices re-reads storage before it writes and takes
+  // the foreign-adopt path on a mismatch (DOM cases in test_lab_dom.mjs).
+  assert.match(js, /const stored = localStorage\.getItem\(STORAGE_KEY\);[\s\S]*?if \(current !== lastSeenRaw && foreignStorageDecision\(writerId, current\) !== "ignore"\) \{\s*takeSaveConflict\(current, pending\);\s*return false;/);
   assert.match(js, /Another tab saved selections/);
   assert.match(js, /could not read/);
   const decide = extractFunction(js, "foreignStorageDecision");

@@ -82,7 +82,7 @@ Historical verification recorded 2026-11-09 in headless Chromium. Details: [VERI
 
 ## Known limits
 
-- Two open tabs share one saved envelope. After another tab's storage event arrives, this tab adopts those saved choices before its next save. An unreadable write is left in place and the banner warns that saving would overwrite it. Simultaneous saves can still overwrite each other.
+- Two open tabs share one saved envelope. After another tab's storage event arrives, this tab adopts those saved choices before its next save. Each save also re-reads storage first. If another tab wrote since this tab last read it, this tab loads that write instead of overwriting it, keeps its own change on screen only, and saves it when the change is made again. Any later successful save from this tab also writes the kept change, because a save writes every displayed choice. If the other tab wrote twice before this tab's save, the storage event for its first write arrives after that save and does not match what this tab loaded, so this tab briefly shows the first write and drops its kept change; the event for the second write then loads the latest write. Nothing stored is lost, but the kept change has to be made again. An unreadable write is left in place and the banner warns that saving would overwrite it. The re-read and the write are two separate storage calls, not one atomic step, so a write from another tab that lands between them can still be overwritten. Reset is not checked this way; it clears whatever is stored.
 - On narrow screens the toast covers content for about 3 seconds
 - Preview mocks stay light “paper” in dark theme by design
 - Text over gradients was not hand-checked for contrast
