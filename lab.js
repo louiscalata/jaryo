@@ -50,12 +50,39 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  // On narrow screens the full-width toast sits over content. There the next tap
+  // or key press dismisses it, and while it shows the page reserves its height
+  // (--toast-clear) so focused controls and the page end scroll clear of it.
+  // Taps still pass through it (pointer-events: none) to the content underneath.
+  const NARROW_TOAST = "(max-width: 480px)";
+  function narrowScreen() {
+    try { return !!(window.matchMedia && window.matchMedia(NARROW_TOAST).matches); } catch (_) { return false; }
+  }
+  function hideToast() {
+    const el = $("#toast");
+    clearTimeout(toast._t);
+    if (el) el.classList.remove("show");
+    const root = document.documentElement;
+    root.classList.remove("toast-open");
+    root.style.removeProperty("--toast-clear");
+  }
   function toast(msg) {
     const el = $("#toast");
     el.textContent = msg;
     el.classList.add("show");
     clearTimeout(toast._t);
-    toast._t = setTimeout(() => el.classList.remove("show"), 3200);
+    toast._t = setTimeout(hideToast, 3200);
+    if (narrowScreen()) {
+      const root = document.documentElement;
+      root.style.setProperty("--toast-clear", `${Math.ceil(el.getBoundingClientRect().height) + 16}px`);
+      root.classList.add("toast-open");
+    }
+  }
+  // Capture phase: this runs before a key or tap handler that shows a new toast.
+  for (const type of ["pointerdown", "keydown"]) {
+    document.addEventListener(type, () => {
+      if (document.documentElement.classList.contains("toast-open")) hideToast();
+    }, true);
   }
 
   const preferenceNotice = " A saved choice is a preference, not a product change.";
@@ -406,7 +433,7 @@
       <text x="252" y="70" font-size="11" font-family="monospace">&gt;OUT</text>
     `),
     "F06.04": () => `<div class="ascii">▶ deck 1\n▼ deck 2\n   detail lines…\n▶ deck 3</div>`,
-    "F06.08": () => `<div class="hatched" style="height:90px;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-family:monospace">/ n/a /</div>`,
+    "F06.08": () => `<div class="hatched" style="height:90px;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-family:monospace"><span class="hatch-label">/ n/a /</span></div>`,
     "F06.09": () => svgWrap(`
       <rect x="20" y="30" width="70" height="28" fill="#fff" stroke="#000" stroke-width="2"/><text x="36" y="49" font-size="11" font-family="monospace">LOG</text>
       <rect x="90" y="30" width="70" height="28" fill="#000"/><text x="106" y="49" fill="#fff" font-size="11" font-family="monospace">OUT</text>
