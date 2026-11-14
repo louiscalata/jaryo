@@ -431,7 +431,7 @@ a[href^="http"] { text-decoration: underline; text-underline-offset: 2px; }
 .choose-label:has(input:checked) input[type="radio"] { accent-color: var(--inv-fg); }
 
 /* ============ Motion ============ */
-.motion-demo .dash, .dash { stroke-dasharray: 4 4; animation: dashmove 1.2s linear infinite; }
+.motion-demo .dash, .dash { stroke-dasharray: 4 4; animation: dashmove 1.2s linear 1 forwards; }
 @keyframes dashmove { to { stroke-dashoffset: -16; } }
 .motion-note { display: none; }
 @media (prefers-reduced-motion: reduce) {

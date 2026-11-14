@@ -203,6 +203,7 @@
 }
 
 @media (forced-colors: active) {
+  .jstage button[aria-pressed="true"], .red .toolrow button[aria-pressed="true"] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
   .opt-card:has(.preview-stage.expanded) { border-color: CanvasText; }
   .opt-card:has(.preview-stage.expanded) > .body > h3 { color: CanvasText; }
 }

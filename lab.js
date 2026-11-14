@@ -72,8 +72,12 @@
     const event = next;
     const count = Object.keys(choices).length;
     if (next === "normalized" || next === "saved" || next === "imported") {
+      // A catalog-version diagnostic alone describes no stored entry: an empty
+      // envelope from another catalog (what Reset used to write) is missing.
+      const entryRejects = persistenceRejects.filter((r) => r.key !== "(catalogVersion)");
+      if (!count && !entryRejects.length) persistenceRejects = [];
       next = persistenceRejects.some((r) => r.reason === "catalog-mismatch") && count ? "catalog-mismatch"
-        : persistenceRejects.length ? (count || next !== "normalized" ? "partial" : "malformed")
+        : entryRejects.length ? (count || next !== "normalized" ? "partial" : "malformed")
         : count ? "valid" : "missing";
     }
     const view = persistenceView[next];
@@ -86,7 +90,6 @@
     if (event === "normalized") words = storageMsg;
     if (next === "catalog-mismatch") {
       if (event === "normalized") words = "Catalog version in stored/imported envelope differs from this lab (" + envelopeCatalogVersion + " ≠ " + DATA.version + "). Valid entries kept; confirm before treating as authoritative.";
-      else if (event === "imported") words = "Imported envelope catalogVersion differs from this lab. Valid entries merged; not treated as authoritative without review.";
       else if (storageMsg.includes("catalogVersion")) words = storageMsg;
     }
     if (detail.source === "json") words = "Stored selections were malformed and were not applied. Raw bytes retained — use Download recovery raw.";
@@ -99,7 +102,8 @@
       if (next === "catalog-mismatch") words += " Catalog version differs from this lab.";
     }
     if (detail.keepMessage) words = storageMsg;
-    if (detail.reportRejects && persistenceRejects.length) words += ` Rejected ${persistenceRejects.length} invalid stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (status=${view.value}).`;
+    const rejectedEntries = persistenceRejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
+    if (detail.reportRejects && rejectedEntries) words += ` Rejected ${rejectedEntries} invalid stored entr${rejectedEntries === 1 ? "y" : "ies"} (status=${view.value}).`;
     storageMsg = words;
     if (event === "normalized" && !persistenceRejects.length) recoveryRaw = null;
     const banner = $("#storage-banner");
@@ -196,7 +200,7 @@
         choices,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
-      setPersistence("saved", { raw: clearRecovery ? null : recoveryRaw });
+      setPersistence("saved", { rejects: [], catalogVersion: envelope.catalogVersion, raw: clearRecovery ? null : recoveryRaw });
       return true;
     } catch (e) {
       setPersistence("unavailable", { source: "save-error", error: e && e.message ? e.message : String(e) });
@@ -770,8 +774,9 @@
     $("#export-box").textContent = JSON.stringify(payload, null, 2);
     const n = acceptedChoiceCount();
     let extra = "";
-    if (persistenceRejects.length) {
-      extra = ` · ${persistenceRejects.length} rejected stored entr${persistenceRejects.length === 1 ? "y" : "ies"} (${persistenceView[persistenceStatus].value})`;
+    const rejectedEntries = persistenceRejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
+    if (rejectedEntries) {
+      extra = ` · ${rejectedEntries} rejected stored entr${rejectedEntries === 1 ? "y" : "ies"} (${persistenceView[persistenceStatus].value})`;
     }
     $("#summary-count").textContent = `${n} / ${DATA.families.length} families chosen (validated)${extra}`;
   }
@@ -880,9 +885,13 @@
     // Failed saves keep merged memory (intent applied) and report unavailable.
     renderNav();
     refreshChoiceSurfaces();
+    // A successful save rewrites the envelope at this lab's catalog version, so
+    // the mismatch is reported here; it is not a rejected entry.
+    const mismatch = incomingRejects.some((r) => r.reason === "catalog-mismatch");
+    const rejectedN = incomingRejects.filter((r) => r.key !== "(catalogVersion)").length;
     return {
       ok: true,
-      message: `Merged ${acceptedN} validated choice(s) (${changed} changed, ${unchanged} already same); ${incomingRejects.length} rejected. Prior families not in import kept. ` + (ok ? "Saved." : "Kept in memory only (save failed)."),
+      message: `Merged ${acceptedN} validated choice(s) (${changed} changed, ${unchanged} already same); ${rejectedN} rejected.${mismatch ? " Import catalog version differs from this lab; review before treating as authoritative." : ""} Prior families not in import kept. ` + (ok ? "Saved." : "Kept in memory only (save failed)."),
     };
   }
 
@@ -973,8 +982,14 @@
     const previousRejects = persistenceRejects.slice();
     const previousEnvelopeCatalog = envelopeCatalogVersion;
     choices = {};
-    setPersistence("missing", { rejects: [], catalogVersion: null });
-    const ok = saveChoices(true);
+    let ok = false;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      setPersistence("missing", { rejects: [], raw: null, catalogVersion: null });
+      ok = true;
+    } catch (e) {
+      setPersistence("unavailable", { source: "save-error", error: e && e.message ? e.message : String(e) });
+    }
     if (!ok) {
       choices = previous;
       setPersistence("unavailable", { rejects: previousRejects, catalogVersion: previousEnvelopeCatalog, keepMessage: true, withoutNotice: true });
@@ -1050,6 +1065,8 @@
         // A click elsewhere on the card activates the same radio change path.
         if (e.defaultPrevented || e.target.closest('button, input, select, textarea, label, a[href], summary, [contenteditable]:not([contenteditable="false"])')) return;
         const card = e.target.closest(".opt-card");
+        const selection = window.getSelection && window.getSelection();
+        if (card && selection && !selection.isCollapsed && (card.contains(selection.anchorNode) || card.contains(selection.focusNode))) return;
         const radio = card && card.querySelector('input[type="radio"][data-choice]');
         if (radio && !radio.checked) radio.click();
         return;
