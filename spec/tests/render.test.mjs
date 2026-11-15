@@ -63,7 +63,7 @@ ok(/Could not display this record/.test(w2.getElementById("warn").textContent) &
 const bad = JSON.parse(JSON.stringify(view)); delete bad.actions;
 const w3 = boot(page(bad)).document;
 ok(/Could not display this record/.test(w3.getElementById("warn").textContent), "a document missing required fields is refused");
-const stale = buildView({ ...man, steps: [{ id: "s1", name: "S1", needs: [] }] }, [{ event: "run-start", run: 1, ts: new Date().toISOString() }, { step: "s1", event: "step-start", ts: new Date().toISOString() }].map(x => JSON.stringify(x)).join("\n"), Date.now());
+const stale = buildView({ ...man, declares: { ...man.declares, heartbeat: { intervalMs: 5000, staleAfterMs: 30000 } }, steps: [{ id: "s1", name: "S1", needs: [] }] },[{ event: "run-start", run: 1, ts: new Date().toISOString() }, { step: "s1", event: "step-start", ts: new Date().toISOString() }].map(x => JSON.stringify(x)).join("\n"), Date.now());
 ok(stale.steps[0].state === "RUNNING", "(setup) a fresh record shows RUNNING");
 stale.generatedAt = new Date(Date.now() - 10 * 60000).toISOString();
 const w4 = boot(page(stale)).document;

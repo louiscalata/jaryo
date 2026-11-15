@@ -8,7 +8,11 @@
       "logs",
       "retry"
     ],
-    "events": false
+    "events": false,
+    "heartbeat": {
+      "intervalMs": 5000,
+      "staleAfterMs": 30000
+    }
   },
   "steps": [
     {

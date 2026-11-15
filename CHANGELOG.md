@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `spec/`: interface spec v0.5e (a design spec, not a production build), reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page.
 - Explicit saved-choice persistence status keeps reset failures, unreadable foreign writes, recovery controls and exported status consistent.
+- `spec/`: the sample pipeline manifest declares a heartbeat (`declares.heartbeat`), the runner writes heartbeat lines while a step runs, and the adaptor judges RUNNING against the declared window instead of a built-in 120 s. Without a declared heartbeat a started step is UNKNOWN.
 
 ### Fixed
 

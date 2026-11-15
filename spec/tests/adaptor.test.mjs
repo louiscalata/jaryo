@@ -4,7 +4,8 @@ import fs from "node:fs"; import os from "node:os"; import path from "node:path"
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const adaptorPath = path.join(root, "adaptor/jaryo-adaptor.mjs");
 
-const M = { id: "p", name: "P", declares: { actions: ["run", "logs", "retry"], events: false }, steps: [
+const HB = { intervalMs: 10000, staleAfterMs: 120000 };
+const M = { id: "p", name: "P", declares: { actions: ["run", "logs", "retry"], events: false, heartbeat: HB }, steps: [
   { id: "a", name: "Step A", needs: [] }, { id: "b", name: "Step B", needs: ["a"] }, { id: "c", name: "Step C", needs: ["b"], consequential: true } ] };
 const T0 = Date.parse("2026-11-07T20:00:00Z");
 let tick = 0;
@@ -45,6 +46,34 @@ async function suite(mod) {
   v = buildView(M, L({ event: "run-start" }, { step: "a", event: "step-start" }, { event: "run-end" }), now);
   t("a step started in a run that ended, with no result: UNKNOWN with a reason that says the run ended", st(v, "a") === "UNKNOWN" && /run ended/.test(v.steps[0].reason));
   t("the view says when it was generated and when the record last moved", v.generatedAt === new Date(now).toISOString() && v.lastEventAt !== null);
+  // declared heartbeat: RUNNING is judged only against the window the manifest declares
+  const NOHB = { ...M, declares: { actions: M.declares.actions, events: false } };
+  const at = ms => new Date(T0 + ms).toISOString();
+  const rec = (...o) => o.map(([ms, x]) => JSON.stringify({ ts: at(ms), run: 1, ...x })).join("\n");
+  v = buildView(NOHB, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }]), T0 + 2000);
+  t("no declared heartbeat: a fresh start is UNKNOWN, never RUNNING, and says why", st(v, "a") === "UNKNOWN" && /declares no heartbeat/.test(v.steps[0].reason) && v.run.state === "unknown");
+  t("no declared heartbeat: capabilities.heartbeat is null", v.capabilities.heartbeat === null);
+  t("a declared heartbeat is copied into capabilities", JSON.stringify(buildView(M, "", now).capabilities.heartbeat) === JSON.stringify(HB));
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }], [590000, { step: "a", event: "heartbeat" }]), T0 + 600000);
+  t("a long step with a fresh heartbeat is RUNNING although its start is old", st(v, "a") === "RUNNING" && v.run.state === "running");
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }], [60000, { step: "a", event: "heartbeat" }]), T0 + 60000 + 120001);
+  t("a heartbeat that stopped longer ago than staleAfterMs is UNKNOWN", st(v, "a") === "UNKNOWN" && /no heartbeat/.test(v.steps[0].reason));
+  const SHORT = { ...M, declares: { ...M.declares, heartbeat: { intervalMs: 5000, staleAfterMs: 30000 } } };
+  v = buildView(SHORT, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }]), T0 + 45000);
+  t("the declared staleAfterMs is used, not a built-in window", st(v, "a") === "UNKNOWN" && /30 s/.test(v.steps[0].reason));
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }], [400000, { step: "b", event: "step-start" }], [598000, { step: "b", event: "heartbeat" }]), T0 + 600000);
+  t("another step's heartbeat does not keep a silent step alive", st(v, "a") === "UNKNOWN" && st(v, "b") === "RUNNING");
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", event: "heartbeat" }]), T0 + 2000);
+  t("a heartbeat without a step-start does not make a step RUNNING", st(v, "a") === "UNKNOWN");
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", status: "ok", exit: 0 }], [2000, { step: "a", event: "heartbeat" }]), T0 + 3000);
+  t("a heartbeat after a result does not replace the result", st(v, "a") === "OK");
+  v = buildView(M, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }], [2000, { step: "a", event: "heartbeat" }], [3000, { event: "run-end" }]), T0 + 4000);
+  t("a heartbeat does not outlive the run's end", st(v, "a") === "UNKNOWN" && /run ended/.test(v.steps[0].reason));
+  for (const bad of ["fast", 10000, [1], {}, { intervalMs: 0, staleAfterMs: 1000 }, { intervalMs: 5000, staleAfterMs: 5000 }, { intervalMs: 1.5, staleAfterMs: 9000 },
+    { intervalMs: 1000, staleAfterMs: 7200000 }, { intervalMs: 50, staleAfterMs: 1000 }, { intervalMs: "1000", staleAfterMs: "9000" }, { staleAfterMs: 9000 }]) {
+    v = buildView({ ...M, declares: { ...M.declares, heartbeat: bad } }, rec([0, { event: "run-start" }], [1000, { step: "a", event: "step-start" }]), T0 + 2000);
+    t(`a malformed heartbeat ${JSON.stringify(bad)} is warned about, null, and never RUNNING`, v.capabilities.heartbeat === null && st(v, "a") === "UNKNOWN" && v.warnings.some(w => /heartbeat/.test(w)));
+  }
   // restart
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "failed", exit: 1 }, { step: "a", event: "step-start" }), now);
   t("a step started again after a result no longer shows the old result", st(v, "a") === "RUNNING" && /again/.test(v.steps[0].reason));
@@ -130,6 +159,50 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
   ck("runner: the working directory is scrubbed from recorded output", !JSON.stringify(recs).includes(tmp));
   const view = real.buildView(man, fs.readFileSync(path.join(runs, "run-0004.jsonl"), "utf8"), Date.now());
   ck("end to end: the adaptor shows exactly the runner's statuses", view.steps.map(s => s.state).join() === "OK,FAILED,FAILED,BLOCKED,BLOCKED,REVIEW");
+  ck("runner: no heartbeat is written when the manifest declares none", !recs.some(r => r.event === "heartbeat"));
+
+  // A declared heartbeat: the runner writes one per interval while a step runs, and only then.
+  const hman = { id: "h", name: "H", declares: { actions: ["run"], heartbeat: { intervalMs: 200, staleAfterMs: 2000 } }, steps: [
+    { id: "slow", name: "Slow", needs: [], cmd: ["node", "-e", "setTimeout(() => console.log('done'), 1100)"] },
+    { id: "quick", name: "Quick", needs: ["slow"], cmd: ["node", "-e", "0"] } ] };
+  const hmf = path.join(tmp, "h.json"), hruns = path.join(tmp, "hruns"); fs.writeFileSync(hmf, JSON.stringify(hman));
+  const hr = spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", hmf, "--runs-dir", hruns, "--cwd", tmp], { encoding: "utf8" });
+  const hrecs = fs.readFileSync(path.join(hruns, "run-0001.jsonl"), "utf8").trim().split("\n").map(x => JSON.parse(x));
+  const idx = (p) => hrecs.findIndex(p);
+  const beats = hrecs.map((r, i) => [r, i]).filter(([r]) => r.event === "heartbeat");
+  const sStart = idx(r => r.step === "slow" && r.event === "step-start"), sEnd = idx(r => r.step === "slow" && r.status);
+  ck("runner: a declared heartbeat is written repeatedly while a slow step runs", hr.status === 0 && beats.filter(([r]) => r.step === "slow").length >= 3);
+  ck("runner: every heartbeat names the running step and falls between its start and its result", beats.every(([r, i]) => r.step === "slow" && i > sStart && i < sEnd));
+  ck("runner: the slow step still records its own status and output", hrecs[sEnd].status === "ok" && hrecs[sEnd].exit === 0 && hrecs[sEnd].tail.includes("done"));
+  const hv = real.buildView(hman, fs.readFileSync(path.join(hruns, "run-0001.jsonl"), "utf8"), Date.now());
+  ck("end to end: heartbeats leave the recorded statuses unchanged", hv.steps.map(s => s.state).join() === "OK,OK" && hv.undeclared.length === 0);
+  const open = hrecs.slice(0, sEnd).map(x => JSON.stringify(x)).join("\n");
+  const lastBeat = Date.parse(beats[beats.length - 1][0].ts);
+  ck("end to end: a record cut mid-step shows RUNNING within staleAfterMs of the last heartbeat and UNKNOWN after it",
+    real.buildView(hman, open, lastBeat + 1500).steps[0].state === "RUNNING" && real.buildView(hman, open, lastBeat + 2500).steps[0].state === "UNKNOWN");
+
+  // The runner accepts exactly the declarations the adaptor accepts: one the adaptor rejects writes no heartbeat.
+  const rejected = [{ intervalMs: 200, staleAfterMs: 200 }, { intervalMs: 200, staleAfterMs: 3600001 }, { intervalMs: 200 }, { intervalMs: 600001, staleAfterMs: 3600000 }];
+  const silent = rejected.map((h, k) => {
+    const rman = { id: "r", name: "R", declares: { actions: ["run"], heartbeat: h }, steps: [
+      { id: "slow", name: "Slow", needs: [], cmd: ["node", "-e", "setTimeout(() => 0, 700)"] } ] };
+    const rmf = path.join(tmp, `r${k}.json`), rruns = path.join(tmp, `rruns${k}`); fs.writeFileSync(rmf, JSON.stringify(rman));
+    spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", rmf, "--runs-dir", rruns, "--cwd", tmp], { encoding: "utf8" });
+    const rv = real.buildView(rman, "", Date.now());
+    return rv.capabilities.heartbeat === null && !fs.readFileSync(path.join(rruns, "run-0001.jsonl"), "utf8").includes("\"heartbeat\"");
+  });
+  ck("runner: a heartbeat declaration the adaptor rejects writes no heartbeat lines", silent.every(Boolean));
+
+  // Output over 1 MiB on one stream fails the step with ENOBUFS, as the synchronous runner did.
+  const bman = { id: "b", name: "B", declares: { actions: ["run"] }, steps: [
+    { id: "loud", name: "Loud", needs: [], cmd: ["node", "-e", "process.stdout.write('x'.repeat(1100000)); setTimeout(() => 0, 2000)"] },
+    { id: "fits", name: "Fits", needs: [], cmd: ["node", "-e", "process.stdout.write('y'.repeat(1000000) + '\\nend')"] } ] };
+  const bmf = path.join(tmp, "b.json"), bruns = path.join(tmp, "bruns"); fs.writeFileSync(bmf, JSON.stringify(bman));
+  spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", bmf, "--runs-dir", bruns, "--cwd", tmp], { encoding: "utf8" });
+  const brecs = fs.readFileSync(path.join(bruns, "run-0001.jsonl"), "utf8").trim().split("\n").map(x => JSON.parse(x));
+  const loud = brecs.find(r => r.step === "loud" && r.status), fits = brecs.find(r => r.step === "fits" && r.status);
+  ck("runner: a step that writes more than 1 MiB to one stream is failed with ENOBUFS and stopped", loud.status === "failed" && /ENOBUFS/.test(loud.reason || "") && loud.ms < 1900);
+  ck("runner: a step just under 1 MiB is still ok", fits.status === "ok" && fits.tail.includes("end"));
 }
 
 // Mutation checks: each broken adaptor must be caught by at least one test.
@@ -137,7 +210,11 @@ const src = fs.readFileSync(adaptorPath, "utf8");
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-mut-"));
 const MUTANTS = [
   ["guess OK when a step has no record", `state = "UNKNOWN"; reason = started ? "no record for this step in the latest run" : "no run record";`, `state = "OK"; reason = null;`],
-  ["show RUNNING for a stale start", `if (live) { state = "RUNNING";`, `if (true) { state = "RUNNING";`],
+  ["show RUNNING for a stale start", `if (live && fresh(beat)) { state = "RUNNING";`, `if (true) { state = "RUNNING";`],
+  ["assume a heartbeat the manifest does not declare", `const fresh = ts => hb !== null && ts !== null && now - ts <= hb.staleAfterMs;`, `const fresh = ts => ts !== null && now - ts <= (hb ? hb.staleAfterMs : 120000);`],
+  ["ignore the declared window", `ts !== null && now - ts <= hb.staleAfterMs;`, `ts !== null && now - ts <= 120000;`],
+  ["judge a step by another step's heartbeat", `if (live && fresh(beat)) {`, `if (live) {`],
+  ["accept a window at or below the interval, or above the cap", `\n    || hb.staleAfterMs <= hb.intervalMs || hb.staleAfterMs > HEARTBEAT_MAX_STALE_MS) {`, `) {`],
   ["trust a future timestamp", `if (lastTs !== null && lastTs > now + SKEW_MS)`, `if (false)`],
   ["copy the undeclared step's recorded status", `name: null, state: "UNKNOWN", reason: "not declared`, `name: null, state: "OK", reason: "not declared`],
   ["accept any status string", `if (key && Object.prototype.hasOwnProperty.call(RECOGNISED, key)) {`, `if (true) {`],

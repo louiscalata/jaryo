@@ -1,13 +1,29 @@
 // Jaryo adaptor v0.1 (read-only). Reads what a pipeline declares (manifest) and what it recorded (JSONL run record)
 // and emits a view document. Rule: every status in the view is copied from a record. Nothing is inferred,
-// with one named exception: RUNNING, which needs a recent, valid timestamp and an open run (see ADAPTOR-V0.md).
+// with one named exception: RUNNING, which needs an open run, a heartbeat the manifest declares, and a recent, valid
+// timestamp from that step (see ADAPTOR-V0.md).
 import fs from "node:fs"; import path from "node:path";
 
 export const KNOWN_ACTIONS = ["run", "pause", "retry", "cancel", "logs", "deploy", "delete", "overwrite"];
 // retry can re-execute consequential steps, so it is reviewed too.
 export const REVIEW_ACTIONS = ["run", "retry", "deploy", "delete", "overwrite"];
-export const STALE_MS = 120000, SKEW_MS = 60000, TAIL_LINES = 6, TAIL_CHARS = 500;
+export const SKEW_MS = 60000, TAIL_LINES = 6, TAIL_CHARS = 500;
+// Accepted bounds for a declared heartbeat (declares.heartbeat = { intervalMs, staleAfterMs }).
+export const HEARTBEAT_MIN_INTERVAL_MS = 100, HEARTBEAT_MAX_INTERVAL_MS = 600000, HEARTBEAT_MAX_STALE_MS = 3600000;
 const RECOGNISED = { ok: "OK", failed: "FAILED", blocked: "BLOCKED", review: "REVIEW" };
+
+function readHeartbeat(decl, warnings) {
+  const hb = decl.heartbeat;
+  if (hb === undefined) return null;
+  const int = x => typeof x === "number" && Number.isInteger(x);
+  if (!hb || typeof hb !== "object" || Array.isArray(hb) || !int(hb.intervalMs) || !int(hb.staleAfterMs)
+    || hb.intervalMs < HEARTBEAT_MIN_INTERVAL_MS || hb.intervalMs > HEARTBEAT_MAX_INTERVAL_MS
+    || hb.staleAfterMs <= hb.intervalMs || hb.staleAfterMs > HEARTBEAT_MAX_STALE_MS) {
+    warnings.push(`manifest: declares.heartbeat must be { intervalMs, staleAfterMs } with integer intervalMs from ${HEARTBEAT_MIN_INTERVAL_MS} to ${HEARTBEAT_MAX_INTERVAL_MS} and staleAfterMs above it, at most ${HEARTBEAT_MAX_STALE_MS}; no heartbeat declared`);
+    return null;
+  }
+  return { intervalMs: hb.intervalMs, staleAfterMs: hb.staleAfterMs };
+}
 
 export function readRecord(text) {
   const events = [], warnings = [];
@@ -33,7 +49,7 @@ function normalise(manifest, warnings) {
   let actions = decl.actions;
   if (!Array.isArray(actions)) { if (actions !== undefined) warnings.push("manifest: declares.actions is not a list; no actions declared"); actions = []; }
   return { id: String(m.id ?? ""), name: String(m.name ?? m.id ?? ""), steps, actions: actions.filter(a => typeof a === "string"),
-    events: decl.events === true ? true : decl.events === false ? false : null };
+    events: decl.events === true ? true : decl.events === false ? false : null, heartbeat: readHeartbeat(decl, warnings) };
 }
 
 export function buildView(manifest, recordText, now = Date.now()) {
@@ -53,11 +69,15 @@ export function buildView(manifest, recordText, now = Date.now()) {
   if (started && events.some(e => e.event === "run-end") && !ended) warnings.push("a run-end in the record belongs to a different run and was ignored");
 
   // Timestamps: valid strings only; a timestamp ahead of now is not trusted.
-  const stamps = events.map(e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN)).filter(Number.isFinite);
+  const stampOf = e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN);
+  const stamps = events.map(stampOf).filter(Number.isFinite);
   let lastTs = stamps.length ? Math.max(...stamps) : null;
   if (lastTs !== null && lastTs > now + SKEW_MS) { warnings.push("record has a timestamp in the future; liveness cannot be judged"); lastTs = null; }
   const runOpen = !!started && !ended;
-  const live = runOpen && lastTs !== null && now - lastTs <= STALE_MS;
+  // Liveness is judged only against the window the manifest declares. No declared heartbeat: never RUNNING.
+  const hb = man.heartbeat;
+  const fresh = ts => hb !== null && ts !== null && now - ts <= hb.staleAfterMs;
+  const live = runOpen && lastTs !== null && fresh(lastTs);
 
   const dup = new Set(); const seen = new Set();
   for (const s of man.steps) { if (seen.has(s.id)) dup.add(s.id); seen.add(s.id); }
@@ -81,8 +101,17 @@ export function buildView(manifest, recordText, now = Date.now()) {
         record = final;
       } else { state = "UNKNOWN"; reason = `record has an unrecognised status "${String(final.status).slice(0, 24)}"`; record = final; }
     } else if (si >= 0) {
-      if (live) { state = "RUNNING"; reason = fi >= 0 ? "started again after an earlier result" : null; }
-      else { state = "UNKNOWN"; reason = (ended ? "step started; the run ended with no result recorded for it" : "step started, but the run record has no end and is stale") + (fi >= 0 ? " (an earlier result was superseded)" : ""); }
+      // This step's own newest sign of life: its latest step-start or a heartbeat after it.
+      const beats = evs.filter(([i, e]) => i >= si && (e.event === "step-start" || e.event === "heartbeat")).map(([, e]) => stampOf(e)).filter(Number.isFinite);
+      const beat = lastTs !== null && beats.length ? Math.max(...beats) : null;
+      if (live && fresh(beat)) { state = "RUNNING"; reason = fi >= 0 ? "started again after an earlier result" : null; }
+      else {
+        state = "UNKNOWN";
+        reason = (ended ? "step started; the run ended with no result recorded for it"
+          : !runOpen ? "step started, but the run state is unknown"
+          : hb === null ? "step started, but the manifest declares no heartbeat, so liveness cannot be judged"
+          : `step started, but the run record has no end and no heartbeat from this step within ${hb.staleAfterMs / 1000} s`) + (fi >= 0 ? " (an earlier result was superseded)" : "");
+      }
     } else {
       state = "UNKNOWN"; reason = started ? "no record for this step in the latest run" : "no run record";
     }
@@ -112,7 +141,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   return {
     schema: "jaryo-view/0", generatedAt: new Date(now).toISOString(), lastEventAt: lastTs !== null ? new Date(lastTs).toISOString() : null,
     pipeline: { id: man.id, name: man.name }, run,
-    capabilities: { declared: man.actions, eventStream: man.events }, actions, steps, undeclared,
+    capabilities: { declared: man.actions, eventStream: man.events, heartbeat: man.heartbeat }, actions, steps, undeclared,
     review: { consequentialSteps: steps.filter(s => s.consequential).map(s => s.id), counts }, warnings,
   };
 }
