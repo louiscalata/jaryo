@@ -4,6 +4,7 @@
 GitHub Pages serves this repository from the root. Relative href/src/url()
 paths must exist so the published site does not 404.
 """
+
 from __future__ import annotations
 
 import re
