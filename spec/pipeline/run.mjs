@@ -1,7 +1,9 @@
 // The pipeline runner: runs the manifest's steps in dependency order and writes an append-only JSONL run record.
 // It does not import or call any Jaryo code; its steps do verify this repository.
+// If the manifest declares a heartbeat ({ intervalMs, staleAfterMs }), it writes a heartbeat line every intervalMs
+// while a step runs, so a reader can tell a long step from a dead runner.
 // usage: node pipeline/run.mjs [--manifest <file>] [--runs-dir <dir>] [--cwd <dir>]
-import fs from "node:fs"; import path from "node:path"; import { spawnSync } from "node:child_process";
+import fs from "node:fs"; import path from "node:path"; import { spawn } from "node:child_process";
 const here = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i >= 0 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]) : d; };
 const manifestPath = arg("--manifest", path.join(here, "pipeline/jaryo-verify.manifest.json"));
@@ -21,6 +23,37 @@ if (fd === undefined) { console.error("could not create a run file"); process.ex
 const emit = o => fs.writeSync(fd, JSON.stringify({ run: n, ts: new Date().toISOString(), ...o }) + "\n");
 const scrub = s => String(s).split(cwd).join("<cwd>").split(process.env.HOME || "\u0000").join("~");
 
+// Same bounds as the adaptor (adaptor/jaryo-adaptor.mjs): a declaration it would reject writes no heartbeat.
+const hb = manifest.declares && manifest.declares.heartbeat;
+const beatMs = hb && typeof hb === "object" && Number.isInteger(hb.intervalMs) && Number.isInteger(hb.staleAfterMs)
+  && hb.intervalMs >= 100 && hb.intervalMs <= 600000 && hb.staleAfterMs > hb.intervalMs && hb.staleAfterMs <= 3600000 ? hb.intervalMs : null;
+// Per-stream output cap, as spawnSync's default maxBuffer: over it the step is stopped and fails with ENOBUFS.
+const MAX_BUFFER = 1024 * 1024;
+
+// Run one command; resolves like spawnSync's result (status, signal, error, stdout, stderr).
+const runCmd = (cmd, beat) => new Promise(resolve => {
+  const r = { status: null, signal: null, error: undefined, stdout: "", stderr: "" };
+  const timer = beat ? setInterval(beat, beatMs) : null;
+  let done = false;
+  const finish = () => { if (done) return; done = true; if (timer) clearInterval(timer); resolve(r); };
+  let child;
+  try { child = spawn(cmd[0], cmd.slice(1), { cwd, env: process.env, stdio: ["ignore", "pipe", "pipe"] }); }
+  catch (e) { r.error = e; finish(); return; }
+  const bufs = { stdout: [], stderr: [] }, sizes = { stdout: 0, stderr: 0 };
+  for (const k of ["stdout", "stderr"]) child[k].on("data", d => {
+    if (r.error) return;
+    sizes[k] += d.length;
+    if (sizes[k] > MAX_BUFFER) { r.error = Object.assign(new Error(`spawn ${cmd[0]} ENOBUFS`), { code: "ENOBUFS" }); child.kill("SIGTERM"); return; }
+    bufs[k].push(d);
+  });
+  child.on("error", e => { if (!r.error) r.error = e; if (child.exitCode === null && child.pid === undefined) finish(); });
+  child.on("close", (code, signal) => {
+    r.stdout = Buffer.concat(bufs.stdout).toString("utf8"); r.stderr = Buffer.concat(bufs.stderr).toString("utf8");
+    if (!r.error) { r.status = code; r.signal = signal; }
+    finish();
+  });
+});
+
 emit({ event: "run-start", pipeline: manifest.id });
 const status = new Map();
 for (const s of manifest.steps) {
@@ -31,7 +64,7 @@ for (const s of manifest.steps) {
   if (s.consequential) { status.set(s.id, "review"); emit({ step: s.id, status: "review", reason: s.reason }); continue; }
   emit({ step: s.id, event: "step-start" });
   const t0 = Date.now();
-  const r = spawnSync(s.cmd[0], s.cmd.slice(1), { cwd, encoding: "utf8", env: process.env });
+  const r = await runCmd(s.cmd, beatMs ? () => emit({ step: s.id, event: "heartbeat" }) : null);
   const out = ((r.stdout || "") + (r.stderr || "")).split("\n").filter(Boolean).map(scrub);
   const ok = r.status === 0 && !r.error;
   status.set(s.id, ok ? "ok" : "failed");
