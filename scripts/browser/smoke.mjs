@@ -1,5 +1,6 @@
 // Usage: node smoke.mjs <labDir> <outJson> [shotDir] --browser=chromium|firefox|webkit
-import fs from "node:fs"; import path from "node:path"; import http from "node:http";
+import fs from "node:fs"; import path from "node:path";
+import { createStaticServer, listenLoopback } from "./static-server.mjs";
 import { runExpandedLayoutChecks, contrast } from "./expanded-layout.mjs";
 import { parseSmokeArgs, verifyBrowserIdentity } from "./smoke-cli.mjs";
 import { assessFocusCoverage, requiredLinks, readFocusedTarget } from "./focus-coverage.mjs";
@@ -14,12 +15,8 @@ const { labDir, outJson, shotDir, engineName } = options;
 const { chromium, firefox, webkit } = await import("playwright");
 const engines = { chromium, firefox, webkit };
 const widths = (process.env.SMOKE_WIDTHS || "1280,260").split(",").map((n) => Number(n.trim())).filter((n) => n > 0);
-const types = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png" };
-const server = http.createServer((req, res) => {
-  const p = path.join(labDir, decodeURIComponent(req.url.split("?")[0]).replace(/^\/$/, "/index.html"));
-  if (!p.startsWith(labDir) || !fs.existsSync(p)) { res.writeHead(404); return res.end(); }
-  res.writeHead(200, { "content-type": types[path.extname(p)] || "application/octet-stream" }); fs.createReadStream(p).pipe(res);
-}).listen(0);
+const server = createStaticServer(labDir);
+await listenLoopback(server);
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 const out = { checks: [], errors: [] };
 const check = (name, pass, detail) => { out.checks.push({ name, pass: !!pass, detail }); console.log(pass ? "PASS" : "FAIL", name, detail !== undefined ? JSON.stringify(detail) : ""); };
