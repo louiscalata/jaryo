@@ -62,6 +62,7 @@ for (const width of widths) {
   const { ctx, page } = await open({ width, tag: "click-" + width });
   const data = await page.evaluate(() => { const d = window.JARYO_LAB_DATA; return { fams: d.families.length, opts: d.families.reduce((n, f) => n + f.options.length, 0), monoBase: d.families.filter(f=>/^F(0[1-9]|1[0-6])$/.test(f.id)).reduce((n,f)=>n+f.options.length,0), color: (d.families.find(f=>f.id==="F17")||{options:[]}).options.length, legacy: (d.families.find(f=>f.id==="F18")||{options:[]}).options.length, red: (d.families.find(f=>f.id==="F19")||{options:[]}).options.length }; });
   let domTotal = 0, clicked = 0, fails = [], selectionFailures = [];
+  const lastVerified = {}; // family -> last option whose click was verified in DOM and storage
   for (const fam of famIds) {
     await clickReady(page.locator(`[data-fam="${fam}"]`));
     const ids = await page.$$eval("#cards .opt-card", (c) => c.map((x) => x.dataset.id));
@@ -99,7 +100,7 @@ for (const width of widths) {
         };
       }, id);
       const ok = state.chosen && state.checked && /CHOSEN/.test(state.marker) && state.storedChoice === id && state.chosenCards.length === 1;
-      if (ok) clicked++; else { fails.push(id); selectionFailures.push({ id, ...state }); }
+      if (ok) { clicked++; lastVerified[id.slice(0, 3)] = id; } else { fails.push(id); selectionFailures.push({ id, ...state }); }
     }
     // expand toggle on first card
     const b = page.locator("#cards .expand-btn").first();
@@ -110,7 +111,8 @@ for (const width of widths) {
   }
   const expectedOpts = data.fams >= 19 ? 97 : 85;
   const expectedFams = data.fams >= 19 ? 19 : 17;
-  // WebKit at 260px on Windows can briefly show 18/19 after the last click; wait for the summary to catch up.
+  // WebKit can show 18/19 here after every click was verified (Windows and hosted Linux, 260 to 1280);
+  // the wait lets a late render catch up, and the failure detail below says which family went missing.
   await clickReady(page.locator('.tab[data-tab="summary"]'));
   await page.waitForSelector("#summary-count");
   try {
@@ -126,7 +128,33 @@ for (const width of widths) {
   const labelOk = groups.labels.some(t=>/Monochrome set/.test(t)) && groups.labels.some(t=>/Color batch/.test(t)) && (expectedFams<19 || (groups.labels.some(t=>/Legacy studies/.test(t)) && groups.labels.some(t=>/Red interactive UI/.test(t))));
   check(`nav groups present (w=${width})`, groups.monoBase === 16 && groups.color === 1 && labelOk, groups);
   check(`all options selectable by click (w=${width})`, clicked === expectedOpts && fails.length === 0, { clicked, fails, expectedOpts, selectionFailures });
-  const sumN = expectedFams; check(`summary shows ${sumN}/${sumN} (w=${width})`, new RegExp(`^${sumN} / ${sumN}`).test(summary), summary);
+  const sumN = expectedFams;
+  const summaryOk = new RegExp(`^${sumN} / ${sumN}`).test(summary);
+  // A pass keeps the plain summary text; a failure records where the missing choice went.
+  const summaryDetail = summaryOk ? summary : await page.evaluate(({ summary, lastVerified }) => {
+    let stored = null, storedError = null;
+    try { stored = JSON.parse(localStorage.getItem("jaryo-adaptive-lab-choices-v1") || "null"); } catch (e) { storedError = String(e); }
+    const storedChoices = stored && stored.choices && typeof stored.choices === "object" ? stored.choices : {};
+    const summaryRows = Object.fromEntries([...document.querySelectorAll("#summary-body tr")].map((tr) => {
+      const cells = tr.querySelectorAll("td");
+      return [cells[0]?.textContent ?? "", cells[2]?.textContent ?? ""];
+    }));
+    const text = (sel) => document.querySelector(sel)?.textContent ?? null;
+    return {
+      summary,
+      summaryMismatch: Object.keys(lastVerified).filter((fam) => summaryRows[fam] !== lastVerified[fam]),
+      storageMismatch: Object.keys(lastVerified).filter((fam) => storedChoices[fam] !== lastVerified[fam]),
+      lastVerified,
+      summaryRows,
+      storedChoices,
+      storedWriterId: stored?.writerId ?? null,
+      storedError,
+      storageBanner: text("#storage-banner"),
+      toast: text("#toast"),
+      choiceLive: text("#choice-live"),
+    };
+  }, { summary, lastVerified });
+  check(`summary shows ${sumN}/${sumN} (w=${width})`, summaryOk, summaryDetail);
   const hs = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(`no horizontal overflow after click-through (w=${width})`, hs <= 0, hs);
   await ctx.close();
