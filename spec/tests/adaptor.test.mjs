@@ -1,7 +1,7 @@
 // Tests for adaptor/jaryo-adaptor.mjs and pipeline/run.mjs.
 // The rule under test: no status is ever inferred, only copied from a record (RUNNING being the one named exception).
-import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { pathToFileURL } from "node:url"; import { spawnSync } from "node:child_process";
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { fileURLToPath, pathToFileURL } from "node:url"; import { spawnSync } from "node:child_process";
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const adaptorPath = path.join(root, "adaptor/jaryo-adaptor.mjs");
 
 const HB = { intervalMs: 10000, staleAfterMs: 120000 };
@@ -203,6 +203,19 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
   const loud = brecs.find(r => r.step === "loud" && r.status), fits = brecs.find(r => r.step === "fits" && r.status);
   ck("runner: a step that writes more than 1 MiB to one stream is failed with ENOBUFS and stopped", loud.status === "failed" && /ENOBUFS/.test(loud.reason || "") && loud.ms < 1900);
   ck("runner: a step just under 1 MiB is still ok", fits.status === "ok" && fits.tail.includes("end"));
+
+  // Both CLIs from a checkout whose path has a space: the adaptor prints the view, the runner finds its default manifest.
+  const sp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo sp ace-"));
+  for (const dir of ["adaptor", "pipeline"]) fs.cpSync(path.join(root, dir), path.join(sp, dir), { recursive: true });
+  const cli = spawnSync("node", [path.join(sp, "adaptor/jaryo-adaptor.mjs"), "pipeline/jaryo-verify.manifest.json", "pipeline/runs"], { cwd: sp, encoding: "utf8" });
+  let cliView = null; try { cliView = JSON.parse(cli.stdout); } catch {}
+  ck("adaptor CLI: prints the view from a path with a space", cli.status === 0 && cliView !== null && cliView.schema === "jaryo-view/0" && cliView.pipeline.id === "jaryo-verify" && cliView.steps.length > 0);
+  fs.writeFileSync(path.join(sp, "pipeline/jaryo-verify.manifest.json"), JSON.stringify({ id: "s", name: "S", declares: { actions: ["run"] }, steps: [
+    { id: "one", name: "One", needs: [], cmd: ["node", "-e", "0"] } ] }));
+  fs.rmSync(path.join(sp, "pipeline/runs"), { recursive: true, force: true });
+  const sr = spawnSync("node", [path.join(sp, "pipeline/run.mjs")], { cwd: sp, encoding: "utf8" });
+  const srFile = path.join(sp, "pipeline/runs/run-0001.jsonl");
+  ck("runner: uses its default manifest and runs directory from a path with a space", sr.status === 0 && /run 1: one=ok/.test(sr.stdout) && fs.existsSync(srFile) && fs.readFileSync(srFile, "utf8").includes("\"run-end\""));
 }
 
 // Mutation checks: each broken adaptor must be caught by at least one test.

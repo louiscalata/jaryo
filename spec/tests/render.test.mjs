@@ -1,9 +1,9 @@
 // Tests for adaptor/view-template.html and build-view-page.mjs. Needs JSDOM=<path to jsdom>.
 // The view document is untrusted data: it must never become markup or script.
-import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { createRequire } from "node:module"; import { spawnSync } from "node:child_process";
+import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { createRequire } from "node:module"; import { spawnSync } from "node:child_process"; import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const { JSDOM } = require(process.env.JSDOM);
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const { buildView } = await import(path.join(root, "adaptor/jaryo-adaptor.mjs"));
 let failed = 0, n = 0;
 const ok = (c, m) => { n++; if (!c) { failed++; console.log("FAIL", m); } else console.log("PASS", m); };
