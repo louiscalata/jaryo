@@ -3,8 +3,8 @@
 // If the manifest declares a heartbeat ({ intervalMs, staleAfterMs }), it writes a heartbeat line every intervalMs
 // while a step runs, so a reader can tell a long step from a dead runner.
 // usage: node pipeline/run.mjs [--manifest <file>] [--runs-dir <dir>] [--cwd <dir>]
-import fs from "node:fs"; import path from "node:path"; import { spawn } from "node:child_process";
-const here = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+import fs from "node:fs"; import path from "node:path"; import { spawn } from "node:child_process"; import { fileURLToPath } from "node:url";
+const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i >= 0 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]) : d; };
 const manifestPath = arg("--manifest", path.join(here, "pipeline/jaryo-verify.manifest.json"));
 const dir = arg("--runs-dir", path.join(here, "pipeline/runs"));
