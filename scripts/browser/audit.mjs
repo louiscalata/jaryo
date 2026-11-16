@@ -2,17 +2,13 @@
 import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
-import http from "node:http";
 import { createRequire } from "node:module";
+import { createStaticServer, listenLoopback } from "./static-server.mjs";
 const require = createRequire(import.meta.url);
 const axeSrc = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 const [labDir, outJson, shotDir] = process.argv.slice(2);
-const types = { ".html":"text/html", ".js":"text/javascript", ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png" };
-const server = http.createServer((req, res) => {
-  const p = path.join(labDir, decodeURIComponent(req.url.split("?")[0]).replace(/^\/$/, "/index.html"));
-  if (!p.startsWith(labDir) || !fs.existsSync(p)) { res.writeHead(404); return res.end(); }
-  res.writeHead(200, { "content-type": types[path.extname(p)] || "application/octet-stream" }); fs.createReadStream(p).pipe(res);
-}).listen(0);
+const server = createStaticServer(labDir);
+await listenLoopback(server);
 const port = server.address().port;
 const modes = [
   { name: "light", colorScheme: "light", reducedMotion: "no-preference" },
