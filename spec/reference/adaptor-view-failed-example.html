@@ -29,12 +29,13 @@ h1 { font:700 20px var(--mono); margin:0; }
 .step .id { font:13px var(--mono); color:var(--muted); }
 .step[aria-pressed="true"] { background:var(--text); color:var(--bg); } .step[aria-pressed="true"] .id { color:var(--ink-soft); }
 .step.bad { background:var(--blocked-bg); border-left:6px double var(--blocked-fg); } .step.bad[aria-pressed="true"] { background:var(--text); border-left-color:var(--blocked-sel); }
+.step.fail { border-left:6px solid var(--blocked-fg); } .step.fail[aria-pressed="true"] { background:var(--text); border-left-color:var(--blocked-sel); }
 .step.unk { border-style:dashed; padding-left:26px; background-image:repeating-linear-gradient(135deg,var(--border) 0 1px,transparent 1px 6px); background-size:12px 100%; background-repeat:no-repeat; }
 .step.unk[aria-pressed="true"] { background-image:none; }
 .step.gated { border-top:3px solid var(--text); }
 .chip { font:700 12px var(--mono); border:1px solid currentColor; padding:2px 7px; white-space:nowrap; display:inline-block; }
-.chip.ok { color:var(--ok); } .chip.run { color:var(--run); } .chip.bad { color:var(--blocked-fg); background:var(--blocked-bg); } .chip.unk { color:var(--muted); border-style:dashed; } .chip.rev { color:var(--text); border-width:2px; }
-.step[aria-pressed="true"] .chip { color:var(--bg); background:transparent; border-color:var(--bg); } .step.bad[aria-pressed="true"] .chip { color:var(--blocked-sel); border-color:var(--blocked-sel); }
+.chip.ok { color:var(--ok); } .chip.run { color:var(--run); } .chip.bad { color:var(--blocked-fg); background:var(--blocked-bg); } .chip.fail { color:var(--blocked-fg); } .chip.unk { color:var(--muted); border-style:dashed; } .chip.rev { color:var(--text); border-width:2px; }
+.step[aria-pressed="true"] .chip { color:var(--bg); background:transparent; border-color:var(--bg); } .step.bad[aria-pressed="true"] .chip, .step.fail[aria-pressed="true"] .chip { color:var(--blocked-sel); border-color:var(--blocked-sel); }
 .insp { border:2px solid var(--border); background:var(--surface); padding:16px; display:grid; grid-template-columns:minmax(0,1fr); gap:10px; min-height:260px; align-content:start; }
 .insp h2 { font:700 17px var(--mono); margin:0; }
 pre { margin:0; background:var(--bg); border:1px solid var(--border); padding:10px; overflow-x:auto; font:12px/1.5 var(--mono); white-space:pre; overflow-wrap:normal; }
@@ -82,7 +83,7 @@ dialog::backdrop { background:rgba(0,0,0,.72); }
     var V = JSON.parse($("view").textContent);
     if (!V || V.schema !== "jaryo-view/0" || !Array.isArray(V.steps) || !Array.isArray(V.actions) || !Array.isArray(V.undeclared) || !V.pipeline || !V.review) throw new Error("not a jaryo-view/0 document");
     var G = { OK: "●", RUNNING: "▶", BLOCKED: "✕", FAILED: "✕", UNKNOWN: "?", REVIEW: "◆" };
-    var CLS = { OK: "ok", RUNNING: "run", BLOCKED: "bad", FAILED: "bad", UNKNOWN: "unk", REVIEW: "rev" };
+    var CLS = { OK: "ok", RUNNING: "run", BLOCKED: "bad", FAILED: "fail", UNKNOWN: "unk", REVIEW: "rev" };
     document.title = "Jaryo adaptor view: " + V.pipeline.name;
     $("pname").textContent = V.pipeline.name; $("pid").textContent = V.pipeline.id;
     $("ro").textContent = "Read-only snapshot of a recorded run, generated " + V.generatedAt + (V.lastEventAt ? "; the record's last event was " + V.lastEventAt : "") + ". This page cannot run or change anything.";
@@ -101,7 +102,7 @@ dialog::backdrop { background:rgba(0,0,0,.72); }
     var cls = function (it) { return CLS[it.state] || "unk"; };
     var nameOf = function (it) { return it.name + ", " + (it.undeclared ? "record id " : "step id ") + it.id + ", " + it.state.toLowerCase() + (it.step && it.step.consequential ? ", consequential" : "") + (it.reason ? ", " + it.reason : ""); };
     items.forEach(function (it) {
-      var li = el("li"), b = el("button", "step " + (cls(it) === "bad" ? "bad " : "") + (it.undeclared || cls(it) === "unk" ? "unk " : "") + (it.step && it.step.consequential ? "gated" : ""));
+      var li = el("li"), b = el("button", "step " + (cls(it) === "bad" ? "bad " : cls(it) === "fail" ? "fail " : "") + (it.undeclared || cls(it) === "unk" ? "unk " : "") + (it.step && it.step.consequential ? "gated" : ""));
       b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-label", nameOf(it));
       var nm = el("span", "nm"); var t = el("span", "", it.name); nm.appendChild(t); nm.appendChild(el("span", "chip " + cls(it), chipText(it))); b.appendChild(nm);
       b.appendChild(el("span", "id", it.undeclared ? "not declared (record id: " + it.id + ")" : "step_id: " + it.id + (it.step && it.step.consequential ? "  [consequential]" : "")));

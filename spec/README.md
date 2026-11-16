@@ -1,4 +1,4 @@
-# Jaryo interface spec (v0.5e)
+# Jaryo interface spec (v0.6)
 
 Work in progress. This folder holds the composed interface spec, two reference screens for a fictional pipeline, a read-only adaptor spike, a sample pipeline used to exercise the adaptor, and tests.
 
@@ -8,7 +8,7 @@ It is separate from the interactive design lab at the repository root. The lab c
 
 | Path | What |
 |---|---|
-| `docs/spec/JARYO-INTERFACE-SPEC.md` | Interface spec v0.5e |
+| `docs/spec/JARYO-INTERFACE-SPEC.md` | Interface spec v0.6 (the reference screens are still v0.5e) |
 | `reference/` | App and website reference screens, plus static adaptor views |
 | `adaptor/` | Read-only adaptor (`manifest + run record → view`) |
 | `pipeline/` | Sample pipeline, checks, and recorded runs |
