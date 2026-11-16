@@ -26,14 +26,27 @@ function readHeartbeat(decl, warnings) {
 }
 
 export function readRecord(text) {
-  const events = [], warnings = [];
+  const events = [], warnings = [], invalidAt = [];
   const body = String(text || "").replace(/^﻿/, "");
   body.split("\n").forEach((line, i) => {
     if (!line.trim()) return;
-    try { const o = JSON.parse(line); if (o && typeof o === "object" && !Array.isArray(o)) events.push(o); else warnings.push(`line ${i + 1}: not an object, ignored`); }
-    catch { warnings.push(`line ${i + 1}: not valid JSON, ignored`); }
+    try { const o = JSON.parse(line); if (o && typeof o === "object" && !Array.isArray(o)) events.push(o); else { invalidAt.push(events.length); warnings.push(`line ${i + 1}: not an object; earlier step evidence is untrusted`); } }
+    catch { invalidAt.push(events.length); warnings.push(`line ${i + 1}: not valid JSON; earlier step evidence is untrusted`); }
   });
-  return { events, warnings };
+  return { events, warnings, invalidAt };
+}
+
+// Remove common credential forms before selecting lines or truncating text.
+// Joining first keeps multiline private keys from escaping the tail window.
+function redactTail(tail) {
+  if (!tail.length) return [];
+  return tail.map(String).join("\n")
+    .replace(/-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z0-9 ]*PRIVATE KEY-----|$)/g, "[REDACTED PRIVATE KEY]")
+    .replace(/\b(Bearer|Basic)\s+[A-Za-z0-9+/_=.-]+/gi, "$1 [REDACTED]")
+    .replace(/([a-z][a-z\d+.-]*:\/\/)[^\s/:@]+:[^\s/@]+@/gi, "$1[REDACTED]@")
+    .replace(/(\b[\w-]*(?:token|secret|password|passwd|api[_-]?key|authorization|credential|private[_-]?key|access[_-]?key)[\w-]*["']?\s*[:=]\s*)(?:"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|[^\s,;]+)/gi, "$1[REDACTED]")
+    .replace(/\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,})\b/g, "[REDACTED]")
+    .split("\n");
 }
 
 function normalise(manifest, warnings) {
@@ -66,13 +79,19 @@ export function buildView(manifest, recordText, now = Date.now()) {
   if (runStarts > 1) warnings.push(`record holds ${runStarts} runs; only the last is shown`);
   const events = at >= 0 ? all.slice(at) : all;
   const started = at >= 0 ? all[at] : null;
-  const ended = events.find(e => e.event === "run-end" && (started === null || e.run === undefined || started.run === undefined || e.run === started.run)) || null;
-  if (!started && events.some(e => e.step)) warnings.push("record has step events but no run-start; the run state is unknown");
-  if (started && events.some(e => e.event === "run-end") && !ended) warnings.push("a run-end in the record belongs to a different run and was ignored");
+  const belongsToRun = e => (started === null || e.run === undefined || started.run === undefined || e.run === started.run);
+  const current = events.filter(belongsToRun);
+  if (current.length !== events.length) warnings.push("events in the record belong to a different run and were ignored");
+  const ended = current.find(e => e.event === "run-end") || null;
+  if (!started && current.some(e => e.step)) warnings.push("record has step events but no run-start; the run state is unknown");
+  // An unreadable line may hide a restart. Keep original event coordinates:
+  // filtering foreign events must not move evidence across this boundary.
+  const invalidAt = rec.invalidAt.reduce((last, i) => i > at ? Math.max(last, i) : last, -1);
+  const positions = new Map(all.map((e, i) => [e, i]));
 
   // Timestamps: valid strings only; a timestamp ahead of now is not trusted.
   const stampOf = e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN);
-  const stamps = events.map(stampOf).filter(Number.isFinite);
+  const stamps = current.map(stampOf).filter(Number.isFinite);
   let lastTs = stamps.length ? Math.max(...stamps) : null;
   if (lastTs !== null && lastTs > now + SKEW_MS) { warnings.push("record has a timestamp in the future; liveness cannot be judged"); lastTs = null; }
   const runOpen = !!started && !ended;
@@ -86,7 +105,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   if (dup.size) warnings.push(`manifest declares ${[...dup].join(", ")} more than once`);
 
   const byStep = new Map();
-  events.forEach((e, i) => { if (typeof e.step === "string") { const a = byStep.get(e.step) || []; a.push([i, e]); byStep.set(e.step, a); } });
+  current.forEach(e => { if (typeof e.step === "string") { const a = byStep.get(e.step) || []; a.push([positions.get(e), e]); byStep.set(e.step, a); } });
 
   const steps = man.steps.map(s => {
     const evs = byStep.get(s.id) || [];
@@ -94,6 +113,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
     for (const [i, e] of evs) { if (e.status !== undefined && e.status !== null && e.status !== "") { fi = i; final = e; } if (e.event === "step-start") si = i; }
     let state, reason = null, record = null;
     if (dup.has(s.id)) { state = "UNKNOWN"; reason = "manifest declares this id more than once"; }
+    else if (Math.max(fi, si) < invalidAt) { state = "UNKNOWN"; reason = "an invalid record line may hide a later step event"; }
     else if (final && si < fi) {
       const key = typeof final.status === "string" ? final.status : null;
       if (key && Object.prototype.hasOwnProperty.call(RECOGNISED, key)) {
@@ -124,7 +144,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
     let lastRun = null;
     if (record) {
       let tail = [];
-      if (Array.isArray(record.tail)) tail = record.tail.slice(-TAIL_LINES).map(x => String(x).slice(0, TAIL_CHARS));
+      if (Array.isArray(record.tail)) tail = redactTail(record.tail).slice(-TAIL_LINES).map(x => String(x).slice(0, TAIL_CHARS));
       else if (record.tail !== undefined) warnings.push(`step ${s.id}: tail is not a list, ignored`);
       lastRun = { ms: typeof record.ms === "number" ? record.ms : null, exit: typeof record.exit === "number" ? record.exit : null, tail };
     }
@@ -143,7 +163,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   const counts = { total: steps.length, blocked: steps.filter(s => s.state === "BLOCKED").length, failed: steps.filter(s => s.state === "FAILED").length,
     unknown: steps.filter(s => s.state === "UNKNOWN").length + undeclared.length, review: steps.filter(s => s.state === "REVIEW").length };
   const run = started ? { id: started.run ?? null, startedAt: typeof started.ts === "string" ? started.ts : null, endedAt: ended && typeof ended.ts === "string" ? ended.ts : null, state: ended ? "ended" : live ? "running" : "unknown" }
-    : (events.some(e => e.step) ? { id: null, startedAt: null, endedAt: null, state: "unknown" } : null);
+    : (current.some(e => e.step) ? { id: null, startedAt: null, endedAt: null, state: "unknown" } : null);
   return {
     schema: "jaryo-view/0", generatedAt: new Date(now).toISOString(), lastEventAt: lastTs !== null ? new Date(lastTs).toISOString() : null,
     pipeline: { id: man.id, name: man.name }, run,

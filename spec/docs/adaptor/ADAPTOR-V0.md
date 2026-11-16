@@ -16,7 +16,7 @@ Status: a working spike, 2026-11-07 (record timestamps are UTC, so they read as 
 A step's state is copied from a record. It is never inferred from dependencies or from absence. **Exception: RUNNING.** A record cannot say "still running"; it can only say a step started and nothing has ended it. RUNNING is shown only when the manifest declares a heartbeat, the run is open, the step has started, and that step's newest valid timestamp (its latest `step-start` or a `heartbeat` after it) is no older than the declared `staleAfterMs`. Clock skew is tolerated up to `SKEW_MS` (60 s): a step timestamp up to 60 s ahead of the clock counts as fresh, and a record whose newest timestamp is more than 60 s ahead is not trusted for liveness at all. Without a declared heartbeat a started step is UNKNOWN, never RUNNING. A page built from the view also refuses to show RUNNING once its snapshot is older than 2 minutes.
 
 ## The declared heartbeat
-`declares.heartbeat` is `{ "intervalMs": <integer>, "staleAfterMs": <integer> }`. `intervalMs` is from 100 to 600000; `staleAfterMs` is above `intervalMs` and at most 3600000 (one hour). Anything else is a warning and counts as no heartbeat. The view copies the accepted declaration to `capabilities.heartbeat` (or `null`). `pipeline/run.mjs` writes `{ "step": <id>, "event": "heartbeat" }` every `intervalMs` while that step's command runs, and none when the manifest declares no heartbeat or one the adaptor would reject (the runner applies the same bounds). Commands run through async `spawn` so the timer can fire; as before, each of stdout and stderr is capped at 1 MiB, and a step over it is stopped and failed with an `ENOBUFS` reason. A command that cannot start now records `spawn <cmd> ENOENT` where the synchronous runner recorded `spawnSync <cmd> ENOENT`. The sample manifest declares 5000 / 30000. The recorded runs 1 to 5 predate the declaration and contain no heartbeat lines; every step in them has a result, so their views are unchanged apart from the new `capabilities.heartbeat` field. The `reference/adaptor-view*.html` pages embed views built before that field existed and were not rebuilt, so a rebuild would add it.
+`declares.heartbeat` is `{ "intervalMs": <integer>, "staleAfterMs": <integer> }`. `intervalMs` is from 100 to 600000; `staleAfterMs` is above `intervalMs` and at most 3600000 (one hour). Anything else is a warning and counts as no heartbeat. The view copies the accepted declaration to `capabilities.heartbeat` (or `null`). `pipeline/run.mjs` writes `{ "step": <id>, "event": "heartbeat" }` every `intervalMs` while that step's command runs, and none when the manifest declares no heartbeat or one the adaptor would reject (the runner applies the same bounds). Commands run through async `spawn` so the timer can fire; as before, each of stdout and stderr is capped at 1 MiB, and a step over it is stopped and failed with an `ENOBUFS` reason. A command that cannot start now records `spawn <cmd> ENOENT` where the synchronous runner recorded `spawnSync <cmd> ENOENT`. The sample manifest declares 5000 / 30000. The recorded runs 1 to 5 predate the declaration and contain no heartbeat lines; every step in them has a result. The generated pages replay their historical manifest declarations and generation times, with `capabilities.heartbeat: null` when no heartbeat was declared.
 
 | Situation | State shown |
 |---|---|
@@ -32,24 +32,55 @@ A step's state is copied from a record. It is never inferred from dependencies o
 | Unrecognised status string | UNKNOWN, reason quotes it |
 | Record mentions a step the manifest does not declare | `undeclared`, UNKNOWN, no name, record id shown as a record id |
 | Manifest declares the same id twice | both rows UNKNOWN, warning |
-| Corrupt line, non-object line, BOM | ignored or stripped; corrupt lines are listed in `warnings` |
-| File holds several runs, or a run-end from another run | last run only, warning |
+| Corrupt or non-object line in the selected run | warning; earlier step evidence becomes UNKNOWN with no old output, because the line may hide a restart; a newer result or start restores only its own step |
+| Corruption before the selected run, or BOM | earlier corruption does not invalidate the new run; BOM is stripped at the start of the file |
+| File holds several runs | last run only, warning |
+| Selected run-start has an explicit run ID; event has a different explicit run ID | ignored with a warning, including results, restarts, heartbeats, timestamps, undeclared steps and run ends |
+| Event has no run ID | remains eligible under legacy behavior |
+| Selected run-start has no run ID | tagged events are also accepted; this path does not establish run isolation |
 | Malformed manifest | no steps or no actions, warnings, never a crash |
 | Action not in `declares.actions` | `n/a: manifest does not declare <action>` |
 | Event stream not mentioned by the manifest | "not declared", not "none" |
 
 Actions that require a review in the view: run, retry, deploy, delete, overwrite. Retry is included because it can re-execute consequential steps.
 
-## What is tested
-`tests/adaptor.test.mjs`: 99 checks for the sample-record adaptor and runner, including the table above, heartbeat declarations, bounded output, real child processes, run selection and 18 mutants. It also imports the Nisi journal and differential suites below: the executed combined total is 476/476.
+Output tails are redacted before selecting the last six lines and capping each
+at 500 characters. The patterns cover Bearer/Basic authorization, credential
+assignments (including quoted values with escapes), URL user/password pairs,
+common provider-token forms and multiline private-key blocks, including an
+unterminated block. Empty output remains empty. Ordinary output, including
+token-check filenames, stays visible. This filtering does not guarantee removal
+of arbitrary secrets in prose or unfamiliar encodings. Raw JSONL files are not
+rewritten and still require private custody. The rule applies to sample-record
+output; the separate Nisi reader's authority and clock rules are unchanged.
 
-`tests/nisi-journal-adaptor.test.mjs`: 344/344 checks through the existing CI entry point or on its own. The original journal coverage contributes 118 checks, including the synthetic sample fixture, CLI, bounded file reads, copied states, heartbeat boundaries and 26 mutants. Its liveness fixtures now use canonical text, real hashes and a header clock at or after creation. The former header-clock expectation was corrected: a header more than 60 s ahead prevents RUNNING.
+## What is tested
+`tests/adaptor.test.mjs`: the combined entry point passes 587/587 checks, including the sample-record adaptor and runner, the Nisi journal and reader checks, corpus replay and 70 focused security checks. Existing heartbeat, caller-clock, explicit FAILED-reason and runner cases remain covered.
+
+`tests/nisi-journal-adaptor.test.mjs`: 360/360 checks through the existing CI entry point. Journal coverage contributes 134 checks, including the synthetic sample fixture, CLI, bounded file reads, copied states, heartbeat boundaries and 26 mutants. Its liveness fixtures use canonical text, real hashes and a header clock at or after creation. A header more than 60 s ahead prevents RUNNING.
 
 `tests/nisi-reader-agreement.test.mjs`: included in that journal total; 174 regression assertions and 52 distinct mutants of the reader boundary, all killed by failed assertions after successful imports. Syntax errors, import errors and thrown test runs are harness failures, never kills. The initial expanded regression suite was run before the implementation changed: 32/155 passed, with 123 false-RUNNING failures. The final suite against the saved old adaptor passes 40/174, with 134 failures; the fixed adaptor passes 174/174.
 
 `tests/nisi-differential.test.mjs`: 33/33 checks, including replay of the recorded corpus, boundary and coverage assertions, deterministic case regeneration, and 12 mutations each caught by the replay.
 
-`tests/render.test.mjs`: 27 checks, needs `JSDOM`. A hostile view document (script close tags, an img with an onerror handler, markup, U+2028, comment openers in names, ids, reasons and output) must not create an element or a script; wrong or incomplete documents are refused, not half-rendered; an old snapshot never shows RUNNING; the page says it is read-only; a FAILED row and a BLOCKED row are styled apart.
+`tests/render.test.mjs`: 51/51 checks, needs `JSDOM`. A hostile view document (script close tags, an img with an onerror handler, markup, U+2028, comment openers in names, ids, reasons and output) must not create an element or a script; wrong or incomplete documents are refused, not half-rendered; an old snapshot never shows RUNNING; the page says it is read-only; a FAILED row and a BLOCKED row are styled apart. Captured credentials must be absent from both generated HTML and the rendered inspector, while ordinary output remains visible. The checks also run from a copied path containing special characters.
+
+`tests/adaptor-security.test.mjs`: 70/70 checks for corruption boundaries and
+per-step recovery, foreign-run exclusion, existing per-step heartbeat rules,
+redaction before tail selection, empty output and ordinary text. Against the
+pre-change sample adaptor, 20/70 pass and 50 fail. The focused suite is imported
+by the existing adaptor entry point.
+
+`tests/adaptor-security-harness.mjs`: all 48 distinct behavioral mutants are
+caught by named assertions after successful imports; import errors, syntax
+errors and non-assertion failures do not count as kills. The seeded stream
+differential checks 8,192 hostile records against a separate state model, 8,192
+compatible whole views against the pre-change adaptor and 8,192 credential
+outputs against literal expectations, with zero mismatches. The existing view
+contract harness also catches 40 adaptor and 49 template mutants and reports
+zero mismatches for 8,192 adaptor inputs, 8,192 journal clock checks, 4,137
+baseline comparisons and 4,096 selections across 64 jsdom pages. Commands and
+evidence limits are in `docs/CHECKS.md` at the repository root.
 
 ## A second adaptor: the Nisi run journal
 `adaptor/nisi-journal-adaptor.mjs` reads a pipeline manifest and a Nisi run journal (`nisi-run-journal-v1` JSONL: one header line, entry lines, one footer line) and emits the same `jaryo-view/0` document as `buildView`, so `build-view-page.mjs`, the page and `tests/render.test.mjs` apply unchanged. It reads the manifest through `buildView` itself, so actions, capabilities, the heartbeat declaration, needs and duplicate ids behave as above. It is read-only and does not import Nisi: Nisi is a separate repository. Usage: `node adaptor/nisi-journal-adaptor.mjs <manifest.json> <journal.jsonl>`.

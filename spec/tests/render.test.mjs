@@ -94,6 +94,20 @@ for (const [status, exit] of [["failed", 1], ["ok", 0], ["blocked", null], ["rev
 const output = d.querySelector("#insp pre");
 ok(output && output.getAttribute("role") === "region" && output.getAttribute("tabindex") === "0" && output.getAttribute("aria-label") === "Last recorded output of " + view.steps[0].name && output.textContent === HOSTILE, "a nonempty output tail remains a named focusable region with literal output");
 
+// Credentials must be removed before either the embedded document or DOM exists.
+{
+  const text = [{ event: "run-start", run: 1 }, { step: "a", run: 1, status: "ok", exit: 0,
+    tail: ["ordinary output", "PASSWORD=fixture-render-secret", "Authorization: Bearer fixture-render-bearer",
+      "-----BEGIN PRIVATE KEY-----", ...Array(8).fill("fixture-render-key-material"), "-----END PRIVATE KEY-----", "done"] }].map(x => JSON.stringify(x)).join("\n");
+  const redacted = page(buildView({ steps: [{ id: "a", name: "A" }] }, text));
+  ok(!/fixture-render-secret|fixture-render-bearer|fixture-render-key-material/.test(redacted), "captured credentials never enter the generated page source");
+  const rw = boot(redacted), rd = rw.document;
+  rd.querySelector(".step").click();
+  ok(!/fixture-render-secret|fixture-render-bearer|fixture-render-key-material/.test(rd.body.textContent), "captured credentials never enter the rendered inspector");
+  ok(/ordinary output/.test(rd.querySelector("#insp pre").textContent) && /REDACTED/.test(rd.querySelector("#insp pre").textContent) && /done$/.test(rd.querySelector("#insp pre").textContent), "redaction preserves ordinary output in the named output region");
+  rw.close();
+}
+
 // failure modes
 const w2 = boot(page({ schema: "something-else", steps: [] })).document;
 ok(/Could not display this record/.test(w2.getElementById("warn").textContent) && w2.querySelectorAll(".step").length === 0, "a document with the wrong schema is refused, not half-rendered");

@@ -68,6 +68,9 @@ node tests/hash-coverage.test.mjs
 node tests/view-contract.test.mjs
 node tests/view-contract-harness.mjs mutations --output "$TMPDIR/mutations.json"
 node tests/view-contract-harness.mjs differential --output "$TMPDIR/differential.json"
+node tests/adaptor-security.test.mjs
+node tests/adaptor-security-harness.mjs mutations --output "$TMPDIR/security-mutations.json"
+node tests/adaptor-security-harness.mjs differential --baseline "$BASELINE_ADAPTOR" --output "$TMPDIR/security-differential.json"
 ```
 
 `adaptor.test.mjs` includes the journal, reader-agreement and corpus replay
@@ -76,7 +79,7 @@ changing the strict reader gate or its recorded corpus.
 
 The renderer also copies `spec/` into a directory named `sp ace %41 é#q` and
 runs its checks there. The generated-view check compares each committed adaptor
-page with the page builder's output. It also rebuilds the FAILED example from
+page with the page builder's output. It also rebuilds every embedded view from
 its recorded run, historical manifest declarations and generation time. This
 checks record consistency and reproducible rendering; it does not independently
 establish where the historical declarations came from.
@@ -100,3 +103,42 @@ refresh hashes: its recorded runs are historical inputs.
 
 These checks use source and jsdom only. Full Lab/spec suites, native browsers,
 screen readers, layout, hardware and current-head CI require separate evidence.
+
+## Sample-record security checks
+
+`adaptor-security.test.mjs` passes 70/70 checks; the pre-change adaptor at
+`aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1` passes 20/70 and fails 50. The
+focused cases cover corrupt suffixes and per-step recovery, foreign results,
+restarts, heartbeat and clock isolation, credential redaction, private keys,
+ordinary filenames and empty tails. Renderer checks also require credentials
+to be absent from the generated page source and the inspector DOM.
+
+For the differential command above, save the pre-change adaptor in a private
+temporary directory and set `BASELINE_ADAPTOR` to that module:
+
+```bash
+git show aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1:spec/adaptor/jaryo-adaptor.mjs > "$TMPDIR/baseline-adaptor.mjs"
+BASELINE_ADAPTOR="$TMPDIR/baseline-adaptor.mjs"
+```
+
+The mutation mode catches 48/48 distinct behavioral mutants by named assertion
+failures after successful imports. Syntax errors, failed imports and
+non-assertion failures are rejected as invalid witnesses. The differential
+mode uses a separate stream model for 8,192 hostile records, whole-view
+comparison for 8,192 compatible records and literal expected output for 8,192
+credential cases; all report zero mismatches. These are separate evidence
+counts, with no claim that they are exhaustive.
+
+The combined adaptor entry point passes 587/587 checks, including the unchanged
+strict reader tests and corpus replay. Focused jsdom checks pass 51/51 renderer,
+211/211 view contracts, 21/21 decisions and 16/16 reference accessibility;
+generated-page checks pass 6/6. Fresh generation with the pinned Nisi reader
+reproduces all 6,923 corpus cases byte-for-byte. The view contract harness
+catches 40/40 adaptor and 49/49 template mutants and reports zero mismatches
+for 8,192 adaptor inputs, 8,192 journal clocks, 4,137 baseline comparisons and
+4,096 selections across 64 jsdom pages.
+
+Full Lab/spec suites, hosted CI, browser smoke, axe, layout, screen readers,
+physical devices, services and real pipeline runs are NOT_RUN for this check
+record. Source and jsdom results do not establish those results. Each source
+revision needs review and current-head CI before merge.
