@@ -50,3 +50,53 @@ Expected:
 [CI](../.github/workflows/ci.yml) configures Playwright Firefox and WebKit smoke on GitHub-hosted Ubuntu 24.04, plus hosted Chromium smoke, axe checks and forced-colors emulation. Mac checks remain browser-free. The audited historical PC jobs logged Chromium twice, so their passing counts do not prove Firefox/WebKit coverage; matching requested/actual engine names and versions (Firefox 132.0, WebKit 18.2) and the full four-job matrix are verified on `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`), as recorded in [roadmap.md](../roadmap.md#browser-identity-correction). Hosted Ubuntu 24.04 runs for #60, #61 and #62 logged the same identities and 326/326 each (receipts in [roadmap.md](../roadmap.md#ci-availability)). A later head needs its own run.
 
 Real Safari on Apple hardware and Windows forced-colors on hardware remain NOT_RUN. Chromium emulation does not establish those hardware results.
+
+## Spec view regression checks
+
+Set `TMPDIR` to a private temporary directory and `JSDOM` to an existing
+jsdom package. These commands run individually from `spec/`:
+
+```bash
+node tests/adaptor.test.mjs
+node tests/nisi-reader-agreement.test.mjs
+node tests/nisi-journal-adaptor.test.mjs
+node tests/nisi-differential.test.mjs
+node tests/render.test.mjs
+node tests/reference-a11y.test.mjs
+node tests/generated-view.test.mjs
+node tests/hash-coverage.test.mjs
+node tests/view-contract.test.mjs
+node tests/view-contract-harness.mjs mutations --output "$TMPDIR/mutations.json"
+node tests/view-contract-harness.mjs differential --output "$TMPDIR/differential.json"
+```
+
+`adaptor.test.mjs` includes the journal, reader-agreement and corpus replay
+checks. The standalone reader commands above allow focused reruns without
+changing the strict reader gate or its recorded corpus.
+
+The renderer also copies `spec/` into a directory named `sp ace %41 é#q` and
+runs its checks there. The generated-view check compares each committed adaptor
+page with the page builder's output. It also rebuilds the FAILED example from
+its recorded run, historical manifest declarations and generation time. This
+checks record consistency and reproducible rendering; it does not independently
+establish where the historical declarations came from.
+
+The explicit contract harness checks caller clocks, FAILED reasons, output
+regions, spoken state words, review counts and inspector actions. It keeps
+scratch mutants and logs in a private temporary directory and counts a mutant
+only when a named contract assertion fails. The differential mode compares
+generated records with expected states and reasons, both builders' clock
+behavior with JavaScript Date conversion, and jsdom selections with the view
+data. An optional `--baseline-root <spec snapshot>` also compares whole views
+with a saved adaptor, allowing only the intended FAILED-reason change. Its
+baseline comparison is separate from its expected-result checks.
+
+`hash-coverage.test.mjs` checks tracked reference, adaptor and pipeline coverage
+and runs the repository's `shasum -a 256 -c HASHES.txt` procedure. When updating
+the manifest, regenerate each listed file's digest with `shasum -a 256`, include
+all paths returned by `git ls-files -- pipeline`, and include new test files.
+Run the coverage check after regeneration. Do not run `pipeline/run.mjs` to
+refresh hashes: its recorded runs are historical inputs.
+
+These checks use source and jsdom only. Full Lab/spec suites, native browsers,
+screen readers, layout, hardware and current-head CI require separate evidence.
