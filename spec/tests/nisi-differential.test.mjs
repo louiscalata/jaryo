@@ -13,10 +13,7 @@ const D = await import(pathToFileURL(path.join(root, "adaptor/differential-nisi.
 // class and count so a new one fails this test.
 //   clock-within-skew: Jaryo's clock is up to 60 s behind the journal's. Nisi's reader refuses to list (TIME); the
 //     adaptor tolerates the skew on purpose.
-//   entry-not-held: one case, an entry id repeated with identical content. Nisi refuses the second append as a
-//     duplicate and its reopen rejects such a file; the adaptor ignores the repeat and warns, so the first entry,
-//     which Nisi does hold as RUNNING, is shown as RUNNING.
-export const KNOWN = { "clock-within-skew": 100, "entry-not-held": 1 };
+export const KNOWN = { "clock-within-skew": 185 };
 
 const rows = fs.readFileSync(corpusPath, "utf8").split("\n").filter(Boolean).map(l => JSON.parse(l));
 export const corpusHeader = rows[0], cases = rows.slice(1);
@@ -34,7 +31,7 @@ export function replay(mod) {
       }
     }
     for (const d of D.judge(c, c.verdict, view)) {
-      if (d.class === "clock-within-skew" || d.class === "entry-not-held") known[d.class] = (known[d.class] || 0) + 1;
+      if (d.class === "clock-within-skew") known[d.class] = (known[d.class] || 0) + 1;
       else hard.push({ case: c.id, kind: c.kind, ...d });
     }
   }
@@ -76,8 +73,14 @@ const hdr = corpusHeader;
     ["the adaptor showed RUNNING in at least 150 of them and agreed with Nisi every time", r.shown.RUNNING >= 150 && runningLive.length >= 150],
     ["Nisi called a step RUNNING and the adaptor, by the manifest's own window, showed UNKNOWN in at least 100", r.shown.nisiRunningButUnknown >= 100],
     ["Nisi said EXPIRED, UNKNOWN, REVOKED, QUEUED and CANCELLED somewhere", ["EXPIRED", "UNKNOWN", "REVOKED", "QUEUED", "CANCELLED"].every(L => cases.some(c => c.verdict.entries.includes(L)))],
-    ["Nisi refused entries, headers and clocks somewhere", cases.some(c => c.verdict.entries.some(x => x === "x:ENTRY")) && cases.some(c => c.verdict.cfg !== "OK") && cases.some(c => c.verdict.time !== "OK")],
-    ["every kind of state is in the corpus", ["running-boundary", "state-expiry", "revocation", "odd-field", "missing-field", "header-ttl", "clock-behind-writer", "fuzz"].every(k => kinds.has(k))],
+    ["Nisi refused entries, headers and clocks somewhere", cases.some(c => c.verdict.entries.some(x => x === "x:RECORD")) && cases.some(c => c.verdict.cfg !== "OK") && cases.some(c => c.verdict.time !== "OK")],
+    ["reader-only states use a separate header clock, including both skew boundaries", [60000, 60001].every(d => cases.some(c => c.kind === "reader-header-clock" && c.headerNow - c.now === d))],
+    ["reader rejects a line and holds no later entry in each prefix regression", cases.filter(c => ["reader-after-rejected", "reader-after-duplicate"].includes(c.kind)).every(c => c.verdict.held < c.entries.length - 1)],
+    ["numeric, duplicate-key and canonical-text regressions are refused by the reader", cases.filter(c => ["reader-numeric-form", "reader-entry-wire"].includes(c.kind)).every(c => c.verdict.status === "INVALID" && c.verdict.held === 0)],
+    ["the reader's missing-newline rule drops the last unterminated entry", cases.some(c => c.kind === "reader-footer" && c.noFooter && c.noFinalNewline && c.verdict.held === 0 && c.verdict.reason === "TRUNCATED")],
+    ["a rejected replacement cannot borrow a held RUNNING entry on the same stage", cases.filter(c => c.kind === "reader-rejected-same-stage").every(c => c.verdict.held === 1 && c.verdict.entries[0] === "RUNNING" && D.judge(c, c.verdict, { steps: [{ id: "a", state: "RUNNING" }, { id: "b", state: "UNKNOWN" }, { id: "c", state: "UNKNOWN" }] }).some(d => d.class === "entry-not-held" && d.stage === "a"))],
+    ["forged journals include rejected records whose hash chain matches parsed values", cases.some(c => c.kind === "reader-numeric-form" && D.journalText(c).includes('"ttlMs":36e5')) && cases.some(c => c.kind === "reader-entry-wire" && D.journalText(c).includes('"state":"SUCCEEDED","state":"RUNNING"'))],
+    ["every kind of state is in the corpus", ["running-boundary", "state-expiry", "revocation", "odd-field", "missing-field", "header-ttl", "clock-behind-writer", "fuzz", "reader-header-clock", "reader-header-now", "reader-header-config", "reader-redact-paths", "reader-header-extra", "reader-header-wire", "reader-after-rejected", "reader-after-duplicate", "reader-created-after-header", "reader-numeric-form", "reader-entry-wire", "reader-record-shape", "reader-footer", "reader-rejected-same-stage", "reader-fuzz"].every(k => kinds.has(k))],
   ];
   for (const [name, ok] of checks) { count++; console.log(ok ? "PASS" : "FAIL", `nisi differential: ${name}`); if (!ok) failed++; }
 }
@@ -109,12 +112,12 @@ for (const r of await suite(real, true)) { count++; console.log(r.pass ? "PASS" 
     ["ignore the manifest's window", `const windowMs = Math.min(hb.staleAfterMs, beatTtl);`, `const windowMs = beatTtl;`],
     ["go stale one millisecond late", `if (age <= windowMs) {`, `if (age <= windowMs + 1) {`],
     ["go stale one millisecond early", `if (age <= windowMs) {`, `if (age < windowMs) {`],
-    ["accept a header without a heartbeatTtlMs", `else if (beatTtl === null) {`, `else if (false) {`],
+    ["trust a future header clock", `let future = nisiTime(header.now) && header.now > now + SKEW_MS;`, `let future = false;`],
     ["show RUNNING without a declared heartbeat", `if (hb === null) { state = "UNKNOWN";`, `if (false) { state = "UNKNOWN";`],
     ["ignore revocations", `else if (revokedBy.has(e.id)) {`, `else if (false) {`],
     ["trust a future timestamp", `else if (future) { state = "UNKNOWN"; reason = "journal says RUNNING, but a journal timestamp is in the future"; }`, ``],
     ["let a QUEUED entry be RUNNING", `else if (e.state === "RUNNING") {`, `else if (e.state === "RUNNING" || e.state === "QUEUED") {`],
-    ["show RUNNING for an entry that is not a valid Nisi entry", `else if (!nisiEntry(e)) {`, `else if (false) {`],
+    ["show RUNNING for an entry that is not a valid Nisi entry", `else if (!nisiEntry(e) || !held.has(e.id)) {`, `else if (false) {`],
   ];
   for (const [name, from, to] of MUTANTS) {
     count++;
