@@ -44,7 +44,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 | Commands | **F16.01 Command Palette** | ⌘K/Ctrl-K **and** a visible button (⌘ More on phones). Combobox semantics; the result count is announced. Undeclared actions are listed as `(n/a)` with the adaptor's reason. **Full sheet on ≤700px** |
 | Phone | **F14.02 Thumb Bar** | A 56px bottom bar: `◀ Prev` · **primary** · `Next ▶` · `⌘ More` |
 | Website | **F15.01 Install Line Hero** | One install command with copy (aria-live confirmation) **plus** a primary GUI connect path |
-| Color | **F17.01 Copper Workshop** | **Explicitly selected by the owner**, no longer EXAMPLE-only. Tokens are in §4 |
+| Color | **F17.01 Copper Workshop** | The skin of this spec and its reference screens (owner decision, §10 item 3). The public lab lists F17.01 as an EXAMPLE only and does not publish personal picks, so it is not a default there. Tokens are in §4 |
 
 ## 3. Layout skeleton
 | Width | Layout |
@@ -146,7 +146,7 @@ These are required, not optional:
 | F09 had five states, so a step that ran and failed was shown as BLOCKED | A sixth state, FAILED (§2, §5). Same tint and glyph, a different word and shape, so the two are told apart without color |
 | F12 optional gap could hide a problem | **Decided:** the group auto-expands and says why, and cannot be hidden while the problem is inside |
 | F02 two strings per item | Unknown nodes say what they are ("not declared by adaptor") instead of inventing an id |
-| Copper (dark) vs the original pure #000/#fff identity | Copper is the default skin; mono is the high-contrast fallback, using the same structure and tokens |
+| Copper (dark) vs the original pure #000/#fff identity | Copper is the skin of the reference screens; mono is the high-contrast fallback, using the same structure and tokens |
 
 ## 9. Reference screens, as checked on the Mac
 These checks ran in the Chromium pane on 2026-11-07, each against the build named in its block. After v0.5c, the behaviour paths below were re-run once more on 2026-11-07 (desktop 1280 and phone 375, no failures; the page was rendered as a data: snapshot, not a file origin), and the thumb-bar buttons now measure 87–113 × 54 px inside the 56px bar.

@@ -42,3 +42,4 @@ jsdom has no layout or safe-area insets, so the browser-facing tests say nothing
 - Design spec and spike only. Not installable. The Nisi journal adaptor reads a recorded journal file, not a running pipeline, and its view is labelled unauthenticated.
 - No screen-reader pass and no physical-device pass yet. The accessibility-tree pass is markup structure only.
 - Personal design-pick exports, internal review receipts, and Jev notes are not included.
+- The reference screens use the Copper Workshop (F17.01) tokens as their own skin. The lab at the repository root lists Copper as an EXAMPLE only and does not record it as anyone's choice; the two statements apply to different things.
