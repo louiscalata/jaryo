@@ -3,6 +3,7 @@
  * Covers Import Tab-order markup, reset surface clear, recovery download binding.
  */
 import "./test_lab_visual_contract.mjs";
+import "./test_expanded_layout.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
