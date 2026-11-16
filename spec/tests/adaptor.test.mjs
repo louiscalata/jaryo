@@ -236,5 +236,9 @@ for (const [name, from, to] of MUTANTS) {
   try { caught = (await suite(await import(pathToFileURL(f)))).some(r => !r.pass); } catch { caught = true; }
   console.log(caught ? "PASS" : "FAIL", `mutation caught: ${name}`); if (!caught) failed++;
 }
+
+// The Nisi run journal adaptor's suite. CI runs only this file, so it is run from here and counted in the total.
+const journal = await import(pathToFileURL(path.join(root, "tests/nisi-journal-adaptor.test.mjs")));
+count += journal.count; failed += journal.failed;
 console.log(`${count - failed}/${count} passed`);
 process.exit(failed ? 1 : 0);
