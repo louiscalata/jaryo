@@ -25,7 +25,7 @@ The counts and measurements below are historical records, not a fresh current-he
 - after: `verification/typography-apply/after/{F01,F02,F19}-{375,1280}.png`
 
 ## Configured Playwright Firefox and WebKit checks
-- [CI job `browsers`](.github/workflows/ci.yml) configures Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 on the PC or hosted Linux runners.
+- [CI job `browsers`](.github/workflows/ci.yml) configures Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 on GitHub-hosted Ubuntu 24.04. Earlier receipts came from the self-hosted Windows PC runner.
 - Current command: `SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs <lab> <out.json> --browser=firefox` and the same with `--browser=webkit`. The optional screenshot directory precedes the explicit browser flag.
 - The old commands relied on an empty positional screenshot argument. The audited historical accepted PC jobs logged `TOTAL 45 / 45 chromium` twice despite their Firefox/WebKit step labels; see [the retained audit](roadmap.md#browser-identity-correction). Those counts do not prove Firefox or WebKit execution.
 - [The smoke CLI](scripts/browser/smoke-cli.mjs) validates requested/actual engine names and a nonempty version; [the smoke runner](scripts/browser/smoke.mjs) records that identity. Matching Firefox 132.0 and WebKit 18.2 receipts (326/326 each) and the complete four-job CI matrix are verified on `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`); see [the roadmap](roadmap.md#browser-identity-correction). They do not cover later heads.
