@@ -6,9 +6,10 @@ Run from the repository root:
 python3 scripts/validate_lab.py
 node scripts/test_smoke_cli.mjs
 node scripts/test_focus_coverage.mjs
+node scripts/test_ci_runners.mjs
 ```
 
-The Node tests check command parsing, engine-identity failure paths and focus assessments with fixtures. They do not launch a browser or establish native browser behavior.
+The Node tests check command parsing, engine-identity failure paths and focus assessments with fixtures, and read `.github/workflows/ci.yml` to check runner routing and that every script it runs exists. They do not launch a browser or establish native browser behavior.
 
 Expected:
 - `data/curated-85.json` has 17 families and 85 options, with unique IDs. The extended catalog's first 17 families use those same option records.
