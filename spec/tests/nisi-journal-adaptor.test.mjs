@@ -45,6 +45,15 @@ export async function suite(mod) {
   const why = (v, id) => v.steps.find(s => s.id === id).reason || "";
   const now = T0 + 5000;
   let v;
+  // The shared view clock contract applies even when there is no journal to parse.
+  for (const bad of [NaN, Infinity, -Infinity, 8640000000000001, -8640000000000001, 1e100, "0", null, true]) {
+    let err = null; try { buildJournalView(M, "", bad); } catch (e) { err = e; }
+    t(`journal: an invalid now (${String(bad)}) is refused with a deliberate clock error`, err instanceof TypeError && err.message === "now must be a finite number within the JavaScript Date range");
+  }
+  for (const valid of [-8640000000000000, -8640000000000000 + 1, -0.5, 0, 0.5, 8640000000000000 - 1, 8640000000000000]) {
+    let result = null; try { result = buildJournalView(M, "", valid); } catch {}
+    t(`journal: a valid now (${valid}) keeps its Date representation`, result?.generatedAt === new Date(valid).toISOString());
+  }
   // copied statuses
   v = buildJournalView(M, J([{ stage: "a", state: "SUCCEEDED" }, { stage: "b", state: "FAILED" }]), now);
   t("journal: SUCCEEDED is OK and FAILED is FAILED", st(v, "a") === "OK" && st(v, "b") === "FAILED");

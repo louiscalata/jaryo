@@ -132,7 +132,7 @@ dialog::backdrop { background:rgba(0,0,0,.72); }
       if (cur.reason) p.appendChild(el("p", "", cur.reason));
       if (cur.step) {
         p.appendChild(el("p", "why", "needs: " + (cur.step.needs.join(", ") || "nothing") + " | feeds: " + (cur.step.next.join(", ") || "nothing")));
-        if (cur.step.lastRun) { p.appendChild(el("div", "why", "Last recorded: exit " + cur.step.lastRun.exit + ", " + cur.step.lastRun.ms + " ms")); if (cur.step.lastRun.tail.length) var pre = el("pre", "", cur.step.lastRun.tail.join("\n")); pre.setAttribute("role", "region"); pre.setAttribute("tabindex", "0"); pre.setAttribute("aria-label", "Last recorded output of " + cur.name); p.appendChild(pre); }
+        if (cur.step.lastRun) { p.appendChild(el("div", "why", "Last recorded: exit " + cur.step.lastRun.exit + ", " + cur.step.lastRun.ms + " ms")); if (cur.step.lastRun.tail.length) { var pre = el("pre", "", cur.step.lastRun.tail.join("\n")); pre.setAttribute("role", "region"); pre.setAttribute("tabindex", "0"); pre.setAttribute("aria-label", "Last recorded output of " + cur.name); p.appendChild(pre); } }
       }
       p.appendChild(actions());
     };

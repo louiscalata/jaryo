@@ -53,6 +53,8 @@ function normalise(manifest, warnings) {
 }
 
 export function buildView(manifest, recordText, now = Date.now()) {
+  if (typeof now !== "number" || !Number.isFinite(now) || Math.abs(now) > 8640000000000000)
+    throw new TypeError("now must be a finite number within the JavaScript Date range");
   const warnings = [];
   const man = normalise(manifest, warnings);
   const rec = readRecord(recordText); warnings.push(...rec.warnings);
@@ -97,7 +99,11 @@ export function buildView(manifest, recordText, now = Date.now()) {
       if (key && Object.prototype.hasOwnProperty.call(RECOGNISED, key)) {
         const exit = typeof final.exit === "number" ? final.exit : null;
         if ((key === "ok" && exit !== null && exit !== 0) || (key === "failed" && exit === 0)) { state = "UNKNOWN"; reason = `record contradicts itself: status ${key} with exit ${exit}`; }
-        else { state = RECOGNISED[key]; reason = typeof final.reason === "string" ? final.reason : null; }
+        else {
+          state = RECOGNISED[key]; reason = typeof final.reason === "string" ? final.reason : null;
+          if (state === "FAILED" && (!reason || !reason.trim()))
+            reason = `This step ran and failed${Number.isFinite(exit) ? `: exit ${exit}` : ""}. See its last output.`;
+        }
         record = final;
       } else { state = "UNKNOWN"; reason = `record has an unrecognised status "${String(final.status).slice(0, 24)}"`; record = final; }
     } else if (si >= 0) {

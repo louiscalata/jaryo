@@ -23,6 +23,31 @@ async function suite(mod) {
   t("ok/failed/blocked are copied from the record", st(v, "a") === "OK" && st(v, "b") === "FAILED" && st(v, "c") === "BLOCKED");
   t("a blocked step keeps the record's reason", v.steps[2].reason === "needs b (failed)");
   t("counts match the rows", v.review.counts.failed === 1 && v.review.counts.blocked === 1 && v.review.counts.unknown === 0 && v.review.counts.total === 3);
+  // A failed result keeps the cause available in the row, even without output or a recorded reason.
+  t("a failed result without a reason uses the spec wording and its recorded exit", v.steps[1].reason === "This step ran and failed: exit 1. See its last output.");
+  for (const [reason, exit, expected] of [
+    ["command could not start", 127, "command could not start"],
+    ["  explicit detail  ", 2, "  explicit detail  "],
+    ["", 3, "This step ran and failed: exit 3. See its last output."],
+    ["  ", 4, "This step ran and failed: exit 4. See its last output."],
+    [null, undefined, "This step ran and failed. See its last output."],
+    [undefined, "unknown", "This step ran and failed. See its last output."],
+    [undefined, -9, "This step ran and failed: exit -9. See its last output."],
+  ]) {
+    const failedView = buildView(M, L({ event: "run-start" }, { step: "a", status: "failed", reason, exit }, { event: "run-end" }), now);
+    t(`a failed result retains an explicit reason or uses only its recorded exit (${String(reason)}, ${String(exit)})`, failedView.steps[0].state === "FAILED" && failedView.steps[0].reason === expected);
+  }
+  const infiniteExit = buildView(M, '{"step":"a","status":"failed","exit":1e400}', now);
+  t("a failed result with an unrepresentable exit does not invent an exit code", infiniteExit.steps[0].reason === "This step ran and failed. See its last output.");
+  // A caller-supplied clock is validated before timestamps are formatted or liveness is judged.
+  for (const bad of [NaN, Infinity, -Infinity, 8640000000000001, -8640000000000001, 1e100, "0", null, true]) {
+    let err = null; try { buildView(M, "", bad); } catch (e) { err = e; }
+    t(`an invalid now (${String(bad)}) is refused with a deliberate clock error`, err instanceof TypeError && err.message === "now must be a finite number within the JavaScript Date range");
+  }
+  for (const valid of [-8640000000000000, -8640000000000000 + 1, -0.5, 0, 0.5, 8640000000000000 - 1, 8640000000000000]) {
+    let result = null; try { result = buildView(M, "", valid); } catch {}
+    t(`a valid now (${valid}) keeps its Date representation`, result?.generatedAt === new Date(valid).toISOString());
+  }
   // no record
   v = buildView(M, "", now);
   t("no record at all: every step is UNKNOWN and there is no run", v.steps.every(s => s.state === "UNKNOWN") && v.run === null);

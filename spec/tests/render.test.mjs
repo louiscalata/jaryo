@@ -1,10 +1,10 @@
 // Tests for adaptor/view-template.html and build-view-page.mjs. Needs JSDOM=<path to jsdom>.
 // The view document is untrusted data: it must never become markup or script.
-import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { createRequire } from "node:module"; import { spawnSync } from "node:child_process"; import { fileURLToPath } from "node:url";
+import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { createRequire } from "node:module"; import { spawnSync } from "node:child_process"; import { fileURLToPath, pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
-const { JSDOM } = require(process.env.JSDOM);
+const { JSDOM, VirtualConsole } = require(process.env.JSDOM);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const { buildView } = await import(path.join(root, "adaptor/jaryo-adaptor.mjs"));
+const { buildView } = await import(pathToFileURL(path.join(root, "adaptor/jaryo-adaptor.mjs")).href);
 let failed = 0, n = 0;
 const ok = (c, m) => { n++; if (!c) { failed++; console.log("FAIL", m); } else console.log("PASS", m); };
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-render-"));
@@ -17,8 +17,10 @@ function page(view) {
   if (r.status !== 0) throw new Error(r.stderr);
   return fs.readFileSync(out, "utf8");
 }
-function boot(html) {
-  const dom = new JSDOM(html, { runScripts: "dangerously", pretendToBeVisual: true, url: "http://127.0.0.1/",
+function boot(html, errors) {
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on("jsdomError", err => { if (errors) errors.push(err); else console.error(err); });
+  const dom = new JSDOM(html, { virtualConsole, runScripts: "dangerously", pretendToBeVisual: true, url: "http://127.0.0.1/",
     beforeParse(w) { w.HTMLDialogElement.prototype.showModal = function () { this.open = true; }; w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event("close")); }; } });
   return dom.window;
 }
@@ -67,11 +69,30 @@ const chipOf = b => b.querySelector(".chip");
 ok(/\[FAILED\]/.test(chipOf(fb[0]).textContent) && /\[BLOCKED\]/.test(chipOf(fb[1]).textContent) && /\[OK\]/.test(chipOf(fb[2]).textContent), "a failed step says FAILED and a blocked step says BLOCKED, each in its own word");
 ok(fb[0].classList.contains("fail") && !fb[0].classList.contains("bad") && fb[1].classList.contains("bad") && !fb[1].classList.contains("fail"), "a failed row and a blocked row get different shape classes");
 ok(chipOf(fb[0]).classList.contains("fail") && !chipOf(fb[0]).classList.contains("bad") && chipOf(fb[1]).classList.contains("bad"), "the FAILED chip and the BLOCKED chip are styled separately");
+ok(/^A, step id a, failed(?:,|$)/.test(fb[0].getAttribute("aria-label")) && !/^A, step id a, blocked(?:,|$)/.test(fb[0].getAttribute("aria-label")), "the FAILED row accessible name identifies it as failed, never blocked");
+ok(/^B, step id b, blocked, needs a \(failed\)$/.test(fb[1].getAttribute("aria-label")), "the BLOCKED row accessible name identifies its own state before the failed dependency reason");
+[...fd.querySelectorAll("button")].find(b => /Preview the run review/.test(b.textContent)).click();
+ok(fd.getElementById("rev").open && fd.getElementById("rev-body").textContent === "From the last recorded run: 3 declared steps; 1 blocked, 1 failed, 0 waiting for a go-ahead, 0 unknown or undiscovered.", "the review dialog names and separately counts blocked and failed steps");
 const css = fd.querySelector("style").textContent;
 const rule = sel => (css.match(new RegExp("(?:^|[}\\s])" + sel.replace(/[.\[\]"=()]/g, "\\$&") + "\\s*\\{([^}]*)\\}")) || [])[1] || "";
 ok(/border-left:\s*6px solid/.test(rule(".step.fail")) && !/background/.test(rule(".step.fail")) && /double/.test(rule(".step.bad")), "FAILED is an unfilled row with a solid 6px rule; BLOCKED keeps its fill and double rule");
 ok(rule(".chip.fail") !== "" && !/background/.test(rule(".chip.fail")) && /background/.test(rule(".chip.bad")), "the FAILED chip is an outline; the BLOCKED chip is filled");
 ok(/border[^;]*blocked-sel/.test(rule('.step.fail[aria-pressed="true"]')), "a selected FAILED row keeps its rule, drawn in the selected-state ink");
+
+// A recorded result may have no output, including a failure that printed nothing.
+for (const [status, exit] of [["failed", 1], ["ok", 0], ["blocked", null], ["review", null]]) {
+  const errors = [], stamp = new Date().toISOString();
+  const emptyRecord = [{ event: "run-start", run: 1, ts: stamp }, { step: "s1", status, exit, ms: 3, ts: stamp, tail: [] }, { event: "run-end", ts: stamp }].map(x => JSON.stringify(x)).join("\n");
+  const ew = boot(page(buildView({ id: "empty", name: "Empty", declares: { actions: ["run"] }, steps: [{ id: "s1", name: "S1", needs: [] }] }, emptyRecord)), errors), ed = ew.document;
+  ed.querySelector(".step").click();
+  ok(errors.length === 0, `selecting a ${status} step with an empty output tail raises no exception`);
+  ok(!!ed.querySelector("#insp .acts button") && /Preview the run review/.test(ed.querySelector("#insp .acts").textContent), `the ${status} empty-tail inspector keeps its action area`);
+  ok(ed.getElementById("live").textContent === `Selected S1, ${status}.`, `the ${status} empty-tail selection is announced exactly`);
+  ok(ed.querySelector("#insp pre") === null && /Last recorded: exit/.test(ed.getElementById("insp").textContent), `the ${status} empty-tail inspector shows the recorded result without an empty output region`);
+  ew.close();
+}
+const output = d.querySelector("#insp pre");
+ok(output && output.getAttribute("role") === "region" && output.getAttribute("tabindex") === "0" && output.getAttribute("aria-label") === "Last recorded output of " + view.steps[0].name && output.textContent === HOSTILE, "a nonempty output tail remains a named focusable region with literal output");
 
 // failure modes
 const w2 = boot(page({ schema: "something-else", steps: [] })).document;
@@ -90,5 +111,13 @@ ok(/Record problem/.test(boot(page(warned)).document.getElementById("warn").text
 // source hygiene
 const tpl = fs.readFileSync(path.join(root, "adaptor/view-template.html"), "utf8");
 ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function/.test(tpl), "the template never builds markup from data");
+// The child runs the same checks from the copied spec without copying recursively.
+if (!process.argv.includes("--path-copy-child")) {
+  const copy = path.join(tmp, "sp ace %41 é#q");
+  fs.cpSync(root, copy, { recursive: true });
+  const child = spawnSync(process.execPath, [path.join(copy, "tests/render.test.mjs"), "--path-copy-child"], { encoding: "utf8", timeout: 30000 });
+  ok(child.status === 0 && /\d+\/\d+ passed/.test(child.stdout) && !/^FAIL /m.test(child.stdout), "the render checks pass when spec is copied to a path with spaces, a percent escape, Unicode and a hash");
+  if (child.status !== 0) console.error(child.stdout, child.stderr);
+}
 console.log(`${n - failed}/${n} passed`);
 process.exit(failed ? 1 : 0);
