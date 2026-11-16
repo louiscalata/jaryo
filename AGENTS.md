@@ -120,7 +120,7 @@ Consult `docs/TYPOGRAPHY-PRINCIPLES.md`, `docs/FONTS.md`, `docs/CHECKS.md`, `VER
 
 ## Publication and hard rules
 
-GitHub Pages publishes `main` at `/` to https://louiscalata.github.io/jaryo/. There is no separate Pages workflow. Preserve both header links, the catalog phrase and Copper's EXAMPLE ONLY status.
+GitHub Pages publishes `main` at `/` to https://louiscalata.github.io/jaryo/. There is no separate Pages workflow. Preserve both header links, the catalog phrase and Copper's EXAMPLE ONLY status. That status applies to the lab and its catalog; the spec's reference screens use the Copper tokens as their own skin, and the spec must not describe the lab as having chosen it.
 
 - Keep one writer per file and preserve unrelated work. Use one focused PR per concern; state the full scope of an authorized cumulative maintenance PR.
 - Never push directly to main. Merge only after the current required checks pass, using a merge commit. Do not change auto-merge settings or close competing PRs unless assigned that action.
