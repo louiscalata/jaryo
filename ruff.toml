@@ -1,0 +1,29 @@
+# Ruff configuration for the Python scripts in this repository. See docs/python-style.md.
+# CI pins ruff==0.17.4 (.github/workflows/ci.yml). Bump it in its own change.
+line-length = 120
+target-version = "py39"
+# Python files only. Ruff 0.17 also formats Python code blocks inside Markdown by default, and
+# spec/docs/spec/JARYO-INTERFACE-SPEC.md and lab-import-fixtures/README.md are pinned by hash
+# (spec/HASHES.txt, lab-import-fixtures/MANIFEST.sha256). Ruff must never rewrite them.
+include = ["*.py"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+
+[lint]
+select = ["E4", "E7", "E9", "F", "W", "I", "B", "UP", "N", "C90", "RUF100", "PTH", "EXE"]
+# EXE001: the scripts are run as `python3 scripts/<name>.py` (CI, AGENTS.md, README.md), so they
+# keep their shebang without the executable bit.
+ignore = ["EXE001"]
+
+[lint.mccabe]
+max-complexity = 15
+
+[lint.per-file-ignores]
+# validate_lab.py is left for its own repair change (ROOT points outside the repository, a
+# behaviour fix that needs a failing test first). Until then its import line and bare open()
+# calls are listed here instead of being rewritten by the style change.
+"scripts/validate_lab.py" = ["E401", "I001", "PTH123"]
