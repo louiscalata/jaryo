@@ -22,6 +22,36 @@ const isId = x => typeof x === "string" && x.length > 0 && x.length <= 128;
 const stamp = x => (Number.isSafeInteger(x) && x >= 0 ? x : null);
 const quote = x => JSON.stringify(String(x).slice(0, 64));
 
+// Whether an entry has the shape Nisi's own writer and reader require (history/run-journal-v1.mjs: entryOf and copy).
+// Nisi refuses any other entry, and its reopen rejects a file that holds one, so RUNNING is never shown for it.
+// Only RUNNING is judged this way: every other state is copied from the record, which stays unauthenticated.
+const NISI_KEYS = ["id", "projectId", "runId", "attempt", "candidateId", "stage", "receiptId", "createdAt", "ttlMs", "state", "heartbeatAt", "retryOf", "revokes", "payload"];
+const NISI_ID = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/;
+const NISI_STATES = new Set(["QUEUED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED", "REVOKED"]);
+const NISI_FORBIDDEN_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+const nisiId = x => typeof x === "string" && NISI_ID.test(x);
+const nisiTime = x => Number.isSafeInteger(x) && x >= 0 && !Object.is(x, -0);
+// Nisi copies an entry as a tree of null, booleans, well-formed strings and safe integers: no floats, no -0, no forbidden
+// keys, nesting to 64 levels, at most 1,000,000 values.
+function nisiTree(x, depth, budget) {
+  if (depth > 64 || ++budget.values > 1000000) return false;
+  if (x === null || typeof x === "boolean") return true;
+  if (typeof x === "string") return x.isWellFormed();
+  if (typeof x === "number") return Number.isSafeInteger(x) && !Object.is(x, -0);
+  if (typeof x !== "object") return false;
+  if (Array.isArray(x)) return x.every(v => nisiTree(v, depth + 1, budget));
+  return Object.keys(x).every(k => !NISI_FORBIDDEN_KEYS.has(k) && k.isWellFormed() && nisiTree(x[k], depth + 1, budget));
+}
+function nisiEntry(e) {
+  const keys = Object.keys(e);
+  return keys.length === NISI_KEYS.length && NISI_KEYS.every(k => Object.prototype.hasOwnProperty.call(e, k)) && nisiTree(e, 0, { values: 0 })
+    && [e.id, e.projectId, e.runId, e.candidateId, e.stage].every(nisiId) && Number.isSafeInteger(e.attempt) && e.attempt >= 0
+    && nisiTime(e.createdAt) && Number.isSafeInteger(e.ttlMs) && e.ttlMs >= 1 && Number.isSafeInteger(e.createdAt + e.ttlMs) && NISI_STATES.has(e.state)
+    && (e.heartbeatAt === null || nisiTime(e.heartbeatAt))  // heartbeatAt <= createdAt is checked by the caller
+    && [e.receiptId, e.retryOf, e.revokes].every(x => x === null || nisiId(x))
+    && (e.state === "REVOKED" ? e.revokes !== null && e.retryOf === null : e.revokes === null) && (e.retryOf === null || e.state === "QUEUED");
+}
+
 export function buildJournalView(manifest, input, now = Date.now(), { maxBytes = MAX_JOURNAL_BYTES } = {}) {
   const base = buildView(manifest, "", now);
   const warnings = [UNAUTHENTICATED, ...base.warnings];
@@ -121,6 +151,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
       else if (beatTtl === null) { state = "UNKNOWN"; reason = "journal says RUNNING, but the journal header has no valid heartbeatTtlMs"; }
       // Nisi: an entry expires ttlMs after its createdAt, whatever its heartbeat says.
       else if (now >= made + e.ttlMs) { state = "UNKNOWN"; reason = `journal says RUNNING, but the entry expired ${e.ttlMs / 1000} s after it was created`; }
+      else if (!nisiEntry(e)) { state = "UNKNOWN"; reason = "journal says RUNNING, but the entry is not a valid Nisi journal entry"; }
       else {
         // Fresh only inside both heartbeat windows, by Jaryo's clock: the manifest's staleAfterMs and the journal's
         // own heartbeatTtlMs. The header can only shorten the window, so it can only turn RUNNING into UNKNOWN.
