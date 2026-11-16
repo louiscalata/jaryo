@@ -6,6 +6,8 @@ Canonical roadmap for this repository.
 
 - [x] Route Chromium forced-colors emulation to GitHub-hosted Ubuntu 24.04.
 - [x] Record the successful three-job CI matrix on the accepted maintenance revision (#45; engine-coverage qualification below).
+- [x] Route the required Firefox/WebKit `browsers` job to GitHub-hosted Ubuntu 24.04 for every event. The self-hosted PC runner `pc-win-jaryo` is offline, so the `browsers` jobs for #57, #58 and #59 stayed queued. This supersedes the PC runner mapping in the paragraph below; `scripts/test_ci_runners.mjs` checks the routing.
+- [ ] Record hosted Ubuntu 24.04 Firefox and WebKit receipts (requested/actual identity, version, totals) from the first run of the hosted `browsers` job. Until then hosted Firefox/WebKit engine coverage is NOT_RUN. The #56 receipts came from Playwright's Windows builds on `pc-win-jaryo` and do not cover the Linux builds.
 
 Static checks retain their existing Mac runner mapping. Configured Firefox and
 WebKit work retains its PC runner mapping; fresh engine-identity proof is pending
@@ -82,3 +84,5 @@ loss; historical child argv and exact PowerShell versions were not captured.
 Real Safari on Apple hardware, Windows forced-colors on hardware, real screen
 readers and physical-phone checks remain NOT_RUN, as listed in README.md.
 Chromium emulation and Playwright results do not establish those results.
+Playwright's Windows Firefox and WebKit builds are no longer run in CI since the
+`browsers` job moved to hosted Ubuntu; a hosted `windows-latest` job could add them back.

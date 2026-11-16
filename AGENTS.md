@@ -42,6 +42,7 @@ node scripts/test_persistence_rules.mjs
 node scripts/test_smoke_cli.mjs
 node scripts/test_focus_coverage.mjs
 node scripts/test_lab_dom.mjs
+node scripts/test_ci_runners.mjs
 ( cd spec && shasum -a 256 -c HASHES.txt )
 ```
 
@@ -72,7 +73,7 @@ The workflow runs on push and pull_request with four jobs. This table describes 
 | Job | Same-repository event | Fork pull request | Coverage |
 | --- | --- | --- | --- |
 | `check` | self-hosted `mac-m5` | hosted `ubuntu-latest` | Python/Node/static/DOM checks, spec checks and spec hashes |
-| `browsers` | self-hosted `pc-win` | hosted `ubuntu-24.04` | Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 |
+| `browsers` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Playwright 1.49.1 Firefox and WebKit smoke at 1280, 375 and 260 |
 | `forced-colors` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium forced-colors emulation |
 | `chromium` | hosted `ubuntu-24.04` | hosted `ubuntu-24.04` | Chromium smoke at 1280, 375 and 260 plus default-view axe checks in light/dark at 1280 and 375 |
 
@@ -80,7 +81,7 @@ Audited historical `browsers` jobs for #29, #35, #44, #45, #46 and #32 each repo
 
 Concurrency groups PR runs by PR number and cancels their superseded runs. Push runs use unique run-ID groups and are not cancelled by this rule. Keep the event name in the group so PR and push runs do not share a scheduling group. Accepted source revisions and their native CI receipts are recorded in `roadmap.md`; a later guide or source revision still needs its own current-head checks.
 
-Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks to the static and jsdom commands above. Use the workflow's platform-specific dependency and browser commands on its PC or hosted Linux runner.
+Never run Playwright, headless Chrome or Lighthouse on the Mac. Keep Mac checks to the static and jsdom commands above. Use the workflow's dependency and browser commands on its hosted Linux runners. No CI job uses the self-hosted PC runner; `scripts/test_ci_runners.mjs` fails if a blocking job targets an offline self-hosted label (`pc-win`, `box-linux`) or a Playwright job targets the Mac.
 
 On a prepared Linux runner, the browser scripts accept these commands:
 

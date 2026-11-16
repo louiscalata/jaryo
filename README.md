@@ -60,7 +60,7 @@ node scripts/test_lab_dom.mjs
 
 The DOM check requires jsdom; see [AGENTS.md](AGENTS.md#static-and-dom-checks) for setup and spec checks.
 
-Browser smoke and axe scripts live under `scripts/browser/` and need Playwright. Run browser checks on the PC or hosted Linux runners; Mac checks stay browser-free (see [AGENTS.md](AGENTS.md#ci-and-browser-boundary)).
+Browser smoke and axe scripts live under `scripts/browser/` and need Playwright. Run browser checks on the hosted Linux runners; Mac checks stay browser-free (see [AGENTS.md](AGENTS.md#ci-and-browser-boundary)).
 
 ## Tested
 
