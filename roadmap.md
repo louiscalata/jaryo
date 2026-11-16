@@ -6,14 +6,15 @@ Canonical roadmap for this repository.
 
 - [x] Route Chromium forced-colors emulation to GitHub-hosted Ubuntu 24.04.
 - [x] Record the successful three-job CI matrix on the accepted maintenance revision (#45; engine-coverage qualification below).
-- [x] Route the required Firefox/WebKit `browsers` job to GitHub-hosted Ubuntu 24.04 for every event. The self-hosted PC runner `pc-win-jaryo` is offline, so the `browsers` jobs for #57, #58 and #59 stayed queued. This supersedes the PC runner mapping in the paragraph below; `scripts/test_ci_runners.mjs` checks the routing.
-- [ ] Record hosted Ubuntu 24.04 Firefox and WebKit receipts (requested/actual identity, version, totals) from the first run of the hosted `browsers` job. Until then hosted Firefox/WebKit engine coverage is NOT_RUN. The #56 receipts came from Playwright's Windows builds on `pc-win-jaryo` and do not cover the Linux builds.
-- [ ] Find the cause of the intermittent WebKit summary shortfall. After every one of the 97 clicks was verified in the DOM and in storage, the summary can still read 18 / 19 (or 17 / 19) even after the 5 s wait. Seen only in WebKit, on `pc-win-jaryo` (push job `133071955544` at `3abf9b5`, 1280; job `130026072385`, 260) and on hosted Ubuntu 24.04 (job `129829626416`, 260). The PR run of the same `3abf9b5` head passed 326/326. A failing summary check now logs which family differs in the summary and in storage, plus the stored writerId, banner and toast text. The cause and a browser-free reproduction are still open.
+- [x] Route the required Firefox/WebKit `browsers` job to GitHub-hosted Ubuntu 24.04 for every event. The self-hosted PC runner `pc-win-jaryo` is offline, so the `browsers` jobs for #57, #58 and #59 stayed queued. This replaced the earlier PC runner mapping; `scripts/test_ci_runners.mjs` checks the routing.
+- [x] Record hosted Ubuntu 24.04 Firefox and WebKit receipts (requested/actual identity, version, totals) from the hosted `browsers` job. Every job below ran on image `ubuntu-24.04` and logged `BROWSER {"requested":"firefox","actual":"firefox","version":"132.0"}` with `TOTAL 326 / 326 firefox`, then `BROWSER {"requested":"webkit","actual":"webkit","version":"18.2"}` with `TOTAL 326 / 326 webkit`: #61 head `c9e56a6`, push run `43801219760` job `133081690647` and pull-request run `43801224982` job `133081786400`; #60 head `3553372`, push run `43803419245` job `133088627196` and pull-request run `43803425556` job `133088647174`; #62 head `e868510`, push run `43804299114` job `133091414668` and pull-request run `43804304442` job `133091514874`. These are Playwright 1.49.1 Linux builds at those three heads only; each later head needs its own run, and they are not real Safari. The #56 receipts came from Playwright's Windows builds on `pc-win-jaryo` and do not cover the Linux builds.
+- [ ] Find the cause of the intermittent WebKit summary shortfall. After every one of the 97 clicks was verified in the DOM and in storage, the summary can still read 18 / 19 (or 17 / 19) even after the 5 s wait. Seen only in WebKit, on `pc-win-jaryo` (push job `133071955544` at `3abf9b5`, 1280; job `130026072385`, 260) and on hosted Ubuntu 24.04 (job `129829626416`, 260). The PR run of the same `3abf9b5` head passed 326/326. A failing summary check now logs which family differs in the summary and in storage, plus the stored writerId, banner and toast text (failure-only diagnostics, #62). The six hosted runs recorded above all passed WebKit 326/326, so the shortfall did not recur there and the new diagnostics have not captured a failure yet. This stays open: the cause and a browser-free reproduction are not found.
 
-Static checks retain their existing Mac runner mapping. Configured Firefox and
-WebKit work retains its PC runner mapping; native Firefox and WebKit identity is
-verified for #56 at `72f4e50` (receipts below), and each later head needs its own
-run. Fork pull requests use hosted runners.
+Static checks retain their existing Mac runner mapping. Firefox and WebKit smoke
+runs on GitHub-hosted Ubuntu 24.04; native Firefox and WebKit identity is verified
+on hosted runs for #60, #61 and #62 (above) and, for Windows builds, for #56 at
+`72f4e50` (receipts below). Each later head needs its own run. Fork pull requests
+use hosted runners.
 
 ## Saved choices across tabs
 
