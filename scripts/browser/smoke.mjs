@@ -8,7 +8,7 @@ let options;
 try { options = parseSmokeArgs(process.argv.slice(2), process.env); }
 catch (error) { console.error(error.message); process.exit(1); }
 if (process.platform === "darwin") {
-  console.error("Browser smoke runs on the PC or hosted Linux, not on the Mac.");
+  console.error("Browser smoke runs on hosted Linux or another non-Mac runner, not on the Mac.");
   process.exit(1);
 }
 const { labDir, outJson, shotDir, engineName } = options;

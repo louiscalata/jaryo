@@ -76,7 +76,7 @@ Historical verification recorded 2026-11-09 in headless Chromium. Details: [VERI
 - Real screen readers (VoiceOver, NVDA, TalkBack)
 - Real phones, cover screens, touch, OS zoom / text scaling
 - Real Safari on Apple hardware: NOT_RUN.
-- Firefox/WebKit engine identity and version are verified on `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`): Playwright Firefox 132.0 and WebKit 18.2, 326/326 each (97-option click-through at 1280, 375 and 260; expanded layout also at 1920). That covers those heads only, and each later head needs its own run. The audited historical PC jobs logged Chromium twice; see [the browser identity correction](roadmap.md#browser-identity-correction).
+- Firefox/WebKit engine identity and version are verified on `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`): Playwright Firefox 132.0 and WebKit 18.2, 326/326 each (97-option click-through at 1280, 375 and 260; expanded layout also at 1920). Hosted `ubuntu-24.04` runs at #60 `3553372`, #61 `c9e56a6` and #62 `e868510` (push and pull-request each) logged the same identities, versions and 326/326 totals; see [the CI availability receipts](roadmap.md#ci-availability). That covers those heads only, and each later head needs its own run. The audited historical PC jobs logged Chromium twice; see [the browser identity correction](roadmap.md#browser-identity-correction).
 - Windows forced-colors on hardware: NOT_RUN. Chromium forced-colors emulation is configured in CI and does not establish hardware results.
 - Import through a real OS file picker (jsdom covers wiring)
 

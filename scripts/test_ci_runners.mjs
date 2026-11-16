@@ -93,6 +93,14 @@ test("browsers keeps the Firefox and WebKit smoke commands and widths", () => {
 });
 test("browsers has no Windows-only steps left", () => assert.doesNotMatch(browsers.lines.join("\n"), /runner\.os == 'Windows'|shell: powershell/));
 
+test("docs and smoke messages no longer describe the retired PC runner mapping for browsers", () => {
+  const stale = [/on the PC or hosted Linux/i, /PC or hosted Linux/i, /retains its PC runner mapping/i];
+  for (const rel of ["README.md", "AGENTS.md", "roadmap.md", "VERIFICATION.md", "CHANGES.md", "docs/CHECKS.md", "scripts/browser/smoke.mjs"]) {
+    const body = fs.readFileSync(path.join(root, rel), "utf8");
+    for (const pattern of stale) assert.doesNotMatch(body, pattern, rel + " still says " + pattern);
+  }
+});
+
 test("every script the workflow runs exists", () => {
   const missing = [];
   let count = 0;
