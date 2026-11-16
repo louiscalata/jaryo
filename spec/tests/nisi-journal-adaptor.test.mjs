@@ -2,6 +2,7 @@
 // The rule under test: a step's state is copied from a journal entry, never from the footer, the header's clock or
 // the journal being well formed. RUNNING is the one named exception, judged against Jaryo's own clock.
 // tests/adaptor.test.mjs imports this file, so CI's `node tests/adaptor.test.mjs` runs it. It also runs on its own.
+import { createHash } from "node:crypto";
 import fs from "node:fs"; import os from "node:os"; import path from "node:path"; import { fileURLToPath, pathToFileURL } from "node:url"; import { spawnSync } from "node:child_process";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const adaptorPath = path.join(root, "adaptor/nisi-journal-adaptor.mjs");
@@ -14,13 +15,27 @@ const M = { id: "p", name: "P", declares: { actions: ["run", "logs", "retry"], e
 const NOHB = { ...M, declares: { actions: M.declares.actions, events: false } };
 const T0 = Date.parse("2026-11-07T20:00:00Z");
 const Z = "0".repeat(64);
-// Journal lines in Nisi's shape. Hashes are placeholders: the adaptor does not check the chain.
-const hdr = (projectId = "p", now = 0, schema = "nisi-run-journal-v1", heartbeatTtlMs = 3600000) => JSON.stringify({ config: { heartbeatTtlMs, maxEntries: 8, projectId, redactPaths: [] }, now, schema, type: "header" });
+// Raw lines support malformed-input tests. J below makes canonical journals with real chains for liveness tests.
+const hdr = (projectId = "p", now = T0, schema = "nisi-run-journal-v1", heartbeatTtlMs = 3600000) => JSON.stringify({ config: { heartbeatTtlMs, maxEntries: 8, projectId, redactPaths: [] }, now, schema, type: "header" });
 const ent = (seq, e) => JSON.stringify({ hash: Z, previousHash: Z, record: { entry: { attempt: 0, candidateId: "c1", createdAt: T0, heartbeatAt: null, id: `e${seq}`,
   payload: null, projectId: "p", receiptId: null, retryOf: null, revokes: null, runId: "r1", stage: "a", state: "SUCCEEDED", ttlMs: 3600000, ...e }, fingerprint: Z, retained: true }, seq, type: "entry" });
 const foot = n => JSON.stringify({ count: n, lastHash: Z, type: "footer" });
-const J = (entries, { header = hdr(), footer = true, after = [] } = {}) =>
-  [header, ...entries.map((e, i) => ent(i + 1, e)), ...(footer ? [foot(entries.length)] : []), ...after].join("\n") + "\n";
+const C = x => Array.isArray(x) ? "[" + x.map(C).join(",") + "]" : x && typeof x === "object"
+  ? "{" + Object.keys(x).sort().map(k => JSON.stringify(k) + ":" + C(x[k])).join(",") + "}" : JSON.stringify(x);
+const H = x => createHash("sha256").update(x).digest("hex");
+const J = (entries, { header = hdr("p", Math.max(T0, ...entries.map(e => Number.isSafeInteger(e.createdAt) ? e.createdAt : T0))), footer = true, after = [] } = {}) => {
+  let h; try { h = JSON.parse(header); } catch { h = {}; }
+  let prev = H("nisi-run-journal/header/v1\n" + C(h));
+  const lines = [header];
+  entries.forEach((raw, i) => {
+    const entry = JSON.parse(ent(i + 1, raw)).record.entry;
+    const retained = !(h.now >= entry.createdAt + entry.ttlMs); if (!retained) entry.payload = null;
+    const record = { entry, fingerprint: H("nisi-run-journal/input/v1\n" + C(entry)), retained };
+    const body = { seq: i + 1, previousHash: prev, record }, hash = H("nisi-run-journal/record/v1\n" + C(body));
+    lines.push(C({ ...body, hash, type: "entry" })); prev = hash;
+  });
+  return [...lines, ...(footer ? [C({ count: entries.length, lastHash: prev, type: "footer" })] : []), ...after].join("\n") + "\n";
+};
 const SAMPLE_M = { id: "sample-smoke", name: "Nisi sample", declares: { actions: ["logs"], heartbeat: HB }, steps: [{ id: "test", name: "Test", needs: [] }] };
 
 export async function suite(mod) {
@@ -56,7 +71,7 @@ export async function suite(mod) {
   // Nisi's rules (history/run-journal-v1.mjs): an entry expires at createdAt + ttlMs (now >= that), and a RUNNING
   // entry is live only while now - heartbeatAt <= the header's config.heartbeatTtlMs. Jaryo must not show RUNNING
   // where Nisi's own reader reports EXPIRED or UNKNOWN.
-  const short = { header: hdr("p", 0, "nisi-run-journal-v1", 1000) };
+  const short = { header: hdr("p", T0, "nisi-run-journal-v1", 1000) };
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 }], short), T0 + 5000);
   t("journal: a heartbeatAt older than the header's heartbeatTtlMs is UNKNOWN, inside staleAfterMs and ttlMs", st(v, "a") === "UNKNOWN" && /older than 1 s/.test(why(v, "a")));
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 }], short), T0 + 1001);
@@ -68,7 +83,7 @@ export async function suite(mod) {
     v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 }, { stage: "b", state: "SUCCEEDED" }], { header: h }), T0 + 500);
     t(`journal: a header heartbeatTtlMs of ${JSON.stringify(bad)} is never RUNNING; copied results stay`, st(v, "a") === "UNKNOWN" && /heartbeatTtlMs/.test(why(v, "a")) && st(v, "b") === "OK");
   }
-  v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0, ttlMs: 10000 }], { header: hdr("p", 0, "nisi-run-journal-v1", 600000) }), T0 + 10000);
+  v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0, ttlMs: 10000 }], { header: hdr("p", T0, "nisi-run-journal-v1", 600000) }), T0 + 10000);
   t("journal: an entry is expired at createdAt + ttlMs exactly: UNKNOWN, with a fresh heartbeatAt", st(v, "a") === "UNKNOWN" && /expired/.test(why(v, "a")) && v.run?.state === "unknown");
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0, ttlMs: 10000 }]), T0 + 9999);
   t("journal: one millisecond before createdAt + ttlMs it is RUNNING", st(v, "a") === "RUNNING");
@@ -101,7 +116,7 @@ export async function suite(mod) {
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 }], { header: hdr("p", T0 + 1000) }), T0 + 200000);
   t("journal: the header's now is not Jaryo's clock: a fresh-by-header heartbeat is UNKNOWN when it is stale now", st(v, "a") === "UNKNOWN");
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 }], { header: hdr("p", T0 + 10 * 86400000) }), T0 + 1000);
-  t("journal: a header now far ahead does not make a fresh heartbeat stale", st(v, "a") === "RUNNING");
+  t("journal: a header now beyond the skew allowance prevents RUNNING", st(v, "a") === "UNKNOWN" && /future/.test(why(v, "a")));
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 + 3600000, createdAt: T0 + 3600000 }]), T0);
   t("journal: a heartbeatAt in the future is never RUNNING and is warned about", st(v, "a") === "UNKNOWN" && v.warnings.some(w => /future/.test(w)));
   v = buildJournalView(M, J([{ stage: "a", state: "RUNNING", heartbeatAt: T0 + 30000, createdAt: T0 + 30000 }]), T0);
@@ -222,7 +237,6 @@ const MUTANTS = [
   ["ignore the header's heartbeatTtlMs", `const windowMs = Math.min(hb.staleAfterMs, beatTtl);`, `const windowMs = hb.staleAfterMs;`],
   ["ignore the declared window", `const windowMs = Math.min(hb.staleAfterMs, beatTtl);`, `const windowMs = beatTtl;`],
   ["accept a header without a heartbeatTtlMs", `else if (beatTtl === null) {`, `else if (false) {`],
-  ["accept a heartbeatAt after createdAt", ` || beat > made || `, ` || `],
   ["stale one millisecond late", `if (age <= windowMs) {`, `if (age <= windowMs + 1) {`],
   ["use the header's now", `const age = now - beat;`, `const age = (Number.isSafeInteger(header.now) ? header.now : now) - beat;`],
   ["trust a future timestamp", `if (future) warnings.push(`, `future = false; if (future) warnings.push(`],
@@ -249,4 +263,7 @@ for (const [name, from, to] of MUTANTS) {
 }
 
 const isMain = () => { try { return !!process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; } };
+// Reader-boundary regressions and assertion-killed mutants also run through the existing CI entry point.
+const reader = await import(pathToFileURL(path.join(root, "tests/nisi-reader-agreement.test.mjs")));
+count += reader.count; failed += reader.failed;
 if (isMain()) { console.log(`${count - failed}/${count} passed`); process.exit(failed ? 1 : 0); }

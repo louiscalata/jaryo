@@ -9,13 +9,13 @@
 // usage: node adaptor/differential-nisi.mjs --nisi <export dir> --commit <40-hex> [--out <corpus path>] [--check]
 //   <export dir> is `git archive <commit>` of Nisi extracted into a folder outside this repository.
 //   --check regenerates in memory and exits 1 unless the file at --out is byte-identical.
+import { createHash } from "node:crypto";
 import fs from "node:fs"; import path from "node:path"; import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const CORPUS_SCHEMA = "jaryo-nisi-differential-corpus-v1";
 export const GENERATOR = "spec/adaptor/differential-nisi.mjs";
 export const SEED = 20261116;
 export const T0 = Date.UTC(2026, 10, 7, 20, 0, 0);
-const Z = "0".repeat(64);
 const STEPS = ["a", "b", "c"];
 // The entry every case starts from, in Nisi's shape. A corpus case stores only what differs from it.
 export const BASE = { attempt: 0, candidateId: "c1", createdAt: T0, heartbeatAt: null, id: "e1", payload: null, projectId: "p", receiptId: null,
@@ -26,20 +26,42 @@ export const manifestFor = c => ({ id: "p", name: "P", declares: { actions: ["ru
   ...(c.staleAfterMs === null ? {} : { heartbeat: { intervalMs: 100, staleAfterMs: c.staleAfterMs } }) },
   steps: [{ id: "a", name: "Step A", needs: [] }, { id: "b", name: "Step B", needs: ["a"] }, { id: "c", name: "Step C", needs: ["b"] }] });
 
-// Journal text with placeholder hashes (the adaptor does not check the chain). The generator proves, for every case
-// Nisi can hold, that this text and Nisi's own serialization give the adaptor the same view.
+// Construct a real chain before wire-only changes. Forged journals can have valid hashes yet fail reader rules.
+const canonical = x => Array.isArray(x) ? "[" + x.map(canonical).join(",") + "]" : x && typeof x === "object"
+  ? "{" + Object.keys(x).sort().map(k => JSON.stringify(k) + ":" + canonical(x[k])).join(",") + "}" : JSON.stringify(x);
+const hash = x => createHash("sha256").update(x).digest("hex");
+const changes = (x, set = {}, del = []) => { const out = { ...x, ...set }; for (const k of del) delete out[k]; return out; };
+export const journalNow = c => c.headerNow ?? Math.max(c.now, 0, ...c.entries.map(expand).map(e => Number.isSafeInteger(e.createdAt) && e.createdAt >= 0 ? e.createdAt : 0));
 export function journalText(c) {
-  const config = { heartbeatTtlMs: c.hbTtl, maxEntries: 10000, projectId: "p", redactPaths: [] };
-  if (c.hbDel) delete config.heartbeatTtlMs;
-  const lines = [JSON.stringify({ config, now: c.now, schema: "nisi-run-journal-v1", type: "header" })];
-  c.entries.forEach((raw, i) => lines.push(JSON.stringify({ hash: Z, previousHash: Z, record: { entry: expand(raw), fingerprint: Z, retained: true }, seq: i + 1, type: "entry" })));
-  lines.push(JSON.stringify({ count: c.entries.length, lastHash: Z, type: "footer" }));
-  return lines.join("\n") + "\n";
+  let config = { heartbeatTtlMs: c.hbTtl, maxEntries: 10000, projectId: "p", redactPaths: [] };
+  config = changes(config, c.configSet, [...(c.hbDel ? ["heartbeatTtlMs"] : []), ...(c.configDel || [])]);
+  const header = changes({ config, now: journalNow(c), schema: "nisi-run-journal-v1", type: "header" }, c.headerSet, c.headerDel);
+  let previousHash = hash("nisi-run-journal/header/v1\n" + canonical(header));
+  const lines = [canonical(header)];
+  c.entries.forEach((raw, i) => {
+    const entry = expand(raw), retained = !(Number.isSafeInteger(entry.createdAt + entry.ttlMs) && journalNow(c) >= entry.createdAt + entry.ttlMs);
+    if (!retained && !raw.recordSet) entry.payload = null;
+    const record = changes({ entry, fingerprint: hash("nisi-run-journal/input/v1\n" + canonical(entry)), retained }, raw.recordSet, raw.recordDel);
+    let env = { type: "entry", seq: i + 1, previousHash, record };
+    env.hash = hash("nisi-run-journal/record/v1\n" + canonical({ seq: env.seq, previousHash, record }));
+    env = changes(env, raw.envelopeSet, raw.envelopeDel);
+    lines.push(raw.wire ?? canonical(env)); previousHash = env.hash;
+  });
+  if (!c.noFooter) lines.push(canonical(changes({ count: c.entries.length, lastHash: previousHash, type: "footer" }, c.footerSet, c.footerDel)));
+  for (const edit of c.lex || []) {
+    const at = edit.line === "footer" ? lines.length - 1 : edit.line;
+    if (edit.reverse) { const v = JSON.parse(lines[at]); lines[at] = "{" + Object.keys(v).reverse().map(k => JSON.stringify(k) + ":" + canonical(v[k])).join(",") + "}"; }
+    else if (edit.space) lines[at] = lines[at].replace(/:/g, ": ");
+    else lines[at] = lines[at].replace(edit.from, edit.to);
+  }
+  let text = lines.join("\n") + (c.noFinalNewline ? "" : "\n");
+  if (c.crlf) text = text.replaceAll("\n", "\r\n");
+  return (c.prefix || "") + text;
 }
 
 // ---- the judge -------------------------------------------------------------------------------------------------
 const HELD = new Set(["QUEUED", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED", "REVOKED", "EXPIRED", "UNKNOWN"]);
-export const isClean = v => v.cfg === "OK" && v.time === "OK" && v.entries.every(x => HELD.has(x));
+export const isClean = v => v.status === "COMPLETE" && v.cfg === "OK" && v.time === "OK" && v.entries.every(x => HELD.has(x));
 
 // The 60 s clock-skew allowance ADAPTOR-V0.md documents: Jaryo's clock may be this far behind the journal's.
 export const SKEW_ALLOWANCE_MS = 60000;
@@ -54,7 +76,7 @@ function selected(es, s) {
 // What Nisi said about each stage's selected entry, and the state the adaptor may show. The only rule that is not
 // Nisi's: the manifest's own staleAfterMs window, which can only turn RUNNING into UNKNOWN.
 export function expectedStates(c, verdict) {
-  const es = c.entries.map(expand), out = {};
+  const es = c.entries.slice(0, verdict.held).map(expand), out = {};
   for (const s of STEPS) {
     const at = selected(es, s);
     if (at < 0) { out[s] = { state: "UNKNOWN", L: "no entry" }; continue; }
@@ -67,34 +89,50 @@ export function expectedStates(c, verdict) {
   return out;
 }
 
-// Disagreements for one case ([] = the adaptor agreed with Nisi), each with a class.
-//   Hard classes, which the test never allows:
-//     clean              Nisi held every entry: a declared stage must show exactly the expected state.
-//     config             Nisi refused the header: no stage may be RUNNING.
-//     clock-beyond-skew  Jaryo's clock is more than the skew allowance behind the journal: no stage may be RUNNING.
-//   Known classes, documented in ADAPTOR-V0.md and pinned by count in the test:
-//     clock-within-skew  Jaryo's clock is behind the journal's by at most the allowance: Nisi's reader refuses to
-//                        list (TIME); the adaptor tolerates the skew on purpose.
-//     entry-not-held     Nisi refused the entry the adaptor shows as RUNNING (shape, retry or revocation rules).
-//     not-running        Nisi held the entry and does not call it RUNNING, yet the adaptor does.
+// The display still copies unauthenticated terminal states and skips unreadable lines. Locate the entry it
+// actually selects, retaining its source index: a held RUNNING entry on the same stage must not excuse a later
+// rejected RUNNING entry. This mirrors only display selection, independently of the strict RUNNING gate.
+function displaySelected(c) {
+  const lines = journalText(c).replace(/^\ufeff/, "").split("\n"), rows = [], ids = new Set();
+  let first = 0; while (first < lines.length && !lines[first].trim()) first++;
+  let header; try { header = JSON.parse(lines[first]); } catch { return {}; }
+  const object = x => x !== null && typeof x === "object" && !Array.isArray(x);
+  const id = x => typeof x === "string" && x.length > 0 && x.length <= 128;
+  if (!object(header) || header.type !== "header" || header.schema !== "nisi-run-journal-v1" || !object(header.config) || !id(header.config.projectId)) return {};
+  for (let n = first + 1; n < lines.length; n++) {
+    if (!lines[n].trim()) continue;
+    let v; try { v = JSON.parse(lines[n]); } catch { continue; }
+    if (object(v) && v.type === "footer") break;
+    const e = object(v) && v.type === "entry" && object(v.record) && object(v.record.entry) ? v.record.entry : null;
+    if (!e || !id(e.id) || !id(e.runId) || !id(e.stage) || e.projectId !== header.config.projectId || ids.has(e.id)) continue;
+    ids.add(e.id); rows.push({ entry: e, index: n - first - 1 });
+  }
+  const runId = rows.length ? rows[rows.length - 1].entry.runId : null, latest = Object.create(null);
+  for (const row of rows) if (row.entry.runId === runId && row.entry.state !== "REVOKED") latest[row.entry.stage] = row;
+  return latest;
+}
+
+// Complete journals require exact state agreement. Rejected journals may still supply copied terminal states,
+// but RUNNING must name an entry in the held prefix. Only the documented clock allowance is tolerated.
 export function judge(c, verdict, view) {
-  const got = Object.fromEntries(view.steps.map(s => [s.id, s.state])), found = [], es = c.entries.map(expand);
+  const got = Object.fromEntries(view.steps.map(s => [s.id, s.state])), found = [];
+  const selectedRows = displaySelected(c);
   const add = (cls, s, expected, nisi) => found.push({ class: cls, stage: s, adaptor: got[s], expected, nisi });
   if (isClean(verdict)) {
     const want = expectedStates(c, verdict);
     for (const s of STEPS) if (got[s] !== want[s].state) add("clean", s, want[s].state, want[s].L);
     return found;
   }
-  const run = es.length ? es[es.length - 1].runId : null;
-  const stamps = es.filter(e => e.runId === run).flatMap(e => [e.createdAt, e.heartbeatAt]).filter(x => Number.isSafeInteger(x) && x >= 0);
-  const beyond = stamps.some(x => x > c.now + SKEW_ALLOWANCE_MS);
   for (const s of STEPS) {
     if (got[s] !== "RUNNING") continue;
-    if (verdict.cfg !== "OK") { add("config", s, "UNKNOWN", `config:${verdict.cfg}`); continue; }
-    if (verdict.time !== "OK") { add(beyond ? "clock-beyond-skew" : "clock-within-skew", s, "UNKNOWN", `clock:${verdict.time}`); continue; }
-    const at = selected(es, s), L = at < 0 ? null : verdict.entries[at];
-    if (L === null || !HELD.has(L)) add("entry-not-held", s, "UNKNOWN", L === null ? "no entry" : L);
-    else if (L !== "RUNNING") add("not-running", s, "UNKNOWN", L);
+    if (verdict.cfg !== "OK") { add("config", s, "UNKNOWN", "config:" + verdict.cfg); continue; }
+    const at = selectedRows[s]?.index;
+    if (at === undefined || at >= verdict.held) { add("entry-not-held", s, "UNKNOWN", "selected entry is not held"); continue; }
+    if (verdict.time !== "OK") {
+      add(journalNow(c) > c.now + SKEW_ALLOWANCE_MS ? "clock-beyond-skew" : "clock-within-skew", s, "UNKNOWN", "clock:" + verdict.time); continue;
+    }
+    const L = verdict.entries[at];
+    if (L !== "RUNNING") add("not-running", s, "UNKNOWN", L);
   }
   return found;
 }
@@ -106,7 +144,7 @@ const run = (fields = {}, extra = {}) => ({ set: { state: "RUNNING", ...fields }
 
 export function generateCases() {
   const cases = [], seen = new Set(), rnd = prng(SEED);
-  const add = c => { const k = JSON.stringify([c.staleAfterMs, c.hbTtl, c.hbDel, c.now, c.entries]); if (!seen.has(k)) { seen.add(k); cases.push({ id: `c${String(cases.length + 1).padStart(4, "0")}`, ...c }); } };
+  const add = c => { const k = JSON.stringify(c); if (!seen.has(k)) { seen.add(k); cases.push({ id: `c${String(cases.length + 1).padStart(4, "0")}`, ...c }); } };
   const pick = a => a[Math.floor(rnd() * a.length)];
 
   // A. RUNNING on every liveness boundary: the entry's ttl, the header's heartbeatTtlMs, the manifest's window.
@@ -175,47 +213,97 @@ export function generateCases() {
     }
     add(mk("fuzz", { staleAfterMs: pick([null, 1000, 120000, 3600000]), hbTtl: pick([1, 1000, 30000, 3600000]), now: times() }, es));
   }
+  // I. Reader-only states: independently chosen clocks, forged chains and hostile wire forms.
+  for (const ahead of [0, 1, 59999, 60000, 60001, 300000]) for (const offset of [0, 1000, 100000])
+    add(mk("reader-header-clock", { headerNow: T0 + offset + ahead, now: T0 + offset, staleAfterMs: 3600000 }, [run({ heartbeatAt: T0 })]));
+  for (const value of [null, "0", 1.5, -1, 2 ** 53]) add(mk("reader-header-now", { headerSet: { now: value } }, [run({ heartbeatAt: T0 })]));
+  add(mk("reader-header-now", { headerDel: ["now"] }, [run({ heartbeatAt: T0 })]));
+  for (const value of [0, 10001, "5", null, 1.5, -1, 2 ** 53]) add(mk("reader-header-config", { configSet: { maxEntries: value } }, [run({ heartbeatAt: T0 })]));
+  for (const value of [null, {}, "payload.x", ["payload"], ["payload.x", "payload.x"], ["payload.x", "payload.x.y"], ["payload.__proto__"], ["payload.01"], ["payload.x", "payload.y"]])
+    add(mk("reader-redact-paths", { configSet: { redactPaths: value } }, [run({ heartbeatAt: T0 })]));
+  for (const key of ["maxEntries", "redactPaths", "projectId"]) add(mk("reader-header-config", { configDel: [key] }, [run({ heartbeatAt: T0 })]));
+  add(mk("reader-header-extra", { headerSet: { extra: true } }, [run({ heartbeatAt: T0 })]));
+  add(mk("reader-header-extra", { configSet: { extra: true } }, [run({ heartbeatAt: T0 })]));
+  for (const fields of [{ prefix: "\ufeff" }, { prefix: "\n" }, { crlf: true }, { lex: [{ line: 0, reverse: true }] }, { lex: [{ line: 0, space: true }] }])
+    add(mk("reader-header-wire", fields, [run({ heartbeatAt: T0 })]));
+  // A fresh RUNNING entry in another run follows each rejected-line family, to catch skip-and-continue readers.
+  const rejected = [
+    { wire: "{}" }, { wire: "not json" }, { wire: "" },
+    { set: { attempt: 1.5, state: "SUCCEEDED" } }, { set: { projectId: "other", state: "SUCCEEDED" } },
+    { set: { state: "REVOKED", revokes: "missing" } }, { recordSet: { retained: "true" } },
+    { recordDel: ["retained"] }, { recordSet: { extra: 1 } }, { envelopeSet: { extra: 1 } },
+    { set: { createdAt: T0 + 5001, heartbeatAt: T0 + 5001 } },
+  ];
+  for (const bad of rejected) add(mk("reader-after-rejected", { headerNow: T0 + 5000 }, [bad, run({ id: "e2", stage: "b", runId: "r2", heartbeatAt: T0 })]));
+  add(mk("reader-after-duplicate", {}, [run({ heartbeatAt: T0 }), run({ heartbeatAt: T0 }), run({ id: "e2", stage: "b", runId: "r2", heartbeatAt: T0 })]));
+  add(mk("reader-created-after-header", { headerNow: T0 - 1 }, [run({ heartbeatAt: T0 })]));
+  // These lexical edits leave parsed values and hashes intact, but violate Nisi's canonical JSON requirement.
+  const numeric = [["ttlMs", 3600000, "3600000.0"], ["ttlMs", 3600000, "36e5"], ["attempt", 0, "0.0"], ["attempt", 0, "-0"],
+    ["createdAt", T0, String(T0) + ".0"], ["heartbeatAt", T0, String(T0) + ".0"]];
+  for (const [key, value, token] of numeric) for (const followed of [false, true])
+    add(mk("reader-numeric-form", { lex: [{ line: 1, from: JSON.stringify(key) + ":" + value, to: JSON.stringify(key) + ":" + token }] },
+      [run({ heartbeatAt: T0 }), ...(followed ? [run({ id: "e2", stage: "b", runId: "r2", heartbeatAt: T0 })] : [])]));
+  for (const followed of [false, true]) for (const fields of [
+    { lex: [{ line: 1, from: '"state":"RUNNING"', to: '"state":"SUCCEEDED","state":"RUNNING"' }] },
+    { lex: [{ line: 1, reverse: true }] }, { lex: [{ line: 1, space: true }] },
+  ]) add(mk("reader-entry-wire", fields, [run({ heartbeatAt: T0 }), ...(followed ? [run({ id: "e2", stage: "b", runId: "r2", heartbeatAt: T0 })] : [])]));
+  for (const raw of [{ recordSet: { retained: "true" } }, { recordDel: ["retained"] }, { recordSet: { retained: false }, set: { payload: { x: 1 } } },
+    { recordSet: { extra: 1 } }, { envelopeSet: { extra: 1 } }, { envelopeDel: ["seq"] }]) add(mk("reader-record-shape", {}, [{ ...raw, set: { heartbeatAt: T0, ...raw.set } }]));
+  for (const fields of [{ noFooter: true }, { noFooter: true, noFinalNewline: true }, { noFinalNewline: true },
+    { footerSet: { count: 0 } }, { footerSet: { extra: 1 } }, { lex: [{ line: "footer", space: true }] }])
+    add(mk("reader-footer", fields, [run({ heartbeatAt: T0 })]));
+  // The stage already has held RUNNING evidence. A later rejected entry must be judged by its own source
+  // position, not excused by any RUNNING entry Nisi holds on that stage, in either the same or another run.
+  for (const runId of ["r1", "r2"]) {
+    add(mk("reader-rejected-same-stage", { lex: [{ line: 2, from: '"ttlMs":3600000', to: '"ttlMs":36e5' }] },
+      [run({ heartbeatAt: T0 }), run({ id: "e2", runId, heartbeatAt: T0 })]));
+    add(mk("reader-rejected-same-stage", {}, [run({ heartbeatAt: T0 }), { set: { id: "e2", runId, heartbeatAt: T0 }, recordSet: { retained: "true" } }]));
+  }
+  // J. Seeded reader fuzz jointly varies the four defect families, with real hashes for parsed values.
+  for (let i = 0; i < 2200; i++) {
+    const offset = Math.floor(rnd() * 100000), now = T0 + offset;
+    const es = [run({ id: "e1", heartbeatAt: T0, ttlMs: 3600000 })];
+    const fields = { now, headerNow: now + pick([0, 1, 60000, 60001, 300000]), staleAfterMs: 3600000 };
+    switch (i % 8) {
+      case 0: fields.configSet = { maxEntries: pick([0, 1, 10001, "5"]) }; break;
+      case 1: fields.headerDel = ["now"]; break;
+      case 2: fields.lex = [{ line: 1, from: '"ttlMs":3600000', to: pick(['"ttlMs":3600000.0', '"ttlMs":36e5']) }]; break;
+      case 3: fields.lex = [{ line: 1, from: '"state":"RUNNING"', to: '"state":"FAILED","state":"RUNNING"' }]; break;
+      case 4: es[0].recordSet = { retained: pick([null, "true", false]) }; break;
+      case 5: es[0].wire = pick(["{}", "", "not json"]); break;
+      case 6: fields.noFooter = true; fields.noFinalNewline = pick([true, false]); break;
+      case 7: fields.lex = [{ line: pick([0, 1]), space: true }]; break;
+    }
+    if (i % 3 === 0) es.push(run({ id: "e2", stage: "b", runId: "r2", heartbeatAt: T0 }));
+    add(mk("reader-fuzz", fields, es));
+  }
   return cases;
 }
 
 export const header = (nisiCommit, count) => ({ type: "header", schema: CORPUS_SCHEMA, generator: GENERATOR, seed: SEED, nisiCommit, count,
   nisiFiles: ["history/run-journal-v1.mjs"], base: BASE, t0: T0,
-  note: "case = {id, kind, staleAfterMs, hbTtl, hbDel, now, entries:[{set,del}]}; verdict = {cfg, time, entries}; entries are Nisi liveness, or x:<code> when Nisi did not hold the entry" });
+  note: "case carries entry changes and optional header, record, envelope or lexical changes; verdict comes from reopen(text), then list(now), including held-prefix length and rejection report" });
 
 // ---- generate (needs Nisi) -------------------------------------------------------------------------------------
-async function nisiVerdict(nisi, c) {
-  const cfg = { projectId: "p", maxEntries: 10000, heartbeatTtlMs: c.hbTtl, redactPaths: [] };
-  if (c.hbDel) delete cfg.heartbeatTtlMs;
-  let j; try { j = nisi.createRunJournal(cfg); } catch (e) { return { v: { cfg: e.code || "ERR", time: null, entries: c.entries.map(() => "x:CONFIG") }, journal: null }; }
-  let mark = 0; const status = [];
-  for (const raw of c.entries) {
-    const e = expand(raw), at = Number.isSafeInteger(e.createdAt) && e.createdAt > mark ? e.createdAt : mark;
-    try { const r = j.append(e, at); status.push(r.status === "APPENDED" ? "ok" : `x:${r.status}${r.reason ? "/" + r.reason : ""}`); if (r.status === "APPENDED") mark = at; }
-    catch (err) { status.push(`x:${err.code || "ERR"}`); }
-  }
+export function nisiVerdict(nisi, c) {
+  const reopened = nisi.reopen(journalText(c)), report = reopened.report;
   let list = null, time = "OK";
-  try { list = j.list(c.now); } catch (err) { time = err.code || "ERR"; }
-  const held = list ? list.map(r => r.liveness) : null; let k = 0;
-  const entries = status.map(s => (s !== "ok" ? s : held ? held[k++] : "x:TIME"));
-  return { v: { cfg: "OK", time, entries }, journal: j };
+  if (reopened.journal) { try { list = reopened.journal.list(c.now); } catch (err) { time = err.code || "ERR"; } }
+  else time = null;
+  const held = report.recoveredIds.length;
+  return { cfg: reopened.journal ? "OK" : report.reason, time, status: report.status, reason: report.reason,
+    rejectedLine: report.rejectedLine, held,
+    entries: c.entries.map((_, i) => i < held ? list ? list[i].liveness : "x:TIME" : "x:" + report.reason) };
 }
 
 async function generate(nisiDir, commit) {
   const nisi = await import(pathToFileURL(path.join(nisiDir, "history/run-journal-v1.mjs")));
-  const { buildJournalView } = await import(pathToFileURL(path.join(path.dirname(fileURLToPath(import.meta.url)), "nisi-journal-adaptor.mjs")));
   const cases = generateCases(), lines = [], problems = [], tally = { clean: 0, refused: 0 }, byKind = {};
   for (const c of cases) {
-    const { v, journal } = await nisiVerdict(nisi, c);
-    // Cross-checks that make the recorded verdict trustworthy and the placeholder-hash text a faithful stand-in.
-    if (journal && v.time === "OK") {
-      const text = journal.serialize(c.now), re = nisi.reopen(text);
-      if (isClean(v)) {
-        if (re.report.status !== "COMPLETE") problems.push(`${c.id}: Nisi's own serialization reopens as ${re.report.status}`);
-        else if (JSON.stringify(re.journal.list(c.now).map(r => r.liveness)) !== JSON.stringify(v.entries)) problems.push(`${c.id}: reopened journal gives other liveness`);
-        const m = manifestFor(c), a = JSON.stringify(buildJournalView(m, text, c.now)), b = JSON.stringify(buildJournalView(m, journalText(c), c.now));
-        if (a !== b) problems.push(`${c.id}: adaptor view differs between Nisi's serialization and the placeholder text`);
-      }
-    }
+    const v = nisiVerdict(nisi, c);
+    // These checks never ask the adaptor which result is correct.
+    if (JSON.stringify(v) !== JSON.stringify(nisiVerdict(nisi, c))) problems.push(c.id + ": reader verdict is not deterministic");
+    if (v.held > c.entries.length || v.status === "COMPLETE" && v.held !== c.entries.length) problems.push(c.id + ": inconsistent held prefix");
     tally[isClean(v) ? "clean" : "refused"]++; byKind[c.kind] = (byKind[c.kind] || 0) + 1;
     lines.push(JSON.stringify({ ...c, verdict: v }));
   }
