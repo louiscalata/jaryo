@@ -115,7 +115,7 @@ async function suite(mod) {
   t("status failed with exit 0 is UNKNOWN: the record contradicts itself", st(v, "a") === "UNKNOWN");
   // corrupt and shaped input
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }) + "\n{not json\n[1,2]\n", now);
-  t("corrupt lines are warnings and never change a status", v.warnings.length === 2 && st(v, "a") === "OK");
+  t("corrupt lines warn and invalidate an earlier status", v.warnings.length === 2 && st(v, "a") === "UNKNOWN" && /invalid record line/.test(v.steps[0].reason) && v.steps[0].lastRun === null);
   v = buildView(M, "﻿" + L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }, { event: "run-end" }), now);
   t("a byte-order mark does not break the first line", v.run && v.run.id === 1 && st(v, "a") === "OK");
   v = buildView(M, L({ step: "a", status: "ok", exit: 0 }, { event: "run-end" }), now);
@@ -131,9 +131,9 @@ async function suite(mod) {
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0, tail: Array.from({ length: 50 }, (_, i) => "x".repeat(2000) + i) }), now);
   t("the output tail is capped in lines and in line length", v.steps[0].lastRun.tail.length === 6 && v.steps[0].lastRun.tail.every(x => x.length <= 500));
   // runs
-  v = buildView(M, L({ event: "run-start", run: 1 }, { step: "a", status: "failed", exit: 1 }, { event: "run-end" }, { event: "run-start", run: 2 }, { step: "b", status: "ok", exit: 0 }), T0 + 8000);
+  v = buildView(M, L({ event: "run-start", run: 1 }, { step: "a", status: "failed", exit: 1 }, { event: "run-end" }, { event: "run-start", run: 2 }, { step: "b", status: "ok", exit: 0, run: 2 }), T0 + 8000);
   t("a file holding two runs shows only the last, and says so", v.run.id === 2 && st(v, "a") === "UNKNOWN" && st(v, "b") === "OK" && v.warnings.some(w => /2 runs/.test(w)));
-  v = buildView(M, L({ event: "run-start", run: 2 }, { step: "a", event: "step-start" }, { event: "run-end", run: 1 }), now);
+  v = buildView(M, L({ event: "run-start", run: 2 }, { step: "a", event: "step-start", run: 2 }, { event: "run-end", run: 1 }), now);
   t("a run-end from a different run does not end this run", v.run.state !== "ended" && v.warnings.some(w => /different run/.test(w)));
   t("the newest record file is chosen by number, not by text", latestRecordFile(["run-0002.jsonl", "run-0010.jsonl", "run-9.jsonl", "notes.txt"]) === "run-0010.jsonl" && latestRecordFile([]) === null);
   // actions
@@ -264,7 +264,7 @@ const MUTANTS = [
   ["drop retry from the review list", `export const REVIEW_ACTIONS = ["run", "retry", "deploy", "delete", "overwrite"];`, `export const REVIEW_ACTIONS = ["run", "deploy", "delete", "overwrite"];`],
   ["sort record files as text", `.sort((a, b) => a[1] - b[1])`, `.sort((a, b) => (a[0] < b[0] ? -1 : 1))`],
   ["uncapped tail", `.slice(-TAIL_LINES).map(x => String(x).slice(0, TAIL_CHARS))`, `.map(x => String(x))`],
-  ["a duplicate id keeps its state", `if (dup.has(s.id)) { state = "UNKNOWN"; reason = "manifest declares this id more than once"; }\n    else if (final && si < fi) {`, `if (false) { }\n    else if (final && si < fi) {`],
+  ["a duplicate id keeps its state", `if (dup.has(s.id)) { state = "UNKNOWN"; reason = "manifest declares this id more than once"; }`, `if (false) { }`],
 ];
 for (const [name, from, to] of MUTANTS) {
   count++;
@@ -281,5 +281,7 @@ count += journal.count; failed += journal.failed;
 // The Nisi differential check replays a recorded corpus of Nisi's own verdicts against that adaptor (no Nisi needed).
 const differential = await import(pathToFileURL(path.join(root, "tests/nisi-differential.test.mjs")));
 count += differential.count; failed += differential.failed;
+const security = await import(pathToFileURL(path.join(root, "tests/adaptor-security.test.mjs")));
+for (const r of security.suite(real)) { count++; console.log(r.pass ? "PASS" : "FAIL", r.name); if (!r.pass) failed++; }
 console.log(`${count - failed}/${count} passed`);
 process.exit(failed ? 1 : 0);
