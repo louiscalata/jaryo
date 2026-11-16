@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Non-browser validation for the Jaryo adaptive design lab."""
+
 from __future__ import annotations
 import json, re, sys
 from pathlib import Path
@@ -9,8 +10,14 @@ ROOT = LAB.parent
 errors = []
 warns = []
 
-def fail(m): errors.append(m)
-def warn(m): warns.append(m)
+
+def fail(m):
+    errors.append(m)
+
+
+def warn(m):
+    warns.append(m)
+
 
 # Original 85 must remain byte-addressable and intact
 curated85 = json.loads((LAB / "data/curated-85.json").read_text(encoding="utf-8"))
@@ -30,9 +37,11 @@ if opt_path.exists():
     catalog = {o["id"]: o for o in json.load(open(opt_path))}
     for oid in ids85:
         if oid.startswith("F17"):
-            if oid not in f17: fail(f"missing F17 source {oid}")
+            if oid not in f17:
+                fail(f"missing F17 source {oid}")
         else:
-            if oid not in catalog: fail(f"missing catalog source {oid}")
+            if oid not in catalog:
+                fail(f"missing catalog source {oid}")
 else:
     warn("parent options.json absent — standalone lab ZIP; skip full-catalog cross-check")
     for oid in ids85:
@@ -118,8 +127,10 @@ if ext_path.exists():
             expect_current = "true" if fid == "F01" else "false"
             if current != expect_current:
                 fail(f"index.html nav aria-current for {fid} is {current}")
+
         def group_count(pred):
             return sum(len(f["options"]) for f in fams if pred(f["id"]))
+
         expected_groups = [
             f"Monochrome set · {group_count(lambda i: re.match(r'F(0[1-9]|1[0-6])$', i))} options",
             f"Color batch · {group_count(lambda i: i == 'F17')} options",
@@ -141,7 +152,9 @@ for needle in ("family-nav", "cards", "jaryo"):
 
 if errors:
     print("FAIL")
-    for e in errors: print(" -", e)
+    for e in errors:
+        print(" -", e)
     sys.exit(1)
 print("OK validate_lab")
-for w in warns: print("warn:", w)
+for w in warns:
+    print("warn:", w)

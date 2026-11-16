@@ -18,6 +18,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Python style (ruff 0.17.4)
+        # Pinned so a Ruff release cannot change CI. Installed in a throwaway venv under RUNNER_TEMP.
+        run: |
+          python3 -m venv "$RUNNER_TEMP/jaryo-ruff"
+          "$RUNNER_TEMP/jaryo-ruff/bin/python" -m pip install --disable-pip-version-check --no-input ruff==0.17.4
+          "$RUNNER_TEMP/jaryo-ruff/bin/ruff" check --output-format github .
+          "$RUNNER_TEMP/jaryo-ruff/bin/ruff" format --check .
       - name: Install jsdom
         run: npm install --prefix "$RUNNER_TEMP/jaryo-jsdom" --ignore-scripts --no-audit --no-fund jsdom@26.1.0
       - name: Lab checks
@@ -32,6 +39,7 @@ jobs:
           if [ -f lab-stages.js ]; then node --check lab-stages.js; fi
           node scripts/test_persistence_rules.mjs
           node scripts/test_smoke_cli.mjs
+          node scripts/test_static_server.mjs
           node scripts/test_focus_coverage.mjs
           node scripts/test_lab_dom.mjs
           node scripts/test_ci_runners.mjs
