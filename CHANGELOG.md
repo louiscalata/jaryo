@@ -12,9 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Explicit saved-choice persistence status keeps reset failures, unreadable foreign writes, recovery controls and exported status consistent.
 - `spec/`: the sample pipeline manifest declares a heartbeat (`declares.heartbeat`), the runner writes heartbeat lines while a step runs, and the adaptor judges RUNNING against the declared window instead of a built-in 120 s. Without a declared heartbeat a started step is UNKNOWN.
 - `spec/`: a second read-only adaptor, `adaptor/nisi-journal-adaptor.mjs`, maps a Nisi run journal (`nisi-run-journal-v1`) and a manifest to the same `jaryo-view/0` document. It checks the journal's project against the manifest, bounds input bytes, uses Jaryo's clock, does not check the hash chain and labels the view unauthenticated.
+- `spec/`: a differential check of the Nisi journal adaptor against Nisi's own reader. `adaptor/differential-nisi.mjs` generates 4,624 journal states, `pipeline/fixtures/nisi-differential-corpus.jsonl` records Nisi's verdicts for them (Nisi `3bfc6021`), and `tests/nisi-differential.test.mjs` replays them against the adaptor with no dependency on the other repository.
 
 ### Fixed
 
+- `spec/`: the Nisi journal adaptor no longer shows RUNNING for an entry Nisi's own writer would refuse (a wrong-typed or missing field, an identifier outside Nisi's format, a float in the payload, negative zero, `retryOf` or `revokes` on the wrong state). The differential check found 120 such states.
 - A save re-reads stored choices first and adopts another tab's newer write instead of overwriting it; the change is kept on screen until it is made again. The envelope format is unchanged and the re-read and write are not atomic.
 - On narrow screens the next tap or key press dismisses the toast, and while it shows the page reserves its height so focused controls and the page end can scroll clear of it.
 - The F06.08 hatched preview label sits on a solid plate instead of the stripes; a source check now rejects text placed directly on a gradient.

@@ -240,5 +240,8 @@ for (const [name, from, to] of MUTANTS) {
 // The Nisi run journal adaptor's suite. CI runs only this file, so it is run from here and counted in the total.
 const journal = await import(pathToFileURL(path.join(root, "tests/nisi-journal-adaptor.test.mjs")));
 count += journal.count; failed += journal.failed;
+// The Nisi differential check replays a recorded corpus of Nisi's own verdicts against that adaptor (no Nisi needed).
+const differential = await import(pathToFileURL(path.join(root, "tests/nisi-differential.test.mjs")));
+count += differential.count; failed += differential.failed;
 console.log(`${count - failed}/${count} passed`);
 process.exit(failed ? 1 : 0);
