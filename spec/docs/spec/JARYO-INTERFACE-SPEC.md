@@ -1,6 +1,6 @@
 # Jaryo interface spec — composed from the 17 design picks
 
-Version 0.5e, 2026-11-07, drafted by Claude on the Mac. It was revised after 15 Codex review rounds. Rounds 1–4, 6, 7, 10, 11 and 14 returned REVISE and each was fixed; rounds 5, 8, 9, 12, 13 and 15 returned **KEEP** with no findings (rounds 13–15 reviewed only the website fix and the accessibility-structure changes). v0.5 added the five owner decisions (§10), v0.5b the 701–1099px fixes, v0.5c the home-screen safe-area padding, v0.5d the website phone-overflow fix, v0.5e the accessibility-structure fixes.
+Version 0.6, 2026-11-16, drafted by Claude on the Mac. v0.5e (2026-11-07) was revised after 15 Codex review rounds. Rounds 1–4, 6, 7, 10, 11 and 14 returned REVISE and each was fixed; rounds 5, 8, 9, 12, 13 and 15 returned **KEEP** with no findings (rounds 13–15 reviewed only the website fix and the accessibility-structure changes). v0.5 added the five owner decisions (§10), v0.5b the 701–1099px fixes, v0.5c the home-screen safe-area padding, v0.5d the website phone-overflow fix, v0.5e the accessibility-structure fixes. **v0.6 (not yet reviewed or confirmed by the owner)** adds a sixth state, FAILED (§2, §5, §10 item 6), and writes down where a state comes from (§6.9), which closes adaptor findings 1 to 3 (`docs/adaptor/ADAPTOR-V0.md`). The review rounds above cover v0.5e, not v0.6. The two reference screens (`reference/index.html` and `reference/hero.html`) are still v0.5e and show no failed step; `reference/adaptor-view-failed-example.html` is the adaptor's own example and does show one.
 Status: **DESIGN SPEC**. It is not a production build, and none of it has been user-tested.
 
 ## Sources
@@ -36,9 +36,9 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 | Detail | **F11.01 Side Inspector** | A right column that is **always reserved** (empty state when nothing is selected), so opening detail never reflows the spine |
 | Walking | **F03.03 Step Pager** | Prev/next in dependency order, by name. At a fork it shows every branch and says "fork: n next steps — choose one" |
 | Data | **F07.01 Mono Ledger Table** | Runs and metrics: right-aligned mono numbers, a rule every row, sticky first column, horizontal scroll inside its own region. A **RUNNING row is inverted** (F17.01) |
-| State | **F09.01 Word+Glyph State** | `● [OK]` `▶ [RUNNING]` `✕ [BLOCKED]` `? [UNKNOWN]` `◆ [REVIEW]` |
+| State | **F09.01 Word+Glyph State** | `● [OK]` `▶ [RUNNING]` `✕ [BLOCKED]` `✕ [FAILED]` `? [UNKNOWN]` `◆ [REVIEW]`. BLOCKED means the step did not run and something it needs is missing. FAILED means the record says the step ran and failed. They are different words with different next steps, so neither stands in for the other (§5) |
 | Unknowns | **F08.10 Unknown-aware Graph** | Undeclared nodes that a run log implies: 1px dashed frame + hatch strip + `? [UNKNOWN]` + "not declared by adaptor" |
-| Hidden steps | **F12.10 Underground Dash** | Hidden steps become a dashed gap on the spine. The wording states what they do: `[+n optional] steps — off by default` for steps that will not run, and `[+n collapsed] steps — will run` for a folded-up required subflow. Never hides errors or consent: a group holding a blocked, unknown or review step **opens itself and cannot be hidden** (`opened: n inside need attention — cannot hide`) |
+| Hidden steps | **F12.10 Underground Dash** | Hidden steps become a dashed gap on the spine. The wording states what they do: `[+n optional] steps — off by default` for steps that will not run, and `[+n collapsed] steps — will run` for a folded-up required subflow. Never hides errors or consent: a group holding a blocked, failed, unknown or review step **opens itself and cannot be hidden** (`opened: n inside need attention — cannot hide`) |
 | Activity | **F13.02 Event Tick** | One glyph advances per **real** event. The bar **resets at each run**, fills to 8 glyphs, and prints the exact count for this run (`n this run`), which is also announced. No decorative or looping motion |
 | Empty | **F10.01 Honest Empty** | Says why it is empty, then gives one next step |
 | Commands | **F16.01 Command Palette** | ⌘K/Ctrl-K **and** a visible button (⌘ More on phones). Combobox semantics; the result count is announced. Undeclared actions are listed as `(n/a)` with the adaptor's reason. **Full sheet on ≤700px** |
@@ -66,7 +66,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 | accent_identity (copper) / accent_ink | `#C47A3A` / `#0B1012` | 5.64 · copper on bg 5.64 · on surface 5.18 |
 | status_ok | `#8FC4A0` | 9.64 · 8.85 |
 | status_run | `#8FB4D6` | 8.81 · 8.09 |
-| status_blocked on blocked_bg | `#FFD2C8` / `#3A2020` | 10.87 |
+| status_blocked on blocked_bg | `#FFD2C8` / `#3A2020` | 10.87 · 12.82 on surface (the FAILED rule and word, §5) |
 | status_unknown | `#9AA3A8` | 7.45 · 6.85 |
 | *derived:* sel-sub / sel-blocked / sel-run (ink on the selected fill) | `#3B4448` / `#6B2A1E` / `#1F4A72` | 8.84 · 9.43 · 8.16 on `#F4F1EA` |
 
@@ -85,7 +85,10 @@ Four picks plus the focus ring all use dashes. Each meaning gets its own stroke 
 | **Unavailable action** | 2px dashed button border, muted text | reason, e.g. `n/a: adaptor does not declare pause` |
 | **Optional / collapsed** (F12.10) | a dashed **gap on the spine line** (a line, never a box) + dashed-top button | `[+n optional] steps — off by default` |
 | **Blocked** | **filled panel** (`status_blocked_bg`) + **left hatch strip** + 6px double left rule + chip; the strip and rule survive selection (drawn in `sel-blocked`) | `✕ [BLOCKED]` + reason line |
+| **Failed** | an **unfilled** row (surface ground) with a **6px solid left rule** in `status_blocked`; no hatch, no double rule; the chip is an outline, not a fill. Selected: the rule is drawn in `sel-blocked`, like BLOCKED's | `✕ [FAILED]` + reason line |
 | **Review gate** | 2px solid hard border | `◆ [REVIEW]` |
+
+FAILED adds no color. It reuses `status_blocked` and `sel-blocked`, so §4 has no new token and the copper rule still holds. A problem tint is never the only signal. FAILED and BLOCKED share the tint and the ✕ glyph, so what tells them apart is the word and the shape: BLOCKED is a filled panel with a double rule, FAILED is an unfilled row with a single solid rule. Neither is the REVIEW gate's 2px frame. In the mono fallback the tint is white text and the shapes stay.
 
 ## 6. Interaction rules
 1. **Capabilities are declared, never assumed.**
@@ -95,7 +98,7 @@ Four picks plus the focus ring all use dashes. Each meaning gets its own stroke 
    - It gives an honest summary, e.g. "6 steps will run. 1 blocked (Load to warehouse); 1 undiscovered step."
    - **Cancel is focused by default.**
    - Closing returns focus to the opener.
-3. **Selection** never moves focus on desktop. On phones it opens the sheet and moves focus to the sheet heading. Selection never erases a state's own marks: BLOCKED keeps its strip and rule, and UNKNOWN stays dashed.
+3. **Selection** never moves focus on desktop. On phones it opens the sheet and moves focus to the sheet heading. Selection never erases a state's own marks: BLOCKED keeps its strip and rule, FAILED keeps its rule, and UNKNOWN stays dashed.
    - **RUNNING vs selection.** F17.01 asks for an "inverted row" for RUNNING, but on the spine an invert means selection. So RUNNING is an inverted *row* in ledgers, where rows are not selectable. On the spine it is `▶ [RUNNING]` plus the Event Tick.
    - **Focus after actions.** Every action that closes a layer returns focus to a visible control: the opener if it is still visible, otherwise the thumb bar's ⌘ More. Commands that move you somewhere focus the destination. Pager navigation keeps focus on the same-direction button, so pressing Enter on Next repeatedly walks forward.
    - **Escape** closes one layer at a time: palette or review first, then the phone sheet.
@@ -109,8 +112,14 @@ Four picks plus the focus ring all use dashes. Each meaning gets its own stroke 
    - Empty: "No step selected…"
    - Unknown: "Unknown: the adaptor has not declared this step…"
    - Never ran: "This step has never run: it is blocked (warehouse credential not set)."
+   - Ran and failed: "This step ran and failed: exit 1. See its last output."
+   - No record: "Unknown: no record for this step in the latest run."
    - Each gives one next step.
 8. **Optional steps.** Revealing them is a toggle (`aria-expanded`). Selecting an optional step from the palette or the pager reveals the group first.
+9. **Where a state comes from.** A state is copied from what the pipeline recorded. It is never inferred from dependencies or from absence.
+   - **Result words.** A record that says ok, failed, blocked or review is shown as OK, FAILED, BLOCKED or REVIEW with the record's reason. An unrecognised word is UNKNOWN and the reason quotes it. A record that contradicts itself (ok with a non-zero exit, failed with exit 0) is UNKNOWN.
+   - **No record.** A declared step with no record in the latest run is UNKNOWN. Jaryo does not call it blocked, because that would claim a cause the record does not give, and it does not call it OK or FAILED.
+   - **RUNNING is the one exception**, because a record cannot say "still running". It is shown only when the pipeline's manifest declares a heartbeat (`intervalMs`, `staleAfterMs`), the run is open, and that step's own latest start or heartbeat is within `staleAfterMs`. Without a declared heartbeat a started step is UNKNOWN. The liveness window belongs to the pipeline, not to Jaryo, which has no built-in one. The bounds the adaptor accepts (interval 100 ms to 10 min, window at most 1 h, 60 s of clock skew, a page refusing RUNNING after a 2-minute-old snapshot) are adaptor v0's choices, not part of this spec.
 
 ## 7. Accessibility baseline
 These are required, not optional:
@@ -134,6 +143,7 @@ These are required, not optional:
 | F09 state words widen dense tables | State words **never truncate**; names truncate instead (full value on focus) |
 | F17 focus ring on the light selected fill = 1.27:1 | The focus ring is always offset outside the element, over bg (13.4:1) |
 | F17 copper next to the salmon blocked tint can read as "warning" | Copper only on the mark and the one primary action; blocked is always chip + ✕ + word + reason |
+| F09 had five states, so a step that ran and failed was shown as BLOCKED | A sixth state, FAILED (§2, §5). Same tint and glyph, a different word and shape, so the two are told apart without color |
 | F12 optional gap could hide a problem | **Decided:** the group auto-expands and says why, and cannot be hidden while the problem is inside |
 | F02 two strings per item | Unknown nodes say what they are ("not declared by adaptor") instead of inventing an id |
 | Copper (dark) vs the original pure #000/#fff identity | Copper is the default skin; mono is the high-contrast fallback, using the same structure and tokens |
@@ -202,8 +212,10 @@ These checks ran in the Chromium pane on 2026-11-07, each against the build name
 - *(closed 2026-11-07: the 701–1099px band was checked at 768px and 900px. The two columns hold (spine 348/480px + inspector 420px), with no overflow and no target under 44px. Two fixes: the neighbour label now sits on its own line instead of over the subline, and the skip link is 44px tall when focused.)*
 
 ## 10. Decisions (owner, 2026-11-07)
-1. **F12 safety:** a hidden group that contains a blocked, unknown or review step **auto-expands**. It says why and cannot be hidden until the problem is gone.
+1. **F12 safety:** a hidden group that contains a blocked, failed, unknown or review step **auto-expands**. It says why and cannot be hidden until the problem is gone.
 2. **Fork default on phones:** **Next opens a branch chooser**. It never silently takes the first branch.
 3. **Copper on the website:** **the same as the app**. The dark Copper skin is used across marketing pages, with copper only on the mark and one primary action per page.
 4. **Event tick:** **resets per run**. The count shown is for the current run.
 5. **Repo home:** the spec and both reference screens move **into the lab's repo** (e.g. `docs/spec/` and `reference/`) once it exists. Notion stays the readable home, and both stay separate from AGIW Suite. **Status 2026-11-13:** done; the spec, reference screens, adaptor and tests now live in this repository under `spec/`.
+### Proposed in v0.6 (needs the owner's confirmation)
+- **FAILED state:** F09.01 has six states, with `✕ [FAILED]` for a step the record says ran and failed. The other option, mapping failed to BLOCKED, was rejected: it would hide whether a step needs a prerequisite or a fix, and the adaptors, the run counts and the review summary already keep the two apart. No new token. The reference screens do not yet show a failed step, and the app reference has no FAILED rendering.

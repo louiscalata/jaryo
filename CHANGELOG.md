@@ -8,11 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- `spec/`: interface spec v0.5e (a design spec, not a production build), reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page.
+- `spec/`: interface spec v0.6 (a design spec, not a production build; reference screens are still v0.5e), reference screens, read-only adaptor spike, sample pipeline, tests, and pitch page.
 - Explicit saved-choice persistence status keeps reset failures, unreadable foreign writes, recovery controls and exported status consistent.
 - `spec/`: the sample pipeline manifest declares a heartbeat (`declares.heartbeat`), the runner writes heartbeat lines while a step runs, and the adaptor judges RUNNING against the declared window instead of a built-in 120 s. Without a declared heartbeat a started step is UNKNOWN.
 - `spec/`: a second read-only adaptor, `adaptor/nisi-journal-adaptor.mjs`, maps a Nisi run journal (`nisi-run-journal-v1`) and a manifest to the same `jaryo-view/0` document. It checks the journal's project against the manifest, bounds input bytes, uses Jaryo's clock, does not check the hash chain and labels the view unauthenticated.
 - `spec/`: a differential check of the Nisi journal adaptor against Nisi's own reader. `adaptor/differential-nisi.mjs` generates 4,624 journal states, `pipeline/fixtures/nisi-differential-corpus.jsonl` records Nisi's verdicts for them (Nisi `3bfc6021`), and `tests/nisi-differential.test.mjs` replays them against the adaptor with no dependency on the other repository.
+
+### Changed
+
+- `spec/`: spec v0.6 adds a sixth state, FAILED (proposed, awaiting the owner's confirmation), with its own word and shape and no new colour, and writes down where a state comes from (a step with no record is UNKNOWN; RUNNING needs a declared heartbeat). The adaptor view template and the three `reference/adaptor-view*.html` pages style FAILED apart from BLOCKED, `check-contrast.mjs` gains one pair, and `tests/render.test.mjs` pins the difference. Closes adaptor findings 1 to 3.
 
 ### Fixed
 

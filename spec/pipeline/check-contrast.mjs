@@ -10,7 +10,7 @@ const PAIRS = [
   ["focus on bg", "#E8D7A8", "#0B1012", 3], ["focus on surface", "#E8D7A8", "#141A1C", 3],
   ["copper ink on copper", "#0B1012", "#C47A3A", 4.5], ["copper on bg", "#C47A3A", "#0B1012", 3],
   ["ok on surface", "#8FC4A0", "#141A1C", 4.5], ["run on surface", "#8FB4D6", "#141A1C", 4.5],
-  ["blocked on blocked bg", "#FFD2C8", "#3A2020", 4.5], ["ink on selected fill", "#0B1012", "#F4F1EA", 4.5],
+  ["blocked on blocked bg", "#FFD2C8", "#3A2020", 4.5], ["blocked (FAILED rule and word) on surface", "#FFD2C8", "#141A1C", 4.5], ["ink on selected fill", "#0B1012", "#F4F1EA", 4.5],
   ["sel-sub on selected fill", "#3B4448", "#F4F1EA", 4.5], ["sel-blocked on selected fill", "#6B2A1E", "#F4F1EA", 4.5],
 ];
 let bad = 0;

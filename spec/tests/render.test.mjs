@@ -57,6 +57,22 @@ ok(!/will not run/.test(d.getElementById("rev-body").textContent), "the review m
 d.getElementById("rev-close").click();
 ok(!d.getElementById("rev").open, "the review closes");
 
+// FAILED is its own state (spec v0.6, section 5): same words as the record, a shape that is not BLOCKED's
+const fm = { id: "f", name: "F", declares: { actions: ["run"], events: false }, steps: [
+  { id: "a", name: "A", needs: [] }, { id: "b", name: "B", needs: ["a"] }, { id: "c", name: "C", needs: ["b"] } ] };
+const fr = [{ event: "run-start", run: 1, ts: new Date().toISOString() }, { step: "a", status: "failed", exit: 1, ts: new Date().toISOString() },
+  { step: "b", status: "blocked", reason: "needs a (failed)", ts: new Date().toISOString() }, { step: "c", status: "ok", exit: 0, ts: new Date().toISOString() }, { event: "run-end", ts: new Date().toISOString() }].map(x => JSON.stringify(x)).join("\n");
+const fd = boot(page(buildView(fm, fr, Date.now()))).document, fb = [...fd.querySelectorAll(".step")];
+const chipOf = b => b.querySelector(".chip");
+ok(/\[FAILED\]/.test(chipOf(fb[0]).textContent) && /\[BLOCKED\]/.test(chipOf(fb[1]).textContent) && /\[OK\]/.test(chipOf(fb[2]).textContent), "a failed step says FAILED and a blocked step says BLOCKED, each in its own word");
+ok(fb[0].classList.contains("fail") && !fb[0].classList.contains("bad") && fb[1].classList.contains("bad") && !fb[1].classList.contains("fail"), "a failed row and a blocked row get different shape classes");
+ok(chipOf(fb[0]).classList.contains("fail") && !chipOf(fb[0]).classList.contains("bad") && chipOf(fb[1]).classList.contains("bad"), "the FAILED chip and the BLOCKED chip are styled separately");
+const css = fd.querySelector("style").textContent;
+const rule = sel => (css.match(new RegExp("(?:^|[}\\s])" + sel.replace(/[.\[\]"=()]/g, "\\$&") + "\\s*\\{([^}]*)\\}")) || [])[1] || "";
+ok(/border-left:\s*6px solid/.test(rule(".step.fail")) && !/background/.test(rule(".step.fail")) && /double/.test(rule(".step.bad")), "FAILED is an unfilled row with a solid 6px rule; BLOCKED keeps its fill and double rule");
+ok(rule(".chip.fail") !== "" && !/background/.test(rule(".chip.fail")) && /background/.test(rule(".chip.bad")), "the FAILED chip is an outline; the BLOCKED chip is filled");
+ok(/border[^;]*blocked-sel/.test(rule('.step.fail[aria-pressed="true"]')), "a selected FAILED row keeps its rule, drawn in the selected-state ink");
+
 // failure modes
 const w2 = boot(page({ schema: "something-else", steps: [] })).document;
 ok(/Could not display this record/.test(w2.getElementById("warn").textContent) && w2.querySelectorAll(".step").length === 0, "a document with the wrong schema is refused, not half-rendered");
