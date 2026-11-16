@@ -8,8 +8,9 @@ Canonical roadmap for this repository.
 - [x] Record the successful three-job CI matrix on the accepted maintenance revision (#45; engine-coverage qualification below).
 
 Static checks retain their existing Mac runner mapping. Configured Firefox and
-WebKit work retains its PC runner mapping; fresh engine-identity proof is pending
-below. Fork pull requests use hosted runners.
+WebKit work retains its PC runner mapping; native Firefox and WebKit identity is
+verified for #56 at `72f4e50` (receipts below), and each later head needs its own
+run. Fork pull requests use hosted runners.
 
 ## Saved choices across tabs
 
@@ -45,15 +46,16 @@ not validate a later revision.
 | [#45](https://github.com/louiscalata/jaryo/pull/45) | `cef74771912a20d9f4d12e80e0dc02026c405565` | `5a0ed3f22c2875b8e882368c96240165c5fe7860` | 6/6 SUCCESS: check, browsers and forced-colors on push and PR |
 | [#46](https://github.com/louiscalata/jaryo/pull/46) | `a7fc8fbcdf232424a7ea1235c4478d060a11e986` | `ccc96b96eb345b7cb36930940945f7ca0266e265` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push and PR |
 | [#32](https://github.com/louiscalata/jaryo/pull/32) | `808cb450ced78b0a0ac2af2a374b1d8202e2ff43` | `52e5576895a469f4edcbb4db2405d90845171699` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push and PR |
+| [#56](https://github.com/louiscalata/jaryo/pull/56) | `d42ece7bf735c33fb8982a813dcb0dfbbec8c858` | `72f4e50461d63a57dda0bdae897cfcfc78e16a55` | 8/8 SUCCESS: check, browsers, forced-colors and chromium on push (run `43667280382`) and PR (run `43665683075`); native engine identity below |
 
 ## Browser identity correction
 
 - [x] Preserve historical green check counts while qualifying engine coverage: all six audited accepted PC jobs listed below logged `TOTAL 45 / 45 chromium` twice, despite Firefox/WebKit step labels.
 - [x] Diagnose #47 head `d0d2bce014265a1929a9032fd654c6e22b809cbf`: PC browser job `130342121894` also ran Chromium in its first command; its failure prevented the second command from running. This is not Firefox/WebKit proof.
 - [x] Prepare validated explicit browser flags, browser-free CLI regression tests and requested/actual engine name plus version receipts. Preserve existing job names, runners, dependencies and assertions.
-- [ ] Verify fresh Firefox and WebKit native runs with matching requested/actual identities and versions on the corrected current head.
-- [ ] Verify the complete current-head CI matrix after the native failure corrections; historical job labels and synthetic checks do not satisfy this gate.
-- [ ] Verify card-wide selection and native Firefox/WebKit smoke on the revised head. Job `131363037421` recorded Firefox 132.0 at 323/324, with F07.03 and F15.02 clicks landing on non-selecting card DIVs at 1280; the job exited before WebKit ran. Browser-free regression covers card selection and control exclusions, not native hit testing.
+- [x] Verify fresh Firefox and WebKit native runs with matching requested/actual identities and versions on the corrected current head. Push run `43667280382` at `72f4e50` (#56 merge), PC job `132669362830` on runner `pc-win-jaryo` (self-hosted, `pc-win`), logged `BROWSER {"requested":"firefox","actual":"firefox","version":"132.0"}` then `TOTAL 326 / 326 firefox`, and `BROWSER {"requested":"webkit","actual":"webkit","version":"18.2"}` then `TOTAL 326 / 326 webkit`. PR run `43665683075` at head `d42ece7`, PC job `132664397157` on the same runner, logged the same identities, versions and totals. These are Playwright 1.49.1 builds at these two heads only, not real Safari.
+- [x] Verify the complete current-head CI matrix after the native failure corrections; historical job labels and synthetic checks do not satisfy this gate. Push run `43667280382` at `72f4e50`: check, browsers, chromium (`chromium` 131.0.6778.33, `TOTAL 326 / 326 chromium`) and forced-colors (`TOTAL 162 / 162 chromium-forced-colors-emulation`) all SUCCESS. PR run `43665683075` at `d42ece7`: the same four jobs SUCCESS.
+- [x] Verify card-wide selection and native Firefox/WebKit smoke on the revised head. Job `131363037421` recorded Firefox 132.0 at 323/324, with F07.03 and F15.02 clicks landing on non-selecting card DIVs at 1280; the job exited before WebKit ran. At `72f4e50`, PC job `132669362830` logged `PASS all options selectable by click` with 97 of 97 clicked and no failures at 1280, 375 and 260 in both Firefox and WebKit. Browser-free regression covers card selection and control exclusions, not native hit testing.
 
 | Accepted PR | Audited PC browser job | Native engine result |
 | --- | --- | --- |
@@ -72,7 +74,7 @@ loss; historical child argv and exact PowerShell versions were not captured.
 
 - [x] Adapt only the compatible expanded booklet title and preview/notes treatment from #36/#37; preserve current normal cards, folios, named scroller and contrast tokens.
 - [x] Retain two-track expanded normal cards and full-width wide-family frames with notes below; defer #36's conflicting global hierarchy.
-- [x] Prepare native smoke assertions for multiple expanded normal cards, wide F18/F19 frames, keyboard focus, clipping/overflow and forced-colors emulation at 1280, 375, 260 and 1920; native execution remains pending.
+- [x] Prepare native smoke assertions for multiple expanded normal cards, wide F18/F19 frames, keyboard focus, clipping/overflow and forced-colors emulation at 1280, 375, 260 and 1920. Native execution passed at `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`): every expanded-layout and keyboard check at all four widths, 1920 included, passed in light and dark in Firefox 132.0 and WebKit 18.2 (browsers jobs `132669362830` and `132664397157`) and in Chromium (job `132669362970`), and in forced-colors emulation (job `132669363006`). Later heads need their own run.
 - [x] Preserve the first failing native receipts at `d0d2bce`: reduced-motion root overflow, visible-overflow misclassification and translucent forced-color outline handling require the bounded corrections under review.
 - [ ] Review the scoped source and remaining design choices before publication.
 - [ ] Verify responsive rendering, keyboard interaction, contrast and forced colors on the final native candidate.

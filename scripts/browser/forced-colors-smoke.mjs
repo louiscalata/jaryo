@@ -1,23 +1,18 @@
 // Chromium forced-colors emulation. Not a Windows hardware test.
 // Usage: node forced-colors-smoke.mjs <labDir> <outJson>
 import { chromium } from "playwright";
-import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { runExpandedLayoutChecks } from "./expanded-layout.mjs";
+import { createStaticServer, listenLoopback } from "./static-server.mjs";
 
 const [labDir, outJson] = process.argv.slice(2);
 if (!labDir || !outJson) {
   console.error("usage: node forced-colors-smoke.mjs <labDir> <outJson>");
   process.exit(1);
 }
-const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
-const server = http.createServer((req, res) => {
-  const p = path.join(labDir, decodeURIComponent(req.url.split("?")[0]).replace(/^\/$/, "/index.html"));
-  if (!p.startsWith(labDir) || !fs.existsSync(p)) { res.writeHead(404); return res.end(); }
-  res.writeHead(200, { "content-type": types[path.extname(p)] || "application/octet-stream" });
-  fs.createReadStream(p).pipe(res);
-}).listen(0);
+const server = createStaticServer(labDir);
+await listenLoopback(server);
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 const out = { mode: "chromium-forced-colors-emulation", hardware: "NOT_RUN", checks: [], errors: [] };
 const check = (name, pass, detail) => {
