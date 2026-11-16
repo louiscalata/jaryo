@@ -1,9 +1,9 @@
 // Accessibility structure checks for the two reference screens. Needs JSDOM=<path to jsdom>.
 // These check markup, not what a screen reader says.
-import fs from "node:fs"; import path from "node:path"; import { createRequire } from "node:module";
+import fs from "node:fs"; import path from "node:path"; import { createRequire } from "node:module"; import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const { JSDOM } = require(process.env.JSDOM);
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 let failed = 0, n = 0;
 const ok = (c, m) => { n++; if (!c) { failed++; console.log("FAIL", m); } else console.log("PASS", m); };
 const boot = f => new JSDOM(fs.readFileSync(path.join(root, f), "utf8"), { runScripts: "dangerously", pretendToBeVisual: true, url: "http://127.0.0.1/",

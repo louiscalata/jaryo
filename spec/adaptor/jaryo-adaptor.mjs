@@ -2,7 +2,7 @@
 // and emits a view document. Rule: every status in the view is copied from a record. Nothing is inferred,
 // with one named exception: RUNNING, which needs an open run, a heartbeat the manifest declares, and a recent, valid
 // timestamp from that step (see ADAPTOR-V0.md).
-import fs from "node:fs"; import path from "node:path";
+import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 
 export const KNOWN_ACTIONS = ["run", "pause", "retry", "cancel", "logs", "deploy", "delete", "overwrite"];
 // retry can re-execute consequential steps, so it is reviewed too.
@@ -152,7 +152,10 @@ export function latestRecordFile(files) {
   return list.length ? list[list.length - 1][0] : null;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run as a CLI only when this file is the main module. Compare file URLs of the real path, so a path with a space,
+// a symlinked directory (macOS /tmp, /var) or a Windows drive path still matches.
+const isMain = () => { try { return !!process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; } };
+if (isMain()) {
   const [manifestPath, runsDir] = process.argv.slice(2);
   if (!manifestPath) { console.error("usage: jaryo-adaptor.mjs <manifest.json> [runs-dir]"); process.exit(2); }
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));

@@ -3,11 +3,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'jaryo-token-check-'));
 try {
   for (const dir of ['reference', 'adaptor']) fs.mkdirSync(path.join(root, dir));
   for (const dir of ['reference', 'adaptor']) fs.cpSync(new URL(`../${dir}`, import.meta.url), path.join(root, dir), { recursive: true });
-  const checker = new URL('../pipeline/check-tokens.mjs', import.meta.url).pathname;
+  const checker = fileURLToPath(new URL('../pipeline/check-tokens.mjs', import.meta.url));
   const run = () => spawnSync(process.execPath, [checker], { cwd: root, encoding: 'utf8' });
   let result = run(); assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.equal((result.stdout.match(/^PASS /gm) || []).length, 6);
