@@ -6,10 +6,37 @@ Run from the repository root:
 python3 scripts/validate_lab.py
 node scripts/test_smoke_cli.mjs
 node scripts/test_focus_coverage.mjs
+node scripts/test_expanded_layout.mjs
 node scripts/test_ci_runners.mjs
 ```
 
-The Node tests check command parsing, engine-identity failure paths and focus assessments with fixtures, and read `.github/workflows/ci.yml` to check runner routing and that every script it runs exists. They do not launch a browser or establish native browser behavior.
+The Node tests check command parsing, engine-identity failure paths, focus and expanded-layout assessments with fixtures, and read `.github/workflows/ci.yml` to check runner routing and that every script it runs exists. They do not launch a browser or establish native browser behavior.
+
+`test_expanded_layout.mjs` uses fabricated snapshot rectangles, overflow metrics
+and resolved RGB styles. It imports no DOM or browser library. The existing
+`test_lab_dom.mjs` runner imports it, so the configured Lab check includes it;
+the standalone command above needs no jsdom. It pins root overflow assessment,
+visible versus clipped overflow, translucent outline compositing, WCAG contrast,
+layout and typography predicates, exact tolerances, zero-size boxes and NaN.
+These tests do not exercise snapshot collection, CSS layout, reduced-motion
+rendering or native forced-colors/keyboard behavior.
+
+Optional targeted harnesses, each with a private temporary directory:
+
+```bash
+task_mutants="$(mktemp -d)"
+TMPDIR="$task_mutants" node scripts/check_expanded_layout_mutations.mjs
+task_differential="$(mktemp -d)"
+TMPDIR="$task_differential" node scripts/check_expanded_layout_differential.mjs
+```
+
+The mutation harness syntax-checks each copied module and counts only failures
+with a named test and an assertion error. It first checks an unmodified control
+and retains each mutant and its log under its private temporary directory. The
+differential harness compares against a separate color/alpha and clipping oracle
+and explicit full-result layout expectations. Its optional
+`--baseline=/absolute/path/expanded-layout.mjs` also compares public helpers with
+a saved baseline module; baseline agreement is separate from oracle evidence.
 
 Expected:
 - `data/curated-85.json` has 17 families and 85 options, with unique IDs. The extended catalog's first 17 families use those same option records.
