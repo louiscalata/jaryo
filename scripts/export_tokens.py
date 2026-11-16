@@ -5,6 +5,7 @@ DTCG-inspired string-value export; this is not a DTCG 2025.10 conformant file.
 Groups: color (light and dark), dimension, fontFamily, fontWeight, typography.
 Font stacks are copied from the CSS. This script does not choose a face.
 """
+
 from __future__ import annotations
 
 import json
