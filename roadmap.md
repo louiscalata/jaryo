@@ -2,6 +2,77 @@
 
 Canonical roadmap for this repository.
 
+The first section is the project's goal and its staged plan. The sections after it track the lab's CI, persistence and browser evidence. A box is ticked only where a receipt (a merged PR, a file in this repository or a CI job) is cited next to it. There are no dates: each stage starts when the one before it passes.
+
+## Project goal: an interface over a pipeline you already run
+
+Jaryo is meant to read what a pipeline already declares (steps, inputs, runs, logs), draw exactly that and nothing more, draw everything else as `? [UNKNOWN]`, and put every consequential action behind a review. The plan and its exit tests are the pitch page's ("The plan", `spec/docs/pitch/jaryo-pitch.src.html`, built to `spec/docs/pitch/jaryo-pitch.html`). Today the repository holds a design spec, two reference screens on a fictional pipeline and a read-only adaptor spike. No independent pipeline is connected, nobody outside the design process has used it, and nothing installs (`spec/README.md`, Limits).
+
+### Stage 0: publish the design source
+
+- [x] The spec, reference screens, adaptor and tests live in this repository under `spec/` (spec section 10, decision 5, status 2026-11-13).
+
+### Stage 1: close the checks that need no backend
+
+Exit: each check has a written pass or fail, and every failure is fixed or listed.
+
+- [ ] VoiceOver pass on the reference screens. NOT_RUN. Only a markup-structure check exists (`spec/tests/reference-a11y.test.mjs`); it is not a screen-reader result.
+- [ ] NVDA pass on the reference screens. NOT_RUN.
+- [ ] Run the reference screens on a physical iPhone, including the home-screen launch and its safe-area padding. NOT_RUN. The simulator evidence in `spec/docs/evidence/ios/` is not a physical device.
+- [ ] Native file-picker Esc check, by hand. NOT_RUN.
+
+### Stage 2: one real pipeline, read-only
+
+Exit: for a named real pipeline, a fixture that omits one referenced step and one status from the adaptor output renders them as UNKNOWN; every step and state shown matches the pipeline's own run record; a deliberate guess-a-status change makes a test fail.
+
+Done, on pipelines this project wrote or generated:
+
+- [x] Read-only adaptor spike on a self-authored sample pipeline: manifest plus run record to a `jaryo-view/0` document (`spec/adaptor/jaryo-adaptor.mjs`, `spec/pipeline/`, `spec/docs/adaptor/ADAPTOR-V0.md`). A state is copied from the record, a declared step with no record is UNKNOWN, and a record for an undeclared step is shown unnamed. The sample is not independent evidence (ADAPTOR-V0, first paragraph).
+- [x] The manifest declares the heartbeat that makes RUNNING possible; without one a started step is UNKNOWN (#56, `d42ece7`; merge `72f4e50`).
+- [x] Second read-only adaptor for the Nisi run journal (`nisi-run-journal-v1`), merged as #60 (`bd45bd4`). It labels the view unauthenticated, bounds input at 4 MiB, uses Jaryo's clock and does not check the hash chain.
+- [x] Differential check of that adaptor against Nisi's own reader, merged as #66 (`3fa364b`). `spec/pipeline/fixtures/nisi-differential-corpus.jsonl` holds 4,624 generated states with the verdicts of Nisi `3bfc6021`; the adaptor agrees on all 2,226 states Nisi held in full; the check found one bug (120 states where RUNNING was shown for an entry Nisi would refuse), now fixed; 97 clock-skew states and 1 repeated id are documented as intended (ADAPTOR-V0, "Differential check against Nisi"). The corpus is generated, not a journal from a real Nisi run, and covers one Nisi commit.
+- [x] Adaptor test count corrected to 245 combined checks in `spec/tests/adaptor.test.mjs` (#67, `7e78bb0`).
+- [x] Spec v0.6 adds a sixth state, FAILED, apart from BLOCKED, and writes down where a state comes from (spec sections 2, 5, 6.7 and 6.9); the view template and `check-contrast.mjs` follow (#69, `87e3637`; merged). This closes ADAPTOR-V0 findings 1 to 3.
+
+Not done:
+
+- [ ] Owner confirmation of spec v0.6. The spec header states v0.6 is "not yet reviewed or confirmed by the owner", and section 10 lists FAILED under "Proposed in v0.6". The 15 Codex rounds cover v0.5e only.
+- [ ] Show a FAILED step on the app reference screen. `spec/reference/index.html` and `spec/reference/hero.html` are still v0.5e and have no FAILED rendering; only the adaptor view pages do.
+- [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
+- [ ] Choose the first real pipeline (open decision below).
+- [ ] Choose the install route (open decision below).
+- [ ] Connect one independent, named pipeline and render it, then meet the exit test above. The 18 adaptor mutants and 27 Nisi mutants in ADAPTOR-V0 show the guess-a-status rule holds for the two spikes; they are not that exit test.
+- [ ] Test the Nisi journal adaptor on a journal from a real Nisi run, not only synthetic and generated ones; regenerate the corpus when Nisi changes.
+- [ ] Refresh the pitch page's figures. It is dated v0.5e, 2026-11-07, and still quotes "63 adaptor checks" and "21 renderer checks" and says the spec has no failed state, where ADAPTOR-V0 now records 245 combined adaptor checks, 27 renderer checks and spec v0.6.
+
+### Stage 3: test with people
+
+Exit: each task has a pass rule written beforehand (the pitch's example is 4 of 5 complete it unaided), and failures are fixed before stage 4.
+
+- [ ] Choose the tasks and write their pass rules. Proposed: about five visually oriented users who do not use a terminal; five is a starting number, not a sample size. Tasks such as finding why a run is blocked and cancelling a review.
+- [ ] Run the sessions. No user test has been done; the only human input so far is the owner's 17 design picks and five behaviour decisions.
+
+### Stage 4: gated actions
+
+Exit: a gated run completes, and a cancelled or refused one leaves the pipeline untouched, on two different pipelines.
+
+- [ ] Enable one declared action, such as retry, behind the review gate against a sandbox pipeline, and decide who may run actions. No action runs today; the adaptor and pages are read-only.
+- [ ] Repeat the stage 2 test on a second, different pipeline.
+
+### Stage 5: make it installable
+
+Exit: three people who did not build it install it on their own pipeline and reach a first view without help.
+
+- [ ] Replace the placeholder install line and connect path with real ones. Nothing installs today.
+
+### Decisions needed from the owner
+
+- [ ] Install route: CLI, MCP, or an MCP-Apps-style host. MCP alone does not draw a UI; the pitch's landscape section suggests riding an existing protocol.
+- [ ] First real pipeline: not chosen. Spec decision 5 keeps the lab separate from AGIW Suite, so a pipeline outside it is the default; the AGIW inference monitor fits only if that separation is lifted, and the lab notes disagree on it.
+- [ ] Maintenance ownership: confirm who maintains the spec, screens and tests.
+- [ ] Confirm or reject FAILED as a sixth state (spec v0.6).
+- [ ] Go or hold. The pitch recommends going to stage 1 and then stage 2, and building no more screens before a real pipeline is connected.
+
 ## CI availability
 
 - [x] Route Chromium forced-colors emulation to GitHub-hosted Ubuntu 24.04.
@@ -28,7 +99,7 @@ use hosted runners.
 - [x] Reconcile catalog identity and status documentation (#23, #27), apostrophe escaping (#30), shared pitch image references (#31), and curated/optional labels (#26).
 - [x] Require jsdom for DOM tests and install its pinned test dependency in CI (#25).
 - [x] Record all six successful push/PR checks on the cumulative maintenance revision (#45; engine-coverage qualification below).
-- [ ] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout.
+- [x] Reconcile the separate typography and expanded-sheet proposals (#36, #37) with the current layout. Both PRs are CLOSED, unmerged. The compatible expanded-layout parts were adapted in #47 (merge `19e3c56`); #47's description calls it a partial reconciliation and defers #36's conflicting global hierarchy (open item under "Visual reconciliation candidate").
 - [x] Retain the current agent guide in #32 after all eight current-head checks passed; #39 is superseded (receipt below).
 
 ## Additional CI coverage
@@ -80,8 +151,9 @@ loss; historical child argv and exact PowerShell versions were not captured.
 - [x] Retain two-track expanded normal cards and full-width wide-family frames with notes below; defer #36's conflicting global hierarchy.
 - [x] Prepare native smoke assertions for multiple expanded normal cards, wide F18/F19 frames, keyboard focus, clipping/overflow and forced-colors emulation at 1280, 375, 260 and 1920. Native execution passed at `72f4e50` (push run `43667280382`) and PR head `d42ece7` (run `43665683075`): every expanded-layout and keyboard check at all four widths, 1920 included, passed in light and dark in Firefox 132.0 and WebKit 18.2 (browsers jobs `132669362830` and `132664397157`) and in Chromium (job `132669362970`), and in forced-colors emulation (job `132669363006`). Later heads need their own run.
 - [x] Preserve the first failing native receipts at `d0d2bce`: reduced-motion root overflow, visible-overflow misclassification and translucent forced-color outline handling require the bounded corrections under review.
-- [ ] Review the scoped source and remaining design choices before publication.
-- [ ] Verify responsive rendering, keyboard interaction, contrast and forced colors on the final native candidate.
+- [x] Review the scoped source before publication. The Codex code and security reviews of #47 completed on head `a67dec4` with no findings (PR comment, 2026-11-11), and #47 was merged by the owner as `19e3c56`. This is advice from a reviewer model plus the owner's merge, not a user test.
+- [ ] Decide whether to adopt #36's conflicting global typography hierarchy. #47 deferred it and #36 was closed unmerged, so the current layout keeps its own hierarchy until the owner decides.
+- [x] Verify responsive rendering, keyboard interaction, contrast and forced colors on the native candidate. The receipt is the third item above: expanded-layout, keyboard-focus and title/outline contrast checks at 1280, 375, 260 and 1920 in light and dark passed in Firefox 132.0, WebKit 18.2 and Chromium (push `72f4e50`, PR head `d42ece7`), and in Chromium forced-colors emulation. The lab source (`index.html`, `lab.js`, `lab.css`, `lab-stages.js`, `lab-stages.css`, `data/`) has no commit since `72f4e50`, and the hosted runs at #60, #61 and #62 heads logged 326/326 for Firefox and WebKit again. This covers emulation and Playwright builds only; real Safari, Windows forced-colors hardware, screen readers and physical phones stay NOT_RUN (Native checks, below).
 
 ## Native checks
 
