@@ -4,11 +4,14 @@
  */
 import "./test_lab_visual_contract.mjs";
 import "./test_expanded_layout.mjs";
+import { runSuiteTokenDifferentialChecks } from "./test_suite_token_differential.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
+
+runSuiteTokenDifferentialChecks();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LAB = path.join(__dirname, "..");

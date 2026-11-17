@@ -1,0 +1,3899 @@
+{
+  "schema": "jaryo-suite-token-differential/v1",
+  "sources": {
+    "export": {
+      "sha256": "bd464e747a2461defd3810f977079d93e3475879358a77ddc8e17be04db88493"
+    },
+    "suite": {
+      "sha256": "619a1f91378c6073e92d1a0382297e66e5e7df16de7e7551015df0ed08e1563c"
+    }
+  },
+  "summary": {
+    "exportTokens": 69,
+    "suiteLeaves": 167,
+    "rawShared": 0,
+    "rawExact": 0,
+    "rawNormalized": 0,
+    "exportOnly": 69,
+    "suiteOnly": 167,
+    "colorShared": 8,
+    "colorExact": 1,
+    "colorNormalized": 3,
+    "colorDifferent": 5,
+    "colorExportOnly": 26,
+    "colorSuiteOnly": 28,
+    "structuralDifferences": 449
+  },
+  "inventories": {
+    "export": [
+      {
+        "name": "/color/dark/bg",
+        "type": "color",
+        "value": "#0c0c0c"
+      },
+      {
+        "name": "/color/dark/border",
+        "type": "color",
+        "value": "#f0f0f0"
+      },
+      {
+        "name": "/color/dark/chip",
+        "type": "color",
+        "value": "#121212"
+      },
+      {
+        "name": "/color/dark/fg",
+        "type": "color",
+        "value": "#f0f0f0"
+      },
+      {
+        "name": "/color/dark/fg2",
+        "type": "color",
+        "value": "#d9d9d9"
+      },
+      {
+        "name": "/color/dark/focus",
+        "type": "color",
+        "value": "#ffd75e"
+      },
+      {
+        "name": "/color/dark/focus-halo",
+        "type": "color",
+        "value": "#0c0c0c"
+      },
+      {
+        "name": "/color/dark/hair",
+        "type": "color",
+        "value": "#6b6b6b"
+      },
+      {
+        "name": "/color/dark/hover",
+        "type": "color",
+        "value": "#242424"
+      },
+      {
+        "name": "/color/dark/inv-bg",
+        "type": "color",
+        "value": "#f0f0f0"
+      },
+      {
+        "name": "/color/dark/inv-fg",
+        "type": "color",
+        "value": "#0c0c0c"
+      },
+      {
+        "name": "/color/dark/muted",
+        "type": "color",
+        "value": "#ababab"
+      },
+      {
+        "name": "/color/dark/red",
+        "type": "color",
+        "value": "#f62131"
+      },
+      {
+        "name": "/color/dark/red-on",
+        "type": "color",
+        "value": "#0c0c0c"
+      },
+      {
+        "name": "/color/dark/rule",
+        "type": "color",
+        "value": "#f0f0f0"
+      },
+      {
+        "name": "/color/dark/surface",
+        "type": "color",
+        "value": "#121212"
+      },
+      {
+        "name": "/color/dark/surface-2",
+        "type": "color",
+        "value": "#1a1a1a"
+      },
+      {
+        "name": "/color/light/bg",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/border",
+        "type": "color",
+        "value": "#000000"
+      },
+      {
+        "name": "/color/light/chip",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/fg",
+        "type": "color",
+        "value": "#000000"
+      },
+      {
+        "name": "/color/light/fg2",
+        "type": "color",
+        "value": "#1f1f1f"
+      },
+      {
+        "name": "/color/light/focus",
+        "type": "color",
+        "value": "#000000"
+      },
+      {
+        "name": "/color/light/focus-halo",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/hair",
+        "type": "color",
+        "value": "#8a8a8a"
+      },
+      {
+        "name": "/color/light/hover",
+        "type": "color",
+        "value": "#ebebeb"
+      },
+      {
+        "name": "/color/light/inv-bg",
+        "type": "color",
+        "value": "#000000"
+      },
+      {
+        "name": "/color/light/inv-fg",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/muted",
+        "type": "color",
+        "value": "#4d4d4d"
+      },
+      {
+        "name": "/color/light/red",
+        "type": "color",
+        "value": "#c21a27"
+      },
+      {
+        "name": "/color/light/red-on",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/rule",
+        "type": "color",
+        "value": "#000000"
+      },
+      {
+        "name": "/color/light/surface",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      {
+        "name": "/color/light/surface-2",
+        "type": "color",
+        "value": "#f4f4f4"
+      },
+      {
+        "name": "/dimension/fs-0",
+        "type": "dimension",
+        "value": "11px"
+      },
+      {
+        "name": "/dimension/fs-1",
+        "type": "dimension",
+        "value": "12px"
+      },
+      {
+        "name": "/dimension/fs-2",
+        "type": "dimension",
+        "value": "13px"
+      },
+      {
+        "name": "/dimension/fs-3",
+        "type": "dimension",
+        "value": "14px"
+      },
+      {
+        "name": "/dimension/fs-4",
+        "type": "dimension",
+        "value": "16px"
+      },
+      {
+        "name": "/dimension/fs-5",
+        "type": "dimension",
+        "value": "20px"
+      },
+      {
+        "name": "/dimension/fs-6",
+        "type": "dimension",
+        "value": "24px"
+      },
+      {
+        "name": "/dimension/fs-7",
+        "type": "dimension",
+        "value": "32px"
+      },
+      {
+        "name": "/dimension/fs-display",
+        "type": "dimension",
+        "value": "48px"
+      },
+      {
+        "name": "/dimension/hit",
+        "type": "dimension",
+        "value": "44px"
+      },
+      {
+        "name": "/dimension/s1",
+        "type": "dimension",
+        "value": "4px"
+      },
+      {
+        "name": "/dimension/s2",
+        "type": "dimension",
+        "value": "8px"
+      },
+      {
+        "name": "/dimension/s3",
+        "type": "dimension",
+        "value": "12px"
+      },
+      {
+        "name": "/dimension/s4",
+        "type": "dimension",
+        "value": "16px"
+      },
+      {
+        "name": "/dimension/s5",
+        "type": "dimension",
+        "value": "24px"
+      },
+      {
+        "name": "/dimension/s6",
+        "type": "dimension",
+        "value": "32px"
+      },
+      {
+        "name": "/dimension/track",
+        "type": "dimension",
+        "value": "0.06em"
+      },
+      {
+        "name": "/dimension/track-body",
+        "type": "dimension",
+        "value": "0em"
+      },
+      {
+        "name": "/dimension/track-display",
+        "type": "dimension",
+        "value": "0.04em"
+      },
+      {
+        "name": "/dimension/track-display-tight",
+        "type": "dimension",
+        "value": "-0.01em"
+      },
+      {
+        "name": "/dimension/track-meta",
+        "type": "dimension",
+        "value": "0.06em"
+      },
+      {
+        "name": "/dimension/track-open",
+        "type": "dimension",
+        "value": "0.12em"
+      },
+      {
+        "name": "/fontFamily/font-display",
+        "type": "fontFamily",
+        "value": "{fontFamily.sans}"
+      },
+      {
+        "name": "/fontFamily/font-machine",
+        "type": "fontFamily",
+        "value": "{fontFamily.mono}"
+      },
+      {
+        "name": "/fontFamily/font-reading",
+        "type": "fontFamily",
+        "value": "{fontFamily.sans}"
+      },
+      {
+        "name": "/fontFamily/font-serif-study",
+        "type": "fontFamily",
+        "value": [
+          "Libre Baskerville",
+          "Iowan Old Style",
+          "Palatino Linotype",
+          "Palatino",
+          "serif"
+        ]
+      },
+      {
+        "name": "/fontFamily/mono",
+        "type": "fontFamily",
+        "value": [
+          "IBM Plex Mono",
+          "JetBrains Mono",
+          "Menlo",
+          "DejaVu Sans Mono",
+          "ui-monospace",
+          "monospace"
+        ]
+      },
+      {
+        "name": "/fontFamily/sans",
+        "type": "fontFamily",
+        "value": [
+          "IBM Plex Sans",
+          "Inter",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "sans-serif"
+        ]
+      },
+      {
+        "name": "/fontWeight/bold",
+        "type": "fontWeight",
+        "value": 700
+      },
+      {
+        "name": "/fontWeight/regular",
+        "type": "fontWeight",
+        "value": 400
+      },
+      {
+        "name": "/fontWeight/semibold",
+        "type": "fontWeight",
+        "value": 600
+      },
+      {
+        "name": "/typography/body",
+        "type": "typography",
+        "value": {
+          "fontFamily": "{fontFamily.font-reading}",
+          "fontSize": "{dimension.fs-3}",
+          "fontWeight": "{fontWeight.regular}",
+          "letterSpacing": "{dimension.track-body}",
+          "lineHeight": 1.5
+        }
+      },
+      {
+        "name": "/typography/display",
+        "type": "typography",
+        "value": {
+          "fontFamily": "{fontFamily.font-display}",
+          "fontSize": "{dimension.fs-display}",
+          "fontWeight": "{fontWeight.bold}",
+          "letterSpacing": "{dimension.track-display}",
+          "lineHeight": 1.2
+        }
+      },
+      {
+        "name": "/typography/meta",
+        "type": "typography",
+        "value": {
+          "fontFamily": "{fontFamily.font-machine}",
+          "fontSize": "{dimension.fs-1}",
+          "fontWeight": "{fontWeight.semibold}",
+          "letterSpacing": "{dimension.track-meta}",
+          "lineHeight": 1.35
+        }
+      },
+      {
+        "name": "/typography/title",
+        "type": "typography",
+        "value": {
+          "fontFamily": "{fontFamily.font-reading}",
+          "fontSize": "{dimension.fs-4}",
+          "fontWeight": "{fontWeight.bold}",
+          "letterSpacing": "{dimension.track-display-tight}",
+          "lineHeight": 1.2
+        }
+      }
+    ],
+    "suite": [
+      {
+        "name": "/appliedChoiceFile/name",
+        "type": "string",
+        "value": "jaryo-lab-choices.json"
+      },
+      {
+        "name": "/appliedChoiceFile/sha256",
+        "type": "string",
+        "value": "6490e5b15b624b82703d2ce897054c2e9a40f6c8dcc5d389de45e86d7004be2d"
+      },
+      {
+        "name": "/artworkApproval",
+        "type": "null",
+        "value": null
+      },
+      {
+        "name": "/choiceScope",
+        "type": "string",
+        "value": "jaryo-kit-and-full-observer-web"
+      },
+      {
+        "name": "/chosenFamilyIds/F01",
+        "type": "string",
+        "value": "F01.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F02",
+        "type": "string",
+        "value": "F02.04"
+      },
+      {
+        "name": "/chosenFamilyIds/F03",
+        "type": "string",
+        "value": "F03.03"
+      },
+      {
+        "name": "/chosenFamilyIds/F04",
+        "type": "string",
+        "value": "F04.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F05",
+        "type": "string",
+        "value": "F05.02"
+      },
+      {
+        "name": "/chosenFamilyIds/F06",
+        "type": "string",
+        "value": "F06.02"
+      },
+      {
+        "name": "/chosenFamilyIds/F07",
+        "type": "string",
+        "value": "F07.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F08",
+        "type": "string",
+        "value": "F08.10"
+      },
+      {
+        "name": "/chosenFamilyIds/F09",
+        "type": "string",
+        "value": "F09.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F10",
+        "type": "string",
+        "value": "F10.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F11",
+        "type": "string",
+        "value": "F11.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F12",
+        "type": "string",
+        "value": "F12.10"
+      },
+      {
+        "name": "/chosenFamilyIds/F13",
+        "type": "string",
+        "value": "F13.02"
+      },
+      {
+        "name": "/chosenFamilyIds/F14",
+        "type": "string",
+        "value": "F14.02"
+      },
+      {
+        "name": "/chosenFamilyIds/F15",
+        "type": "string",
+        "value": "F15.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F16",
+        "type": "string",
+        "value": "F16.01"
+      },
+      {
+        "name": "/chosenFamilyIds/F17",
+        "type": "string",
+        "value": "F17.01"
+      },
+      {
+        "name": "/chromeMark",
+        "type": "string",
+        "value": "type-agiw"
+      },
+      {
+        "name": "/explicitOverride",
+        "type": "array",
+        "value": [
+          "light",
+          "dark"
+        ]
+      },
+      {
+        "name": "/familyOptions/F01",
+        "type": "string",
+        "value": "Main Bus Spine"
+      },
+      {
+        "name": "/familyOptions/F02",
+        "type": "string",
+        "value": "Human Label + Technical Subline"
+      },
+      {
+        "name": "/familyOptions/F03",
+        "type": "string",
+        "value": "Step Pager"
+      },
+      {
+        "name": "/familyOptions/F04",
+        "type": "string",
+        "value": "Step Focus + Neighbours"
+      },
+      {
+        "name": "/familyOptions/F05",
+        "type": "string",
+        "value": "Port Socket"
+      },
+      {
+        "name": "/familyOptions/F06",
+        "type": "string",
+        "value": "Ported Box"
+      },
+      {
+        "name": "/familyOptions/F07",
+        "type": "string",
+        "value": "Mono Ledger Table"
+      },
+      {
+        "name": "/familyOptions/F08",
+        "type": "string",
+        "value": "Unknown-aware Graph"
+      },
+      {
+        "name": "/familyOptions/F09",
+        "type": "string",
+        "value": "Word+Glyph State"
+      },
+      {
+        "name": "/familyOptions/F10",
+        "type": "string",
+        "value": "Honest Empty"
+      },
+      {
+        "name": "/familyOptions/F11",
+        "type": "string",
+        "value": "Side Inspector"
+      },
+      {
+        "name": "/familyOptions/F12",
+        "type": "string",
+        "value": "Underground Dash"
+      },
+      {
+        "name": "/familyOptions/F13",
+        "type": "string",
+        "value": "Event Tick"
+      },
+      {
+        "name": "/familyOptions/F14",
+        "type": "string",
+        "value": "Thumb Bar"
+      },
+      {
+        "name": "/familyOptions/F15",
+        "type": "string",
+        "value": "Install Line Hero"
+      },
+      {
+        "name": "/familyOptions/F16",
+        "type": "string",
+        "value": "Command Palette"
+      },
+      {
+        "name": "/familyOptions/F17",
+        "type": "string",
+        "value": "Copper Workshop"
+      },
+      {
+        "name": "/interaction/desktopMin",
+        "type": "string",
+        "value": "1100px"
+      },
+      {
+        "name": "/interaction/focusOffset",
+        "type": "string",
+        "value": "3px"
+      },
+      {
+        "name": "/interaction/focusWidth",
+        "type": "string",
+        "value": "3px"
+      },
+      {
+        "name": "/interaction/inspectorMax",
+        "type": "string",
+        "value": "420px"
+      },
+      {
+        "name": "/interaction/inspectorMin",
+        "type": "string",
+        "value": "340px"
+      },
+      {
+        "name": "/interaction/motion",
+        "type": "string",
+        "value": "0ms"
+      },
+      {
+        "name": "/interaction/phoneMax",
+        "type": "string",
+        "value": "700px"
+      },
+      {
+        "name": "/interaction/targetMin",
+        "type": "string",
+        "value": "44px"
+      },
+      {
+        "name": "/interaction/thumbBar",
+        "type": "string",
+        "value": "56px"
+      },
+      {
+        "name": "/interaction/tickCapacity",
+        "type": "number",
+        "value": 8
+      },
+      {
+        "name": "/interaction/unknownHatch",
+        "type": "string",
+        "value": "12px"
+      },
+      {
+        "name": "/logoSelection",
+        "type": "null",
+        "value": null
+      },
+      {
+        "name": "/motion",
+        "type": "string",
+        "value": "event-only"
+      },
+      {
+        "name": "/note",
+        "type": "string",
+        "value": "Owner choices applied to the Jaryo kit and full observer web. The owner selected Copper on 2026-11-12, superseding the earlier booklet-red override. Android retains the Inter, black-white foundation and its original scale. No artwork direction is approved."
+      },
+      {
+        "name": "/ownerOverrides/F17/accentInk",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/ownerOverrides/F17/choice",
+        "type": "string",
+        "value": "F17.01"
+      },
+      {
+        "name": "/ownerOverrides/F17/dark",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/ownerOverrides/F17/date",
+        "type": "string",
+        "value": "2026-11-12"
+      },
+      {
+        "name": "/ownerOverrides/F17/forcedColors",
+        "type": "string",
+        "value": "system colors (unchanged)"
+      },
+      {
+        "name": "/ownerOverrides/F17/light",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/ownerOverrides/F17/reason",
+        "type": "string",
+        "value": "owner selected Copper, superseding booklet red"
+      },
+      {
+        "name": "/ownerOverrides/F17/scope",
+        "type": "string",
+        "value": "accent and focus only; preserve remaining F17 color tokens"
+      },
+      {
+        "name": "/palette/dark/accent_identity",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/palette/dark/accent_ink",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/dark/bg",
+        "type": "string",
+        "value": "#0B1012"
+      },
+      {
+        "name": "/palette/dark/border",
+        "type": "string",
+        "value": "#5A676C"
+      },
+      {
+        "name": "/palette/dark/focus_ring",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/palette/dark/muted",
+        "type": "string",
+        "value": "#9AA3A8"
+      },
+      {
+        "name": "/palette/dark/sel_blocked",
+        "type": "string",
+        "value": "#6B2A1E"
+      },
+      {
+        "name": "/palette/dark/sel_run",
+        "type": "string",
+        "value": "#1F4A72"
+      },
+      {
+        "name": "/palette/dark/sel_sub",
+        "type": "string",
+        "value": "#3B4448"
+      },
+      {
+        "name": "/palette/dark/selected_bg",
+        "type": "string",
+        "value": "#F4F1EA"
+      },
+      {
+        "name": "/palette/dark/selected_fg",
+        "type": "string",
+        "value": "#0B1012"
+      },
+      {
+        "name": "/palette/dark/status_blocked",
+        "type": "string",
+        "value": "#FFD2C8"
+      },
+      {
+        "name": "/palette/dark/status_blocked_bg",
+        "type": "string",
+        "value": "#3A2020"
+      },
+      {
+        "name": "/palette/dark/status_ok",
+        "type": "string",
+        "value": "#8FC4A0"
+      },
+      {
+        "name": "/palette/dark/status_run",
+        "type": "string",
+        "value": "#8FB4D6"
+      },
+      {
+        "name": "/palette/dark/status_unknown",
+        "type": "string",
+        "value": "#9AA3A8"
+      },
+      {
+        "name": "/palette/dark/surface",
+        "type": "string",
+        "value": "#141A1C"
+      },
+      {
+        "name": "/palette/dark/text",
+        "type": "string",
+        "value": "#F4F1EA"
+      },
+      {
+        "name": "/palette/light/accent_identity",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/palette/light/accent_ink",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/bg",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/border",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/focus_ring",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/palette/light/muted",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/sel_blocked",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/sel_run",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/sel_sub",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/selected_bg",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/selected_fg",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/status_blocked",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/status_blocked_bg",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/status_ok",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/status_run",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/status_unknown",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/palette/light/surface",
+        "type": "string",
+        "value": "#FFFFFF"
+      },
+      {
+        "name": "/palette/light/text",
+        "type": "string",
+        "value": "#000000"
+      },
+      {
+        "name": "/patterns/accentPlacement",
+        "type": "string",
+        "value": "brand-and-one-primary-action"
+      },
+      {
+        "name": "/patterns/activity",
+        "type": "string",
+        "value": "event-tick-reset-per-run"
+      },
+      {
+        "name": "/patterns/commands",
+        "type": "string",
+        "value": "capability-gated-combobox"
+      },
+      {
+        "name": "/patterns/container",
+        "type": "string",
+        "value": "ported-box"
+      },
+      {
+        "name": "/patterns/empty",
+        "type": "string",
+        "value": "reason-and-one-next-step"
+      },
+      {
+        "name": "/patterns/hero",
+        "type": "string",
+        "value": "install-line-and-gui-connect"
+      },
+      {
+        "name": "/patterns/hidden",
+        "type": "string",
+        "value": "underground-dash-auto-open-attention"
+      },
+      {
+        "name": "/patterns/inputs",
+        "type": "string",
+        "value": "port-socket-and-binding-list"
+      },
+      {
+        "name": "/patterns/inspector",
+        "type": "string",
+        "value": "reserved-column-or-modal-sheet"
+      },
+      {
+        "name": "/patterns/layout",
+        "type": "string",
+        "value": "main-bus-spine"
+      },
+      {
+        "name": "/patterns/naming",
+        "type": "string",
+        "value": "human-label-technical-subline"
+      },
+      {
+        "name": "/patterns/navigation",
+        "type": "string",
+        "value": "dependency-step-pager"
+      },
+      {
+        "name": "/patterns/responsive",
+        "type": "string",
+        "value": "thumb-bar"
+      },
+      {
+        "name": "/patterns/selection",
+        "type": "string",
+        "value": "invert-and-declared-neighbours"
+      },
+      {
+        "name": "/patterns/state",
+        "type": "string",
+        "value": "word-and-glyph"
+      },
+      {
+        "name": "/patterns/table",
+        "type": "string",
+        "value": "mono-ledger"
+      },
+      {
+        "name": "/patterns/unknown",
+        "type": "string",
+        "value": "dashed-frame-hatch-word"
+      },
+      {
+        "name": "/provisionalTypeface",
+        "type": "string",
+        "value": "Inter"
+      },
+      {
+        "name": "/provisionalTypefaceLicense",
+        "type": "string",
+        "value": "SIL Open Font License 1.1"
+      },
+      {
+        "name": "/reducedMotion",
+        "type": "string",
+        "value": "remove-nonessential"
+      },
+      {
+        "name": "/rejectedDirection",
+        "type": "string",
+        "value": "d4-split"
+      },
+      {
+        "name": "/scale/borderWidth",
+        "type": "string",
+        "value": "1px"
+      },
+      {
+        "name": "/scale/breakpoints/cover",
+        "type": "string",
+        "value": "300px"
+      },
+      {
+        "name": "/scale/breakpoints/desktop",
+        "type": "string",
+        "value": "980px"
+      },
+      {
+        "name": "/scale/breakpoints/handset",
+        "type": "string",
+        "value": "599px"
+      },
+      {
+        "name": "/scale/breakpoints/inner",
+        "type": "string",
+        "value": "979px"
+      },
+      {
+        "name": "/scale/controlMin",
+        "type": "string",
+        "value": "44px"
+      },
+      {
+        "name": "/scale/focusOffset",
+        "type": "string",
+        "value": "3px"
+      },
+      {
+        "name": "/scale/focusWidth",
+        "type": "string",
+        "value": "3px"
+      },
+      {
+        "name": "/scale/fontDisplay",
+        "type": "string",
+        "value": "Inter, \"Liberation Sans\", \"Noto Sans\", sans-serif"
+      },
+      {
+        "name": "/scale/grid",
+        "type": "string",
+        "value": "24px"
+      },
+      {
+        "name": "/scale/leading/body",
+        "type": "string",
+        "value": "1.45"
+      },
+      {
+        "name": "/scale/leading/display",
+        "type": "string",
+        "value": "1.15"
+      },
+      {
+        "name": "/scale/leading/meta",
+        "type": "string",
+        "value": "1.4"
+      },
+      {
+        "name": "/scale/leading/title",
+        "type": "string",
+        "value": "1.2"
+      },
+      {
+        "name": "/scale/leading/ui",
+        "type": "string",
+        "value": "1.4"
+      },
+      {
+        "name": "/scale/motion",
+        "type": "string",
+        "value": "240ms"
+      },
+      {
+        "name": "/scale/radius",
+        "type": "string",
+        "value": "0px"
+      },
+      {
+        "name": "/scale/sidebar",
+        "type": "string",
+        "value": "220px"
+      },
+      {
+        "name": "/scale/space/1",
+        "type": "string",
+        "value": "4px"
+      },
+      {
+        "name": "/scale/space/2",
+        "type": "string",
+        "value": "8px"
+      },
+      {
+        "name": "/scale/space/3",
+        "type": "string",
+        "value": "12px"
+      },
+      {
+        "name": "/scale/space/4",
+        "type": "string",
+        "value": "16px"
+      },
+      {
+        "name": "/scale/space/5",
+        "type": "string",
+        "value": "24px"
+      },
+      {
+        "name": "/scale/space/6",
+        "type": "string",
+        "value": "32px"
+      },
+      {
+        "name": "/scale/space/7",
+        "type": "string",
+        "value": "48px"
+      },
+      {
+        "name": "/scale/space/8",
+        "type": "string",
+        "value": "64px"
+      },
+      {
+        "name": "/scale/tracking/meta",
+        "type": "string",
+        "value": "0.08em"
+      },
+      {
+        "name": "/scale/tracking/wordmark",
+        "type": "string",
+        "value": "0.02em"
+      },
+      {
+        "name": "/scale/type/body",
+        "type": "string",
+        "value": "14px"
+      },
+      {
+        "name": "/scale/type/display",
+        "type": "string",
+        "value": "28px"
+      },
+      {
+        "name": "/scale/type/meta",
+        "type": "string",
+        "value": "11px"
+      },
+      {
+        "name": "/scale/type/name",
+        "type": "string",
+        "value": "16px"
+      },
+      {
+        "name": "/scale/type/title",
+        "type": "string",
+        "value": "20px"
+      },
+      {
+        "name": "/scale/type/ui",
+        "type": "string",
+        "value": "13px"
+      },
+      {
+        "name": "/schema",
+        "type": "string",
+        "value": "agiw.jaryo-tokens.v1"
+      },
+      {
+        "name": "/selectedDirection",
+        "type": "null",
+        "value": null
+      },
+      {
+        "name": "/structure",
+        "type": "string",
+        "value": "factory"
+      },
+      {
+        "name": "/surface",
+        "type": "string",
+        "value": "black-white"
+      },
+      {
+        "name": "/surfaces",
+        "type": "string",
+        "value": "quiet"
+      },
+      {
+        "name": "/themeDefault",
+        "type": "string",
+        "value": "system"
+      },
+      {
+        "name": "/typefaceFallbacks",
+        "type": "array",
+        "value": [
+          "Liberation Sans",
+          "Noto Sans"
+        ]
+      },
+      {
+        "name": "/variants/android/inherits",
+        "type": "string",
+        "value": "foundation"
+      },
+      {
+        "name": "/variants/web/accent",
+        "type": "string",
+        "value": "#C47A3A"
+      },
+      {
+        "name": "/variants/web/fontLicense",
+        "type": "string",
+        "value": "SIL Open Font License 1.1"
+      },
+      {
+        "name": "/variants/web/fonts/figures",
+        "type": "string",
+        "value": "IBM Plex Mono"
+      },
+      {
+        "name": "/variants/web/fonts/text",
+        "type": "string",
+        "value": "IBM Plex Sans"
+      },
+      {
+        "name": "/variants/web/scope",
+        "type": "string",
+        "value": "full-observer-web"
+      },
+      {
+        "name": "/variants/web/typeScalePx",
+        "type": "array",
+        "value": [
+          13,
+          14,
+          16,
+          20,
+          28,
+          28
+        ]
+      }
+    ]
+  },
+  "rawNames": {
+    "shared": [],
+    "exportOnly": [
+      "/color/dark/bg",
+      "/color/dark/border",
+      "/color/dark/chip",
+      "/color/dark/fg",
+      "/color/dark/fg2",
+      "/color/dark/focus",
+      "/color/dark/focus-halo",
+      "/color/dark/hair",
+      "/color/dark/hover",
+      "/color/dark/inv-bg",
+      "/color/dark/inv-fg",
+      "/color/dark/muted",
+      "/color/dark/red",
+      "/color/dark/red-on",
+      "/color/dark/rule",
+      "/color/dark/surface",
+      "/color/dark/surface-2",
+      "/color/light/bg",
+      "/color/light/border",
+      "/color/light/chip",
+      "/color/light/fg",
+      "/color/light/fg2",
+      "/color/light/focus",
+      "/color/light/focus-halo",
+      "/color/light/hair",
+      "/color/light/hover",
+      "/color/light/inv-bg",
+      "/color/light/inv-fg",
+      "/color/light/muted",
+      "/color/light/red",
+      "/color/light/red-on",
+      "/color/light/rule",
+      "/color/light/surface",
+      "/color/light/surface-2",
+      "/dimension/fs-0",
+      "/dimension/fs-1",
+      "/dimension/fs-2",
+      "/dimension/fs-3",
+      "/dimension/fs-4",
+      "/dimension/fs-5",
+      "/dimension/fs-6",
+      "/dimension/fs-7",
+      "/dimension/fs-display",
+      "/dimension/hit",
+      "/dimension/s1",
+      "/dimension/s2",
+      "/dimension/s3",
+      "/dimension/s4",
+      "/dimension/s5",
+      "/dimension/s6",
+      "/dimension/track",
+      "/dimension/track-body",
+      "/dimension/track-display",
+      "/dimension/track-display-tight",
+      "/dimension/track-meta",
+      "/dimension/track-open",
+      "/fontFamily/font-display",
+      "/fontFamily/font-machine",
+      "/fontFamily/font-reading",
+      "/fontFamily/font-serif-study",
+      "/fontFamily/mono",
+      "/fontFamily/sans",
+      "/fontWeight/bold",
+      "/fontWeight/regular",
+      "/fontWeight/semibold",
+      "/typography/body",
+      "/typography/display",
+      "/typography/meta",
+      "/typography/title"
+    ],
+    "suiteOnly": [
+      "/appliedChoiceFile/name",
+      "/appliedChoiceFile/sha256",
+      "/artworkApproval",
+      "/choiceScope",
+      "/chosenFamilyIds/F01",
+      "/chosenFamilyIds/F02",
+      "/chosenFamilyIds/F03",
+      "/chosenFamilyIds/F04",
+      "/chosenFamilyIds/F05",
+      "/chosenFamilyIds/F06",
+      "/chosenFamilyIds/F07",
+      "/chosenFamilyIds/F08",
+      "/chosenFamilyIds/F09",
+      "/chosenFamilyIds/F10",
+      "/chosenFamilyIds/F11",
+      "/chosenFamilyIds/F12",
+      "/chosenFamilyIds/F13",
+      "/chosenFamilyIds/F14",
+      "/chosenFamilyIds/F15",
+      "/chosenFamilyIds/F16",
+      "/chosenFamilyIds/F17",
+      "/chromeMark",
+      "/explicitOverride",
+      "/familyOptions/F01",
+      "/familyOptions/F02",
+      "/familyOptions/F03",
+      "/familyOptions/F04",
+      "/familyOptions/F05",
+      "/familyOptions/F06",
+      "/familyOptions/F07",
+      "/familyOptions/F08",
+      "/familyOptions/F09",
+      "/familyOptions/F10",
+      "/familyOptions/F11",
+      "/familyOptions/F12",
+      "/familyOptions/F13",
+      "/familyOptions/F14",
+      "/familyOptions/F15",
+      "/familyOptions/F16",
+      "/familyOptions/F17",
+      "/interaction/desktopMin",
+      "/interaction/focusOffset",
+      "/interaction/focusWidth",
+      "/interaction/inspectorMax",
+      "/interaction/inspectorMin",
+      "/interaction/motion",
+      "/interaction/phoneMax",
+      "/interaction/targetMin",
+      "/interaction/thumbBar",
+      "/interaction/tickCapacity",
+      "/interaction/unknownHatch",
+      "/logoSelection",
+      "/motion",
+      "/note",
+      "/ownerOverrides/F17/accentInk",
+      "/ownerOverrides/F17/choice",
+      "/ownerOverrides/F17/dark",
+      "/ownerOverrides/F17/date",
+      "/ownerOverrides/F17/forcedColors",
+      "/ownerOverrides/F17/light",
+      "/ownerOverrides/F17/reason",
+      "/ownerOverrides/F17/scope",
+      "/palette/dark/accent_identity",
+      "/palette/dark/accent_ink",
+      "/palette/dark/bg",
+      "/palette/dark/border",
+      "/palette/dark/focus_ring",
+      "/palette/dark/muted",
+      "/palette/dark/sel_blocked",
+      "/palette/dark/sel_run",
+      "/palette/dark/sel_sub",
+      "/palette/dark/selected_bg",
+      "/palette/dark/selected_fg",
+      "/palette/dark/status_blocked",
+      "/palette/dark/status_blocked_bg",
+      "/palette/dark/status_ok",
+      "/palette/dark/status_run",
+      "/palette/dark/status_unknown",
+      "/palette/dark/surface",
+      "/palette/dark/text",
+      "/palette/light/accent_identity",
+      "/palette/light/accent_ink",
+      "/palette/light/bg",
+      "/palette/light/border",
+      "/palette/light/focus_ring",
+      "/palette/light/muted",
+      "/palette/light/sel_blocked",
+      "/palette/light/sel_run",
+      "/palette/light/sel_sub",
+      "/palette/light/selected_bg",
+      "/palette/light/selected_fg",
+      "/palette/light/status_blocked",
+      "/palette/light/status_blocked_bg",
+      "/palette/light/status_ok",
+      "/palette/light/status_run",
+      "/palette/light/status_unknown",
+      "/palette/light/surface",
+      "/palette/light/text",
+      "/patterns/accentPlacement",
+      "/patterns/activity",
+      "/patterns/commands",
+      "/patterns/container",
+      "/patterns/empty",
+      "/patterns/hero",
+      "/patterns/hidden",
+      "/patterns/inputs",
+      "/patterns/inspector",
+      "/patterns/layout",
+      "/patterns/naming",
+      "/patterns/navigation",
+      "/patterns/responsive",
+      "/patterns/selection",
+      "/patterns/state",
+      "/patterns/table",
+      "/patterns/unknown",
+      "/provisionalTypeface",
+      "/provisionalTypefaceLicense",
+      "/reducedMotion",
+      "/rejectedDirection",
+      "/scale/borderWidth",
+      "/scale/breakpoints/cover",
+      "/scale/breakpoints/desktop",
+      "/scale/breakpoints/handset",
+      "/scale/breakpoints/inner",
+      "/scale/controlMin",
+      "/scale/focusOffset",
+      "/scale/focusWidth",
+      "/scale/fontDisplay",
+      "/scale/grid",
+      "/scale/leading/body",
+      "/scale/leading/display",
+      "/scale/leading/meta",
+      "/scale/leading/title",
+      "/scale/leading/ui",
+      "/scale/motion",
+      "/scale/radius",
+      "/scale/sidebar",
+      "/scale/space/1",
+      "/scale/space/2",
+      "/scale/space/3",
+      "/scale/space/4",
+      "/scale/space/5",
+      "/scale/space/6",
+      "/scale/space/7",
+      "/scale/space/8",
+      "/scale/tracking/meta",
+      "/scale/tracking/wordmark",
+      "/scale/type/body",
+      "/scale/type/display",
+      "/scale/type/meta",
+      "/scale/type/name",
+      "/scale/type/title",
+      "/scale/type/ui",
+      "/schema",
+      "/selectedDirection",
+      "/structure",
+      "/surface",
+      "/surfaces",
+      "/themeDefault",
+      "/typefaceFallbacks",
+      "/variants/android/inherits",
+      "/variants/web/accent",
+      "/variants/web/fontLicense",
+      "/variants/web/fonts/figures",
+      "/variants/web/fonts/text",
+      "/variants/web/scope",
+      "/variants/web/typeScalePx"
+    ]
+  },
+  "colors": {
+    "mapping": {
+      "export": "/color",
+      "suite": "/palette",
+      "rule": "same theme and local name only"
+    },
+    "shared": [
+      {
+        "name": "/dark/bg",
+        "exportName": "/color/dark/bg",
+        "suiteName": "/palette/dark/bg",
+        "exportValue": "#0c0c0c",
+        "suiteValue": "#0B1012",
+        "exact": false,
+        "normalized": false
+      },
+      {
+        "name": "/dark/border",
+        "exportName": "/color/dark/border",
+        "suiteName": "/palette/dark/border",
+        "exportValue": "#f0f0f0",
+        "suiteValue": "#5A676C",
+        "exact": false,
+        "normalized": false
+      },
+      {
+        "name": "/dark/muted",
+        "exportName": "/color/dark/muted",
+        "suiteName": "/palette/dark/muted",
+        "exportValue": "#ababab",
+        "suiteValue": "#9AA3A8",
+        "exact": false,
+        "normalized": false
+      },
+      {
+        "name": "/dark/surface",
+        "exportName": "/color/dark/surface",
+        "suiteName": "/palette/dark/surface",
+        "exportValue": "#121212",
+        "suiteValue": "#141A1C",
+        "exact": false,
+        "normalized": false
+      },
+      {
+        "name": "/light/bg",
+        "exportName": "/color/light/bg",
+        "suiteName": "/palette/light/bg",
+        "exportValue": "#ffffff",
+        "suiteValue": "#FFFFFF",
+        "exact": false,
+        "normalized": true
+      },
+      {
+        "name": "/light/border",
+        "exportName": "/color/light/border",
+        "suiteName": "/palette/light/border",
+        "exportValue": "#000000",
+        "suiteValue": "#000000",
+        "exact": true,
+        "normalized": true
+      },
+      {
+        "name": "/light/muted",
+        "exportName": "/color/light/muted",
+        "suiteName": "/palette/light/muted",
+        "exportValue": "#4d4d4d",
+        "suiteValue": "#000000",
+        "exact": false,
+        "normalized": false
+      },
+      {
+        "name": "/light/surface",
+        "exportName": "/color/light/surface",
+        "suiteName": "/palette/light/surface",
+        "exportValue": "#ffffff",
+        "suiteValue": "#FFFFFF",
+        "exact": false,
+        "normalized": true
+      }
+    ],
+    "exportOnly": [
+      "/dark/chip",
+      "/dark/fg",
+      "/dark/fg2",
+      "/dark/focus",
+      "/dark/focus-halo",
+      "/dark/hair",
+      "/dark/hover",
+      "/dark/inv-bg",
+      "/dark/inv-fg",
+      "/dark/red",
+      "/dark/red-on",
+      "/dark/rule",
+      "/dark/surface-2",
+      "/light/chip",
+      "/light/fg",
+      "/light/fg2",
+      "/light/focus",
+      "/light/focus-halo",
+      "/light/hair",
+      "/light/hover",
+      "/light/inv-bg",
+      "/light/inv-fg",
+      "/light/red",
+      "/light/red-on",
+      "/light/rule",
+      "/light/surface-2"
+    ],
+    "suiteOnly": [
+      "/dark/accent_identity",
+      "/dark/accent_ink",
+      "/dark/focus_ring",
+      "/dark/sel_blocked",
+      "/dark/sel_run",
+      "/dark/sel_sub",
+      "/dark/selected_bg",
+      "/dark/selected_fg",
+      "/dark/status_blocked",
+      "/dark/status_blocked_bg",
+      "/dark/status_ok",
+      "/dark/status_run",
+      "/dark/status_unknown",
+      "/dark/text",
+      "/light/accent_identity",
+      "/light/accent_ink",
+      "/light/focus_ring",
+      "/light/sel_blocked",
+      "/light/sel_run",
+      "/light/sel_sub",
+      "/light/selected_bg",
+      "/light/selected_fg",
+      "/light/status_blocked",
+      "/light/status_blocked_bg",
+      "/light/status_ok",
+      "/light/status_run",
+      "/light/status_unknown",
+      "/light/text"
+    ]
+  },
+  "structure": [
+    {
+      "name": "/$description",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/appliedChoiceFile",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/appliedChoiceFile/name",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/appliedChoiceFile/sha256",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/artworkApproval",
+      "exportType": "missing",
+      "suiteType": "null"
+    },
+    {
+      "name": "/choiceScope",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/chosenFamilyIds/F01",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F02",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F03",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F04",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F05",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F06",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F07",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F08",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F09",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F10",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F11",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F12",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F13",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F14",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F15",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F16",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chosenFamilyIds/F17",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/chromeMark",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/color",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-0",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-0/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-0/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-1",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-1/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-1/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-3",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-3/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-3/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-4",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-4/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-4/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-5",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-5/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-5/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-6",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-6/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-6/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-7",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-7/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-7/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-display",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-display/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-display/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/hit",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/hit/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/hit/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s1",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s1/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s1/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s2",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s2/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s2/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s3",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s3/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s3/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s4",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s4/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s4/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s5",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s5/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s5/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s6",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s6/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s6/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-body",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-body/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-body/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display-tight",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display-tight/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display-tight/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-display/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-meta",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-meta/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-meta/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-open",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-open/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track-open/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/track/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/explicitOverride",
+      "exportType": "missing",
+      "suiteType": "array"
+    },
+    {
+      "name": "/explicitOverride/0",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/explicitOverride/1",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/familyOptions/F01",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F02",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F03",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F04",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F05",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F06",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F07",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F08",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F09",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F10",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F11",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F12",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F13",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F14",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F15",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F16",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/familyOptions/F17",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/fontFamily",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-display",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-display/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-display/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-machine",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-machine/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-machine/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-reading",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-reading/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-reading/$value",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value/0",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value/1",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value/2",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value/3",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/font-serif-study/$value/4",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/0",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/1",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/2",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/3",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/4",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/mono/$value/5",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/0",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/1",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/2",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/3",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/4",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontFamily/sans/$value/5",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/bold",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/bold/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/bold/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/regular",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/regular/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/regular/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/semibold",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/semibold/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/fontWeight/semibold/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/interaction",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/interaction/desktopMin",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/focusOffset",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/focusWidth",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/inspectorMax",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/inspectorMin",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/motion",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/phoneMax",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/targetMin",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/thumbBar",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/interaction/tickCapacity",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/interaction/unknownHatch",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/logoSelection",
+      "exportType": "missing",
+      "suiteType": "null"
+    },
+    {
+      "name": "/motion",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/note",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/ownerOverrides/F17",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/ownerOverrides/F17/accentInk",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/choice",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/dark",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/date",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/forcedColors",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/light",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/reason",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/ownerOverrides/F17/scope",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/palette/dark",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/palette/dark/accent_identity",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/accent_ink",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/border",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/focus_ring",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/muted",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/sel_blocked",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/sel_run",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/sel_sub",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/selected_bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/selected_fg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/status_blocked",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/status_blocked_bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/status_ok",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/status_run",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/status_unknown",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/surface",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/dark/text",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/palette/light/accent_identity",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/accent_ink",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/border",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/focus_ring",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/muted",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/sel_blocked",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/sel_run",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/sel_sub",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/selected_bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/selected_fg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/status_blocked",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/status_blocked_bg",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/status_ok",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/status_run",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/status_unknown",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/surface",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/palette/light/text",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/patterns/accentPlacement",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/activity",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/commands",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/container",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/empty",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/hero",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/hidden",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/inputs",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/inspector",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/layout",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/naming",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/navigation",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/responsive",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/selection",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/state",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/table",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/patterns/unknown",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/provisionalTypeface",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/provisionalTypefaceLicense",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/reducedMotion",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/rejectedDirection",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/borderWidth",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/breakpoints",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/breakpoints/cover",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/breakpoints/desktop",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/breakpoints/handset",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/breakpoints/inner",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/controlMin",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/focusOffset",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/focusWidth",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/fontDisplay",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/grid",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/leading",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/leading/body",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/leading/display",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/leading/meta",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/leading/title",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/leading/ui",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/motion",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/radius",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/sidebar",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/space/1",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/2",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/3",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/4",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/5",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/6",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/7",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/space/8",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/tracking",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/tracking/meta",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/tracking/wordmark",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/scale/type/body",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type/display",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type/meta",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type/name",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type/title",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/scale/type/ui",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/schema",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/selectedDirection",
+      "exportType": "missing",
+      "suiteType": "null"
+    },
+    {
+      "name": "/structure",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/surface",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/surfaces",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/themeDefault",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/typefaceFallbacks",
+      "exportType": "missing",
+      "suiteType": "array"
+    },
+    {
+      "name": "/typefaceFallbacks/0",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/typefaceFallbacks/1",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/typography",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/fontFamily",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/fontSize",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/fontWeight",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/letterSpacing",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/lineHeight",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/fontFamily",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/fontSize",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/fontWeight",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/letterSpacing",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/lineHeight",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/fontFamily",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/fontSize",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/fontWeight",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/letterSpacing",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/lineHeight",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/fontFamily",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/fontSize",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/fontWeight",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/letterSpacing",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/lineHeight",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/variants",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/variants/android",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/variants/android/inherits",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/variants/web/accent",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web/fontLicense",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web/fonts",
+      "exportType": "missing",
+      "suiteType": "object"
+    },
+    {
+      "name": "/variants/web/fonts/figures",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web/fonts/text",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web/scope",
+      "exportType": "missing",
+      "suiteType": "string"
+    },
+    {
+      "name": "/variants/web/typeScalePx",
+      "exportType": "missing",
+      "suiteType": "array"
+    },
+    {
+      "name": "/variants/web/typeScalePx/0",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/variants/web/typeScalePx/1",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/variants/web/typeScalePx/2",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/variants/web/typeScalePx/3",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/variants/web/typeScalePx/4",
+      "exportType": "missing",
+      "suiteType": "number"
+    },
+    {
+      "name": "/variants/web/typeScalePx/5",
+      "exportType": "missing",
+      "suiteType": "number"
+    }
+  ]
+}

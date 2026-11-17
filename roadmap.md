@@ -83,7 +83,7 @@ Exit: three people who did not build it install it on their own pipeline and rea
 - [x] Record the successful three-job CI matrix on the accepted maintenance revision (#45; engine-coverage qualification below).
 - [x] Route the required Firefox/WebKit `browsers` job to GitHub-hosted Ubuntu 24.04 for every event. The self-hosted PC runner `pc-win-jaryo` is offline, so the `browsers` jobs for #57, #58 and #59 stayed queued. This replaced the earlier PC runner mapping; `scripts/test_ci_runners.mjs` checks the routing.
 - [x] Record hosted Ubuntu 24.04 Firefox and WebKit receipts (requested/actual identity, version, totals) from the hosted `browsers` job. Every job below ran on image `ubuntu-24.04` and logged `BROWSER {"requested":"firefox","actual":"firefox","version":"132.0"}` with `TOTAL 326 / 326 firefox`, then `BROWSER {"requested":"webkit","actual":"webkit","version":"18.2"}` with `TOTAL 326 / 326 webkit`: #61 head `c9e56a6`, push run `43801219760` job `133081690647` and pull-request run `43801224982` job `133081786400`; #60 head `3553372`, push run `43803419245` job `133088627196` and pull-request run `43803425556` job `133088647174`; #62 head `e868510`, push run `43804299114` job `133091414668` and pull-request run `43804304442` job `133091514874`. These are Playwright 1.49.1 Linux builds at those three heads only; each later head needs its own run, and they are not real Safari. The #56 receipts came from Playwright's Windows builds on `pc-win-jaryo` and do not cover the Linux builds.
-- [ ] Find the cause of the intermittent WebKit summary shortfall. After every one of the 97 clicks was verified in the DOM and in storage, the summary can still read 18 / 19 (or 17 / 19) even after the 5 s wait. Seen only in WebKit, on `pc-win-jaryo` (push job `133071955544` at `3abf9b5`, 1280; job `130026072385`, 260) and on hosted Ubuntu 24.04 (job `129829626416`, 260). The PR run of the same `3abf9b5` head passed 326/326. A failing summary check now logs which family differs in the summary and in storage, plus the stored writerId, banner and toast text (failure-only diagnostics, #62). The six hosted runs recorded above all passed WebKit 326/326, so the shortfall did not recur there and the new diagnostics have not captured a failure yet. This stays open: the cause and a browser-free reproduction are not found.
+- [ ] Find the cause of the intermittent WebKit summary shortfall. Failing jobs `133071955544` at `3abf9b5` (PC, 1280), `130026072385` at `3ff0174` (PC, 260), and `129829626416` at PR head `3e99fc9` (hosted Ubuntu, 260) show 97 per-click DOM/current-family storage successes followed by 18 / 19. Those checks do not establish the final full storage map, and the failures lack the later missing-family diagnostics (#62). The [browser-free investigation](docs/WEBKIT-SUMMARY-INTERLEAVINGS.md) found no shortfall in the single-page matrix on the current source or either older failing head. It exercised toast timing, microtask boundaries, catalog normalization, storage contracts/failures, reset and CAS; there is no heartbeat in the lab entry path. Late foreign snapshots can produce 18 / 19 or 17 / 19 with complete storage, but need another writer absent from the demonstrated fresh single-page smoke. Delayed storage visibility fails per-click acceptance. The hosted cause remains open pending a diagnostic-bearing failure or a reproduction reachable in that setup.
 
 Static checks retain their existing Mac runner mapping. Firefox and WebKit smoke
 runs on GitHub-hosted Ubuntu 24.04; native Firefox and WebKit identity is verified
@@ -167,3 +167,33 @@ readers and physical-phone checks remain NOT_RUN, as listed in README.md.
 Chromium emulation and Playwright results do not establish those results.
 Playwright's Windows Firefox and WebKit builds are no longer run in CI since the
 `browsers` job moved to hosted Ubuntu; a hosted `windows-latest` job could add them back.
+
+## Suite token differential
+
+The offline comparator retains complete atomic inventories and raw structural
+differences for the lab export and a supplied Suite snapshot. See
+[the findings](docs/SUITE-TOKEN-DIFFERENTIAL.md) and
+[complete generated report](docs/data/suite-token-differential.json).
+The secondary color mapping finds 8 shared names, 3 normalized matches and
+5 differences. The full raw names and schemas remain distinct; the comparison
+does not establish that the Suite consumes the lab export.
+
+Focused API checks pass 153 cases and assertion-kill 63 selected in-memory
+mutants with no survivors or execution errors. The seeded oracle agrees on all
+9,000 comparisons: 3,464 valid reports and 5,536 INVALID_INPUT results, with no
+mismatches or unexpected errors. Every valid pair repeats deterministically.
+Seven focused controls cover escaped-pointer sorting, palette separation,
+injected filesystem boundaries and byte-identical pinned-report serialization.
+The existing Lab test runner invokes the focused API/CLI regressions; explicit
+mutation and oracle commands are in [CHECKS.md](docs/CHECKS.md).
+
+The summary module passes 60 cases, 1,681 accepted / 1,686 observed clicks and
+3,507 full-map checkpoints. All 16 original witness probes pass, and all 16
+selected summary mutations fail assertions. Historical sources `3ff0174` and
+`3e99fc9` each pass the single-page/current-foreign subset: 32 cases,
+1,367 / 1,367 observations and 2,846 checkpoints. These source and jsdom checks
+do not diagnose the hosted WebKit failure; its cause remains open above.
+
+Full Lab/spec suites, native CLI/FIFO checks, complete mutation campaigns,
+full-tree Ruff, exporter reruns, Node 22, browser/server checks, Suite contract
+execution, deployed consumption and current-head CI are NOT_RUN for this record.
