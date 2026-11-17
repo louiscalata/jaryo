@@ -21,6 +21,29 @@ layout and typography predicates, exact tolerances, zero-size boxes and NaN.
 These tests do not exercise snapshot collection, CSS layout, reduced-motion
 rendering or native forced-colors/keyboard behavior.
 
+The token comparison regression module runs through `test_lab_dom.mjs` and can
+also run alone without jsdom:
+
+```bash
+node scripts/test_suite_token_differential.mjs
+node scripts/test_suite_token_differential_mutations.mjs
+python3 scripts/check_suite_token_differential.py
+```
+
+These checks cover the offline token comparator's API/CLI boundaries, deliberately
+faulty implementations, and a seeded corpus compared with a separate
+standard-library oracle. Each harness removes its private temporary fixtures.
+The Python command requires Node on PATH and uses only the Python standard
+library. To check a supplied Suite snapshot against the saved report:
+
+```bash
+python3 scripts/check_suite_token_differential.py --export-file tokens/jaryo.tokens.json --suite-file suite.tokens.json --report-file docs/data/suite-token-differential.json
+```
+
+The standalone corpus and mutation checks do not run automatically in the Lab
+runner. See [the comparison contract](SUITE-TOKEN-DIFFERENTIAL.md) for input pins,
+measured results and NOT_RUN checks.
+
 Optional targeted harnesses, each with a private temporary directory:
 
 ```bash
