@@ -21,7 +21,7 @@ Live lab: [louiscalata.github.io/jaryo](https://louiscalata.github.io/jaryo/).
 
 ## Checks
 
-Run from the repository root. These are the same commands listed in [README.md](README.md#checks):
+Run from the repository root. These are the browser-free lab checks that CI runs (see [README.md](README.md#checks) and [the workflow](.github/workflows/ci.yml)):
 
 ```bash
 python3 scripts/validate_lab.py
@@ -32,9 +32,13 @@ node --check lab.js
 node --check lab-stages.js
 node scripts/test_persistence_rules.mjs
 node scripts/test_smoke_cli.mjs
+node scripts/test_static_server.mjs
 node scripts/test_focus_coverage.mjs
 node scripts/test_lab_dom.mjs
+node scripts/test_ci_runners.mjs
 ```
+
+CI also runs `ruff check .` and `ruff format --check .` with ruff 0.17.4 pinned in a throwaway virtual environment.
 
 The DOM check requires jsdom 26.1.0. Point `JARYO_JSDOM_PATH` at an existing package, or create an isolated temporary dependency directory:
 
@@ -44,7 +48,7 @@ npm install --prefix "$task_deps" --ignore-scripts --no-audit --no-fund jsdom@26
 export JARYO_JSDOM_PATH="$task_deps/node_modules/jsdom"
 ```
 
-Missing jsdom is a failure. Do not report a static-only result as a DOM pass. Do not use a global jsdom install or a shared fixed temporary directory. Further setup and spec checks are in [AGENTS.md](AGENTS.md#static-and-dom-checks).
+Missing jsdom is a failure. Do not report a static-only result as a DOM pass. Do not use a global jsdom install or a shared fixed temporary directory. Further setup and the spec checks (run from `spec/`, with `JSDOM` set to the same jsdom path, followed by `shasum -a 256 -c HASHES.txt`) are in [AGENTS.md](AGENTS.md#static-and-dom-checks).
 
 Browser smoke and axe scripts live under `scripts/browser/` and need Playwright. Run browser checks on the hosted Linux runners; Mac checks stay browser-free (see [AGENTS.md](AGENTS.md#ci-and-browser-boundary)).
 
