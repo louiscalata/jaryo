@@ -54,6 +54,7 @@ node --check lab.js
 node --check lab-stages.js
 node scripts/test_persistence_rules.mjs
 node scripts/test_smoke_cli.mjs
+node scripts/test_static_server.mjs
 node scripts/test_focus_coverage.mjs
 node scripts/test_lab_dom.mjs
 node scripts/test_ci_runners.mjs
