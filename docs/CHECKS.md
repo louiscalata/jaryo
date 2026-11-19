@@ -119,8 +119,11 @@ with a saved adaptor, allowing only the intended FAILED-reason change. Its
 baseline comparison is separate from its expected-result checks.
 
 `hash-coverage.test.mjs` checks tracked reference, adaptor and pipeline coverage
-and runs the repository's `shasum -a 256 -c HASHES.txt` procedure. When updating
-the manifest, regenerate each listed file's digest with `shasum -a 256`, include
+and verifies each listed SHA-256 with `node:crypto` against the file bytes as
+stored (LF). That is the same digest as `shasum -a 256 -c HASHES.txt`, without
+depending on `shasum` or `sha256sum`. When updating
+the manifest, regenerate each listed file's digest with `shasum -a 256` or
+`node:crypto`, include
 all paths returned by `git ls-files -- pipeline`, and include new test files.
 Run the coverage check after regeneration. Do not run `pipeline/run.mjs` to
 refresh hashes: its recorded runs are historical inputs.
