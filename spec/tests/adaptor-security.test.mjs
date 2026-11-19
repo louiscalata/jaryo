@@ -149,6 +149,14 @@ export function suite({ buildView, readRecord }) {
   test("embedded newlines do not bypass key redaction", () => {
     assert.ok(!tailView(["-----BEGIN PRIVATE KEY-----\nfixture-nested-material\n-----END PRIVATE KEY-----"]).join("\n").includes("fixture-nested-material"));
   });
+  test("PGP private key block is redacted", () => {
+    const tail = tailView(["-----BEGIN PGP PRIVATE KEY BLOCK-----", "fixturePgpMaterial", "-----END PGP PRIVATE KEY BLOCK-----", "done"]);
+    assert.deepEqual(tail, ["[REDACTED PRIVATE KEY]", "done"]);
+  });
+  test("orphan private key end marker redacts the key lines before it", () => {
+    const tail = tailView(["ordinary output", "Zml4dHVyZU9ycGhhbjE=", "Zml4dHVyZU9ycGhhbjI=", "-----END OPENSSH PRIVATE KEY-----", "done"]);
+    assert.deepEqual(tail, ["ordinary output", "[REDACTED PRIVATE KEY]", "done"]);
+  });
   test("ordinary output keeps final line and character bounds", () => {
     assert.deepEqual(tailView(Array.from({ length: 10 }, (_, i) => "x".repeat(600) + i)), Array(6).fill("x".repeat(500)));
   });

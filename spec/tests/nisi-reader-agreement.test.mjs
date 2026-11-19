@@ -206,6 +206,7 @@ const MUTANTS = [
 if (!failed) {
   const src = fs.readFileSync(adaptorPath, "utf8"), dir = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-reader-mut-"));
   fs.copyFileSync(path.join(root, "adaptor/jaryo-adaptor.mjs"), path.join(dir, "jaryo-adaptor.mjs"));
+  fs.copyFileSync(path.join(root, "adaptor/redact.mjs"), path.join(dir, "redact.mjs"));
   let killed = 0;
   for (const [i, [name, from, to]] of MUTANTS.entries()) {
     count++; let ok = false, detail = "";

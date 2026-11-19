@@ -1,27 +1,32 @@
 // The pipeline runner: runs the manifest's steps in dependency order and writes an append-only JSONL run record.
-// It does not import or call any Jaryo code; its steps do verify this repository.
+// It imports only the shared credential redactor (adaptor/redact.mjs), not the adaptor; its steps do verify this repository.
+// Step output and reasons are redacted before they are written; run files are created owner-only (0600 in a 0700 directory).
 // If the manifest declares a heartbeat ({ intervalMs, staleAfterMs }), it writes a heartbeat line every intervalMs
 // while a step runs, so a reader can tell a long step from a dead runner.
 // usage: node pipeline/run.mjs [--manifest <file>] [--runs-dir <dir>] [--cwd <dir>]
 import fs from "node:fs"; import path from "node:path"; import { spawn } from "node:child_process"; import { fileURLToPath } from "node:url";
+import { redactText } from "../adaptor/redact.mjs";
 const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i >= 0 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]) : d; };
 const manifestPath = arg("--manifest", path.join(here, "pipeline/jaryo-verify.manifest.json"));
 const dir = arg("--runs-dir", path.join(here, "pipeline/runs"));
 const cwd = arg("--cwd", here);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-fs.mkdirSync(dir, { recursive: true });
+fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
 
 // New file number = highest existing number + 1, created exclusively so two runners never share a file.
 let n, fd, file;
 for (let tries = 0; tries < 20; tries++) {
   n = Math.max(0, ...fs.readdirSync(dir).map(f => /^run-(\d+)\.jsonl$/.exec(f)).filter(Boolean).map(m => parseInt(m[1], 10))) + 1;
   file = path.join(dir, `run-${String(n).padStart(4, "0")}.jsonl`);
-  try { fd = fs.openSync(file, "wx"); break; } catch (e) { if (e.code !== "EEXIST") throw e; }
+  try { fd = fs.openSync(file, "wx", 0o600); break; } catch (e) { if (e.code !== "EEXIST") throw e; }
 }
 if (fd === undefined) { console.error("could not create a run file"); process.exit(1); }
-const emit = o => fs.writeSync(fd, JSON.stringify({ run: n, ts: new Date().toISOString(), ...o }) + "\n");
-const scrub = s => String(s).split(cwd).join("<cwd>").split(process.env.HOME || "\u0000").join("~");
+// Every reason is redacted as it is written; step output is redacted whole before its tail is selected (below).
+const emit = o => fs.writeSync(fd, JSON.stringify({ run: n, ts: new Date().toISOString(), ...o,
+  ...(typeof o.reason === "string" ? { reason: redactText(o.reason) } : {}) }) + "\n");
+const scrub = s => String(s).split(cwd).join("<cwd>")
+  .split(process.env.HOME || "\u0000").join("~").split(process.env.USERPROFILE || "\u0000").join("~");
 
 // Same bounds as the adaptor (adaptor/jaryo-adaptor.mjs): a declaration it would reject writes no heartbeat.
 const hb = manifest.declares && manifest.declares.heartbeat;
@@ -65,7 +70,7 @@ for (const s of manifest.steps) {
   emit({ step: s.id, event: "step-start" });
   const t0 = Date.now();
   const r = await runCmd(s.cmd, beatMs ? () => emit({ step: s.id, event: "heartbeat" }) : null);
-  const out = ((r.stdout || "") + (r.stderr || "")).split("\n").filter(Boolean).map(scrub);
+  const out = redactText((r.stdout || "") + (r.stderr || "")).split("\n").filter(Boolean).map(scrub);
   const ok = r.status === 0 && !r.error;
   status.set(s.id, ok ? "ok" : "failed");
   const why = r.error ? scrub(r.error.message) : r.signal ? `killed by ${r.signal}` : undefined;

@@ -5,6 +5,8 @@ tools/
 *.log
 playwright-report/
 test-results/
+# New sample-pipeline run records stay local; the tracked run-0001…0005 fixtures remain tracked.
+spec/pipeline/runs/run-*.jsonl
 
 __pycache__/
 *.pyc
