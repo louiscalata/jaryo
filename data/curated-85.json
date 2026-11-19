@@ -18,7 +18,10 @@
     "Demo pipelines and data are fictional.",
     "Copper is an example palette, not the default.",
     "MCP exposes tools and resources. It does not draw the interface by itself.",
-    "This lab is a documentation demo, not an installable product.",
+    "Jaryo is an installable kit. This lab is its interactive companion. The canonical tokens file is tokens/jaryo.tokens.json.",
+    "Buttons keep text labels; no glyph-only buttons.",
+    "Missing readings say Not measured. Step state UNKNOWN is unchanged.",
+    "The current-page indicator default is inverted. This is a documented default, not an owner-chosen style.",
     "Live lab: https://louiscalata.github.io/jaryo/",
     "Project page: https://fortheloveof.studio/code/jaryo/",
     "Repository: https://github.com/louiscalata/jaryo"
@@ -263,7 +266,7 @@
             "##PARSE##",
             "  load"
           ],
-          "curation_rationale": "Stage bus index — default jump list.",
+          "curation_rationale": "Stage bus index — default jump list. The inverted current indicator is the documented default, not an owner-chosen style.",
           "status": "proposed-design"
         },
         {

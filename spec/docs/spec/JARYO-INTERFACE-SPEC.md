@@ -1,7 +1,7 @@
 # Jaryo interface spec — composed from the 17 design picks
 
 Version 0.6, 2026-11-16, drafted by Claude on the Mac. v0.5e (2026-11-07) was revised after 15 Codex review rounds. Rounds 1–4, 6, 7, 10, 11 and 14 returned REVISE and each was fixed; rounds 5, 8, 9, 12, 13 and 15 returned **KEEP** with no findings (rounds 13–15 reviewed only the website fix and the accessibility-structure changes). v0.5 added the five owner decisions (§10), v0.5b the 701–1099px fixes, v0.5c the home-screen safe-area padding, v0.5d the website phone-overflow fix, v0.5e the accessibility-structure fixes. **v0.6 (not yet reviewed or confirmed by the owner)** adds a sixth state, FAILED (§2, §5, §10 item 6), and writes down where a state comes from (§6.9), which closes adaptor findings 1 to 3 (`docs/adaptor/ADAPTOR-V0.md`). The review rounds above cover v0.5e, not v0.6. The two reference screens (`reference/index.html` and `reference/hero.html`) are still v0.5e and show no failed step; `reference/adaptor-view-failed-example.html` is the adaptor's own example and does show one.
-Status: **DESIGN SPEC**. It is not a production build, and none of it has been user-tested.
+Status: **DESIGN SPEC**. Jaryo is an installable kit; this document is the design spec. It is not a production build, and none of it has been user-tested.
 
 ## Sources
 - **Picks:** the 17 design picks, recorded against the lab-v1 catalog (personal pick export not published).
@@ -11,8 +11,9 @@ Status: **DESIGN SPEC**. It is not a production build, and none of it has been u
 A pipeline reads top to bottom as **one vertical bus**. Each step is a hard-edged **box with its frame broken at the IN and OUT ports**. It is named in plain language, with the exact step id beneath in mono.
 
 Selecting a step inverts it and lights up only its declared neighbours. Detail opens in a **side inspector** while the bus stays put, and you can walk the flow with a **prev/next pager**. A few rules hold everywhere:
-- **State:** always a word plus a glyph.
-- **Unknown:** what Jaryo has not discovered is drawn as unknown.
+- **State:** always a word plus a glyph. Buttons keep text labels; no glyph-only buttons.
+- **Unknown:** what Jaryo has not discovered is drawn as the UNKNOWN step state. Missing readings say **Not measured**.
+- **Current page:** the current-page indicator default is inverted. That is a documented default, not an owner-chosen style.
 - **Optional:** optional steps sit hidden behind an honest dashed gap.
 - **Motion:** it happens only when a real event arrives.
 
@@ -35,7 +36,7 @@ Selecting a step inverts it and lights up only its declared neighbours. Detail o
 | Selection | **F04.01 Step Focus + Neighbours** | Selected = inverted + ▶. Declared inputs/outputs get a full-strength outline plus a "← input" / "output →" word. Others recede to a **hairline frame and a muted title, never opacity**, so every token keeps its measured contrast. The inspector also lists the neighbours, which is how phones see them (catalog: "Neighbours listed under selection") |
 | Detail | **F11.01 Side Inspector** | A right column that is **always reserved** (empty state when nothing is selected), so opening detail never reflows the spine |
 | Walking | **F03.03 Step Pager** | Prev/next in dependency order, by name. At a fork it shows every branch and says "fork: n next steps — choose one" |
-| Data | **F07.01 Mono Ledger Table** | Runs and metrics: right-aligned mono numbers, a rule every row, sticky first column, horizontal scroll inside its own region. A **RUNNING row is inverted** (F17.01) |
+| Data | **F07.01 Mono Ledger Table** | Runs and metrics: right-aligned mono numbers, a rule every row, sticky first column, horizontal scroll inside its own region. A **RUNNING row is inverted** (F17.01). Missing readings say **Not measured**, not Unknown. |
 | State | **F09.01 Word+Glyph State** | `● [OK]` `▶ [RUNNING]` `✕ [BLOCKED]` `✕ [FAILED]` `? [UNKNOWN]` `◆ [REVIEW]`. BLOCKED means the step did not run and something it needs is missing. FAILED means the record says the step ran and failed. They are different words with different next steps, so neither stands in for the other (§5) |
 | Unknowns | **F08.10 Unknown-aware Graph** | Undeclared nodes that a run log implies: 1px dashed frame + hatch strip + `? [UNKNOWN]` + "not declared by adaptor" |
 | Hidden steps | **F12.10 Underground Dash** | Hidden steps become a dashed gap on the spine. The wording states what they do: `[+n optional] steps — off by default` for steps that will not run, and `[+n collapsed] steps — will run` for a folded-up required subflow. Never hides errors or consent: a group holding a blocked, failed, unknown or review step **opens itself and cannot be hidden** (`opened: n inside need attention — cannot hide`) |
@@ -217,5 +218,16 @@ These checks ran in the Chromium pane on 2026-11-07, each against the build name
 3. **Copper on the website:** **the same as the app**. The dark Copper skin is used across marketing pages, with copper only on the mark and one primary action per page.
 4. **Event tick:** **resets per run**. The count shown is for the current run.
 5. **Repo home:** the spec and both reference screens move **into the lab's repo** (e.g. `docs/spec/` and `reference/`) once it exists. Notion stays the readable home, and both stay separate from AGIW Suite. **Status 2026-11-13:** done; the spec, reference screens, adaptor and tests now live in this repository under `spec/`.
+### Owner calls and documented defaults (2026-11-19)
+Owner calls, in his words (2026-11-19, 11:51 AM PST):
+- "No glyph-only buttons, keep text labels."
+- "Missing readings say Not measured."
+- "Jaryo is an installable kit."
+- "Yes, the Suite kit should converge on Jaryo's tokens file." The canonical tokens file is `tokens/jaryo.tokens.json`. Suite-side consumption of that file is outside this spec.
+
+Documented default, not an owner-chosen style:
+- The current-page indicator stays **inverted** as the default (as in F03.01 "current inverted" and the lab's selected family button).
+
+The install route is a plain read-only CLI; packaging for that route is kept with that work and is not duplicated here.
 ### Proposed in v0.6 (needs the owner's confirmation)
 - **FAILED state:** F09.01 has six states, with `✕ [FAILED]` for a step the record says ran and failed. The other option, mapping failed to BLOCKED, was rejected: it would hide whether a step needs a prerequisite or a fix, and the adaptors, the run counts and the review summary already keep the two apart. No new token. The reference screens do not yet show a failed step, and the app reference has no FAILED rendering.

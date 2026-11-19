@@ -1,6 +1,6 @@
 # Jaryo
 
-Jaryo is a work-in-progress interface design lab for comparing layouts, typography and controls, saving choices in your browser, and exporting preferences. Its designs include monochrome, color and red-accent studies. It is a documentation and design tool, not a production product.
+Jaryo is an installable kit and a work-in-progress interface design lab for comparing layouts, typography and controls, saving choices in your browser, and exporting preferences. Its designs include monochrome, color and red-accent studies.
 
 The lab explores interface ideas for [AGIW Suite](https://github.com/louiscalata/agiw-suite), [Old Phone OS](https://github.com/louiscalata/old-phone-os) and [Nisi](https://github.com/louiscalata/nisi); choosing an option here does not change those projects.
 
@@ -17,12 +17,18 @@ cd jaryo
 
 Open `index.html` in your browser. Embedded data loads if fetch is blocked.
 
+## Installable kit
+
+Jaryo is an installable kit. The canonical tokens file is `tokens/jaryo.tokens.json`. The install route is a plain read-only CLI; packaging for that route is kept with the CLI work and is not duplicated here.
+
+Buttons keep text labels (no glyph-only buttons). Missing readings say “Not measured” (the UNKNOWN step state is unchanged). The current-page indicator default is inverted; that is a documented default, not an owner-chosen style.
+
 ## What’s in the lab
 
 - 19 families · 85 curated + 12 optional (97 total). The 85 curated options are 80 monochrome (F01–F16) and 5 color (F17). The 12 optional options are 8 legacy studies (F18) and 4 Red interactive UI (F19).
 - Theme: System / Light / Dark (persisted separately from choices)
 - Shared typography tokens in `lab.css` (see [docs/TYPOGRAPHY-PRINCIPLES.md](docs/TYPOGRAPHY-PRINCIPLES.md)). Latin OFL faces load from `assets/fonts/`; licenses are in [docs/FONTS.md](docs/FONTS.md).
-- Token export: `tokens/jaryo.tokens.json` (DTCG 2025.10 conformant: Design Tokens Format Module 2025.10 and Color Module 2025.10), written by `scripts/export_tokens.py` from `lab.css`. Export only; AGIW Suite and OPOS do not consume this file yet.
+- Token export: `tokens/jaryo.tokens.json` (DTCG 2025.10 conformant: Design Tokens Format Module 2025.10 and Color Module 2025.10), written by `scripts/export_tokens.py` from `lab.css`. This file is the canonical tokens source. AGIW Suite kit consumption of it is Suite-side work and is not done in this repository.
 - Layouts from about 260px wide to desktop
 - Keyboard support for option groups and tabs (arrow keys, Home/End, Space)
 - Reduced-motion support via `prefers-reduced-motion`

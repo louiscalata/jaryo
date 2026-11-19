@@ -994,7 +994,7 @@
         <div class="type-row"><div class="role-meta spec-foot">Spec</div><p class="spec-foot">14/21 · IBM Plex Sans · regular · 0 tracking</p></div>
       </div>
       <h3>Product frame (proposed)</h3>
-      <p>Jaryo is a proposed graphical interface for pipelines via CLI, MCP, or other adapters. The architecture is exploratory. AGIW Suite is one application of Jaryo, not the whole product. MCP alone has no renderer; a host is still required. This lab is not an installable product.</p>
+      <p>Jaryo is an installable kit and a proposed graphical interface for pipelines. AGIW Suite is one application of Jaryo, not the whole product. The canonical tokens file is tokens/jaryo.tokens.json. This page is the interactive lab companion.</p>
       <h3>State grammar (v4)</h3>
       <ul>
         <li><strong>Selected:</strong> ${esc(g.selected)}</li>
@@ -1008,7 +1008,14 @@
       <p><strong>Lab implements:</strong> ${esc(DATA.implemented_in_lab.join("; "))}</p>
       <p><strong>Proposed / not implemented:</strong> ${esc(DATA.proposed_not_implemented.join("; "))}</p>
       <h3>Accessibility baseline (required, not an option)</h3>
-      <p>Contrast-aware B/W or color-independent signals; 3px dashed focus ring; ≥44px hit targets; state in words/glyphs; keyboard path; prefers-reduced-motion respected; honest unsupported controls.</p>
+      <p>Contrast-aware B/W or color-independent signals; 3px dashed focus ring; ≥44px hit targets; state in words plus glyphs; buttons keep text labels (no glyph-only buttons); keyboard path; prefers-reduced-motion respected; honest unsupported controls.</p>
+      <h3>Documented defaults and owner calls (2026-11-19)</h3>
+      <ul>
+        <li>Buttons keep text labels; no glyph-only buttons.</li>
+        <li>Missing readings say Not measured. The UNKNOWN step state is unchanged.</li>
+        <li>The current-page indicator default is inverted (the lab's selected family button uses inverted fill). This is a documented default, not an owner-chosen style.</li>
+        <li>Jaryo is an installable kit. The canonical tokens file is tokens/jaryo.tokens.json.</li>
+      </ul>
       <h3>Notices</h3>
       <ul>${DATA.notices.map((n) => `<li>${withLinks(n)}</li>`).join("")}</ul>
       <h3>Links</h3>
@@ -1017,7 +1024,7 @@
         <li><a href="https://louiscalata.github.io/jaryo/">Live lab</a></li>
         <li><a href="${esc(DATA.canonical_notion || DATA.homepage || "https://fortheloveof.studio/code/jaryo/")}">Project page</a></li>
       </ul>
-      <p>This lab is an interactive companion, not a production product.</p>
+      <p>This lab is the interactive companion for the installable kit.</p>
     `;
   }
 
