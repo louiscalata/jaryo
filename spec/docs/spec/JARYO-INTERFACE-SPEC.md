@@ -1,11 +1,11 @@
 # Jaryo interface spec — composed from the 17 design picks
 
-Version 0.6, 2026-11-16, drafted by Claude on the Mac. v0.5e (2026-11-07) was revised after 15 Codex review rounds. Rounds 1–4, 6, 7, 10, 11 and 14 returned REVISE and each was fixed; rounds 5, 8, 9, 12, 13 and 15 returned **KEEP** with no findings (rounds 13–15 reviewed only the website fix and the accessibility-structure changes). v0.5 added the five owner decisions (§10), v0.5b the 701–1099px fixes, v0.5c the home-screen safe-area padding, v0.5d the website phone-overflow fix, v0.5e the accessibility-structure fixes. **v0.6 (not yet reviewed or confirmed by the owner)** adds a sixth state, FAILED (§2, §5, §10 item 6), and writes down where a state comes from (§6.9), which closes adaptor findings 1 to 3 (`docs/adaptor/ADAPTOR-V0.md`). The review rounds above cover v0.5e, not v0.6. The two reference screens (`reference/index.html` and `reference/hero.html`) are still v0.5e and show no failed step; `reference/adaptor-view-failed-example.html` is the adaptor's own example and does show one.
+Version 0.6, 2026-11-16, drafted by Claude on the Mac. v0.5e (2026-11-07) was revised after 15 Codex review rounds. Rounds 1–4, 6, 7, 10, 11 and 14 returned REVISE and each was fixed; rounds 5, 8, 9, 12, 13 and 15 returned **KEEP** with no findings (rounds 13–15 reviewed only the website fix and the accessibility-structure changes). v0.5 added the five owner decisions (§10), v0.5b the 701–1099px fixes, v0.5c the home-screen safe-area padding, v0.5d the website phone-overflow fix, v0.5e the accessibility-structure fixes. **v0.6, confirmed by the owner on 2026-11-19 ("If it works, yes") after the FAILED step was shown working end to end,** adds a sixth state, FAILED (§2, §5, §10 item 6), and writes down where a state comes from (§6.9), which closes adaptor findings 1 to 3 (`docs/adaptor/ADAPTOR-V0.md`). The Codex review rounds cover v0.5e, not v0.6; both reference screens were updated to v0.6 on 2026-11-19 and show a failed step (Write audit log). `reference/adaptor-view-failed-example.html` is the adaptor's own example and does show one.
 Status: **DESIGN SPEC**. Jaryo is an installable kit; this document is the design spec. It is not a production build, and none of it has been user-tested.
 
 ## Sources
 - **Picks:** the 17 design picks, recorded against the lab-v1 catalog (personal pick export not published).
-- **Reference screens:** `index.html`, the app (v0.5e, sha256 `f06b31eb…`), and `hero.html`, the website (v0.5e, sha256 `0420bde0…`), in `reference/`. Both use a fictional sample pipeline.
+- **Reference screens:** `index.html`, the app (v0.6, sha256 `6a7b4f2f…`), and `hero.html`, the website (v0.6, sha256 `f5342a18…`), in `reference/`. Both use a fictional sample pipeline.
 
 ## 1. What Jaryo looks like
 A pipeline reads top to bottom as **one vertical bus**. Each step is a hard-edged **box with its frame broken at the IN and OUT ports**. It is named in plain language, with the exact step id beneath in mono.
@@ -229,5 +229,5 @@ Documented default, not an owner-chosen style:
 - The current-page indicator stays **inverted** as the default (as in F03.01 "current inverted" and the lab's selected family button).
 
 The install route is a plain read-only CLI; packaging for that route is kept with that work and is not duplicated here.
-### Proposed in v0.6 (needs the owner's confirmation)
-- **FAILED state:** F09.01 has six states, with `✕ [FAILED]` for a step the record says ran and failed. The other option, mapping failed to BLOCKED, was rejected: it would hide whether a step needs a prerequisite or a fix, and the adaptors, the run counts and the review summary already keep the two apart. No new token. The reference screens do not yet show a failed step, and the app reference has no FAILED rendering.
+### Confirmed in v0.6 (owner, 2026-11-19)
+- **FAILED state:** F09.01 has six states, with `✕ [FAILED]` for a step the record says ran and failed. The other option, mapping failed to BLOCKED, was rejected: it would hide whether a step needs a prerequisite or a fix, and the adaptors, the run counts and the review summary already keep the two apart. No new token. Both reference screens show a failed step (Write audit log), checked by tests/decisions.test.mjs.

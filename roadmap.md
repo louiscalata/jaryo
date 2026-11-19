@@ -41,7 +41,7 @@ Done, on pipelines this project wrote or generated:
 Not done:
 
 - [ ] Owner confirmation of spec v0.6. The spec header states v0.6 is "not yet reviewed or confirmed by the owner", and section 10 lists FAILED under "Proposed in v0.6". The 15 Codex rounds cover v0.5e only.
-- [ ] Show a FAILED step on the app reference screen. `spec/reference/index.html` and `spec/reference/hero.html` are still v0.5e and have no FAILED rendering; only the adaptor view pages do.
+- [x] Show a FAILED step on the app reference screen. Done 2026-11-19 (LOU-27): `spec/reference/index.html` and `spec/reference/hero.html` are v0.6 and show a failed step (Write audit log); spec v0.6 is confirmed by the owner.
 - [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
 - [ ] Choose the first real pipeline (open decision below).
 - [ ] Choose the install route (open decision below).
