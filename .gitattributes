@@ -1,0 +1,8 @@
+# Force LF eol for spec integrity manifest and all files it covers to keep SHA-256 hashes stable across Windows checkouts
+spec/HASHES.txt text eol=lf
+spec/reference/** text eol=lf
+spec/adaptor/** text eol=lf
+spec/pipeline/** text eol=lf
+spec/tests/** text eol=lf
+spec/docs/adaptor/** text eol=lf
+spec/docs/spec/** text eol=lf

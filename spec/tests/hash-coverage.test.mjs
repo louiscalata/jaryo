@@ -3,10 +3,20 @@ import fs from "node:fs"; import path from "node:path"; import { fileURLToPath }
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 let n = 0, failed = 0;
 const ok = (c, m) => { n++; if (!c) { failed++; console.log("FAIL", m); } else console.log("PASS", m); };
-const entries = fs.readFileSync(path.join(root, "HASHES.txt"), "utf8").trim().split("\n").map(line => line.match(/^([a-f0-9]{64})  (.+)$/));
+const entries = fs.readFileSync(path.join(root, "HASHES.txt"), "utf8").trim().split(/\r?\n/).map(line => line.match(/^([a-f0-9]{64})  (.+)$/));
 ok(entries.every(Boolean), "every integrity entry is a SHA-256 and a file path");
 const listed = entries.filter(Boolean).map(m => m[2]);
 ok(new Set(listed).size === listed.length, "integrity paths are unique");
+const attrPaths = ["HASHES.txt", ...listed];
+const attr = spawnSync("git", ["check-attr", "eol", "--", ...attrPaths], { cwd: root, encoding: "utf8" });
+ok(attr.status === 0, "git check-attr eol runs");
+const attrMap = {};
+for (const line of attr.stdout.split(/\r?\n/).filter(Boolean)) {
+  const m = line.match(/^(.+?): eol: (.+)$/);
+  if (m) attrMap[m[1]] = m[2];
+}
+ok(attrMap["HASHES.txt"] === "lf", "HASHES.txt eol is lf");
+for (const p of listed) ok(attrMap[p] === "lf", `eol is lf for ${p}`);
 const tracked = spawnSync("git", ["ls-files", "-z", "--", "reference", "adaptor", "pipeline"], { cwd: root, encoding: "utf8" });
 ok(tracked.status === 0, "tracked spec paths can be enumerated");
 for (const file of tracked.stdout.split("\0").filter(Boolean)) ok(listed.includes(file), `integrity manifest covers ${file}`);
