@@ -68,7 +68,7 @@ jobs:
     # never starts. Playwright 1.49.1 has Ubuntu 24.04 builds of both engines; --with-deps
     # installs their apt packages. Never run Playwright on the Mac.
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,15 +82,87 @@ jobs:
           key: ms-playwright-${{ runner.os }}-${{ runner.arch }}-1.49.1-firefox-webkit
       - name: Install Playwright Firefox and WebKit
         # Each command gets a per-attempt timeout and up to 3 attempts, so one stalled download or apt
-        # mirror does not hold the job until its 30-minute limit.
-        timeout-minutes: 15
+        # mirror does not hold the job until its limit. After a killed attempt, sudo apt-get from
+        # --with-deps can outlive timeout and keep /var/lib/dpkg/lock-frontend; wait for those locks
+        # (never delete a held lock file) and finish half-installed packages before retrying.
+        # Step budget covers 3 timed attempts plus lock waits.
+        timeout-minutes: 30
         run: |
+          APT_LOCKS="/var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock"
+
+          lock_holders() {
+            lock="$1"
+            [ -e "$lock" ] || return 0
+            if command -v fuser >/dev/null 2>&1; then
+              sudo fuser "$lock" 2>/dev/null | tr -cs '0-9' '\n' | grep -E '^[0-9]+$' || true
+            elif command -v lsof >/dev/null 2>&1; then
+              sudo lsof -t "$lock" 2>/dev/null || true
+            fi
+          }
+
+          apt_locks_held() {
+            for lock in $APT_LOCKS; do
+              if [ -n "$(lock_holders "$lock")" ]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          # Bounded wait for dpkg/apt locks to free. Never deletes lock files.
+          wait_for_apt_locks() {
+            budget="${1:-180}"
+            start="$(date +%s)"
+            while apt_locks_held; do
+              now="$(date +%s)"
+              if [ $((now - start)) -ge "$budget" ]; then
+                echo "::warning::apt/dpkg locks still held after ${budget}s"
+                return 1
+              fi
+              sleep 2
+            done
+            return 0
+          }
+
+          # timeout signals its process group, but sudo apt-get often leaves that group.
+          stop_stale_apt() {
+            saw=0
+            for lock in $APT_LOCKS; do
+              pids="$(lock_holders "$lock")"
+              [ -n "$pids" ] || continue
+              saw=1
+              echo "::warning::sending TERM to processes holding $lock: $(echo $pids)"
+              # shellcheck disable=SC2086
+              sudo kill -TERM $pids 2>/dev/null || true
+            done
+            [ "$saw" -eq 0 ] && return 0
+            sleep 3
+            for lock in $APT_LOCKS; do
+              pids="$(lock_holders "$lock")"
+              [ -n "$pids" ] || continue
+              echo "::warning::sending KILL to processes still holding $lock: $(echo $pids)"
+              # shellcheck disable=SC2086
+              sudo kill -KILL $pids 2>/dev/null || true
+            done
+          }
+
           retry() {
             limit="$1"; shift
+            configured=0
             for attempt in 1 2 3; do
+              if [ "$attempt" -gt 1 ]; then
+                stop_stale_apt
+                wait_for_apt_locks 180 || true
+                if [ "$configured" -eq 0 ]; then
+                  sudo dpkg --configure -a || echo "::warning::dpkg --configure -a failed; continuing to retry"
+                  configured=1
+                  wait_for_apt_locks 60 || true
+                fi
+                sleep $(( (attempt - 1) * 15 ))
+              fi
               if timeout --kill-after=10 "$limit" "$@"; then return 0; fi
               echo "::warning::attempt $attempt of 3 failed or timed out: $*"
-              [ "$attempt" -lt 3 ] && sleep $((attempt * 15))
+              stop_stale_apt
             done
             return 1
           }
