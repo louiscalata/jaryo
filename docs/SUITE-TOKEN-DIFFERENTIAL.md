@@ -23,7 +23,9 @@ The Suite snapshot's `appliedChoiceFile` is **an object**, containing
 Its `jaryo/contract.mjs` checks this against `jaryo/decision.mjs`; its kit
 README describes the selected
 choices and Copper override. These sources were read at the same pinned Suite
-commit. The Suite contract was not executed, and no Suite source was changed.
+commit. The Suite contract was executed on 2026-11-19; see
+[Suite contract run, 2026-11-19](#suite-contract-run-2026-11-19). No Suite source
+was changed.
 
 ## Results
 
@@ -90,6 +92,39 @@ primitive colors under `palette`, dimensions and other settings under `scale`
 and `interaction`, and records choices, variants, patterns, and provenance.
 The full raw path/type inventory in the receipt makes every structural
 difference inspectable without treating one schema as the other's subset.
+
+## Suite contract run, 2026-11-19
+
+Suite: louiscalata/agiw-suite main at `9df747b` (`9df747bf7612671696e593e66219b24bd79c15c4`).
+`jaryo/tokens.json` SHA-256 `619a1f91378c6073e92d1a0382297e66e5e7df16de7e7551015df0ed08e1563c`.
+Same bytes as pinned `5694d16`. Last commit touching it: `f767e09`.
+
+Lab: Jaryo main at `166bb8a`. `tokens/jaryo.tokens.json` SHA-256
+`7d23cf27ee6eac5d322263cb929f6fe72c5b9a4a3bd8e10e10ffe64919fead22`.
+Unchanged since `da38e11`.
+
+Node v24.22.2 on macOS (Apple silicon). No Suite file was changed; nothing was installed.
+
+Here "Suite contract" means the Suite kit's own file contract (`checkKit` in
+`jaryo/contract.mjs`) and the Suite tests that exercise it. These commands ran
+from the root of the read-only Suite clone:
+
+- `node jaryo/cli.mjs check` printed `ok`, exit 0.
+- `node --test test_jaryo_design.mjs` 7/7.
+- `node --test test_jaryo_choices.mjs` 50/50.
+- `node --test test_jaryo_platform.mjs` 6/6.
+- `node --test test_jaryo_web_variant.mjs` 4/4 pass.
+
+These commands ran from the Jaryo checkout, with the Suite clone's file as input:
+
+- `node scripts/suite_token_differential.mjs tokens/jaryo.tokens.json <suite>/jaryo/tokens.json`
+  output is byte-identical to `docs/data/suite-token-differential.json`.
+- `python3 scripts/check_suite_token_differential.py --export-file ... --suite-file ... --report-file docs/data/suite-token-differential.json`
+  exit 0: 9,000 cases, 0 mismatches, 0 unexpected errors, saved report matches 2/2.
+
+NOT_RUN: deployed consumption (an installed Suite build reading the tokens), native Mac/Windows GUI, installer, Windows High Contrast hardware, physical devices.
+
+The Suite kit does not read `tokens/jaryo.tokens.json`; the two files remain separate contracts.
 
 ## Regenerate offline
 
