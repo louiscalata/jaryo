@@ -160,6 +160,19 @@ export function suite({ buildView, readRecord }) {
   test("ordinary output keeps final line and character bounds", () => {
     assert.deepEqual(tailView(Array.from({ length: 10 }, (_, i) => "x".repeat(600) + i)), Array(6).fill("x".repeat(500)));
   });
+  // LOU-89: the old nested-star credential-name rule and the unanchored END-marker check were cubic/quadratic here
+  // (an 8 KB run took tens of seconds); the bound is ~1000x the current cost, so it is not timing-sensitive on CI.
+  const bounded = (tail, ms = 2000) => { const t0 = performance.now(), out = tailView(tail), took = performance.now() - t0; assert.ok(took < ms, `redaction took ${took.toFixed(0)} ms`); return out; };
+  test("long credential-name near-match without an assignment redacts in bounded time", () => {
+    const tail = bounded(["token-".repeat(1400) + "token"]); assert.equal(tail[0], ("token-".repeat(1400)).slice(0, 500)); assert.doesNotMatch(tail[0], /REDACTED/);
+  });
+  test("long blank run without an END marker redacts in bounded time", () => {
+    const tail = bounded(["token" + " ".repeat(131072), "done"]); assert.deepEqual(tail, [("token" + " ".repeat(495)), "done"]);
+  });
+  test("credential name after a long hyphenated run is still redacted", () => {
+    const tail = bounded(["x-".repeat(100) + "token=fixture-hidden-value", "a=api-key=fixture-second"]);
+    assert.ok(!tail.join("\n").includes("fixture-hidden-value")); assert.ok(!tail.join("\n").includes("fixture-second")); assert.match(tail[0], /token=\[REDACTED\]$/);
+  });
   test("ordinary token-check filenames are not credential assignments", () => {
     assert.deepEqual(tailView(["pipeline/check-tokens.mjs: OK"]), ["pipeline/check-tokens.mjs: OK"]);
   });

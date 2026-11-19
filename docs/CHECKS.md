@@ -130,14 +130,15 @@ screen readers, layout, hardware and current-head CI require separate evidence.
 
 ## Sample-record security checks
 
-`adaptor-security.test.mjs` passes 72/72 checks. Against the original 70
+`adaptor-security.test.mjs` passes 75/75 checks. Against the original 70
 checks, the pre-change adaptor at `aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1`
 passed 20/70 and failed 50. The focused cases cover corrupt suffixes and
 per-step recovery, foreign results, restarts, heartbeat and clock isolation,
 credential redaction, private keys (including PGP blocks and orphan END
 markers), ordinary filenames and empty tails. The runner redacts its full
 output before keeping the last six lines, redacts every failure and review
-reason, and writes run files owner-only (LOU-56). Renderer checks also
+reason, and writes run files owner-only (LOU-56). Long near-match names and
+long blank runs finish within a generous time bound (LOU-89). Renderer checks also
 require credentials to be absent from the generated page source and the
 inspector DOM.
 
