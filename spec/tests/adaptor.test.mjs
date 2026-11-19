@@ -229,6 +229,34 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
   ck("runner: a step that writes more than 1 MiB to one stream is failed with ENOBUFS and stopped", loud.status === "failed" && /ENOBUFS/.test(loud.reason || "") && loud.ms < 1900);
   ck("runner: a step just under 1 MiB is still ok", fits.status === "ok" && fits.tail.includes("end"));
 
+  // Redaction happens before the tail window: a key whose BEGIN line falls outside the last six lines must not leak.
+  const body = Array.from({ length: 8 }, (_, i) => `Rml4dHVyZUtleUJvZHk${i}`);
+  const pem = ["-----BEGIN RSA PRIVATE KEY-----", ...body, "-----END RSA PRIVATE KEY-----", "after key"];
+  const pgp = ["-----BEGIN PGP PRIVATE KEY BLOCK-----", "", "UGdwRml4dHVyZUJvZHkx", "=UGdw", "-----END PGP PRIVATE KEY BLOCK-----", "after pgp"];
+  const fakeProfile = path.resolve("/jaryo-fixture-profile"); // a string only, outside HOME and the working directory
+  const kman = { id: "k", name: "K", declares: { actions: ["run"] }, steps: [
+    { id: "pem", name: "Pem", needs: [], cmd: ["node", "-e", `console.log(${JSON.stringify(pem.join("\n"))})`] },
+    { id: "pgp", name: "Pgp", needs: [], cmd: ["node", "-e", `console.error(${JSON.stringify(pgp.join("\n"))})`] },
+    { id: "profile", name: "Profile", needs: [], cmd: ["node", "-e", "console.log('profile ' + process.env.USERPROFILE)"] },
+    { id: "nostart", name: "No start", needs: [], cmd: ["API_TOKEN=fixture-reason-secret"] },
+    { id: "gated", name: "Gated", needs: [], consequential: true, reason: "uses PASSWORD=fixture-review-secret", cmd: ["node", "-e", "0"] } ] };
+  const kmf = path.join(tmp, "k.json"), kruns = path.join(tmp, "kruns"); fs.writeFileSync(kmf, JSON.stringify(kman));
+  spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", kmf, "--runs-dir", kruns, "--cwd", tmp],
+    { encoding: "utf8", env: { ...process.env, USERPROFILE: fakeProfile } });
+  const kfile = path.join(kruns, "run-0001.jsonl"), ktext = fs.readFileSync(kfile, "utf8");
+  const krecs = ktext.trim().split("\n").map(x => JSON.parse(x)), kres = id => krecs.find(r => r.step === id && r.status);
+  ck("runner: a 10-line private key is redacted before the tail is selected", kres("pem").status === "ok"
+    && !body.some(b => ktext.includes(b)) && !ktext.includes("END RSA PRIVATE KEY") && kres("pem").tail.join("\n") === "[REDACTED PRIVATE KEY]\nafter key");
+  ck("runner: a PGP private key block is redacted", !ktext.includes("UGdwRml4dHVyZUJvZHkx") && !ktext.includes("PGP PRIVATE KEY BLOCK")
+    && kres("pgp").tail.join("\n") === "[REDACTED PRIVATE KEY]\nafter pgp");
+  ck("runner: a credential in a failure reason is redacted", kres("nostart").status === "failed"
+    && /API_TOKEN=\[REDACTED\]/.test(kres("nostart").reason) && !ktext.includes("fixture-reason-secret"));
+  ck("runner: a credential in a review reason is redacted", kres("gated").status === "review"
+    && kres("gated").reason === "uses PASSWORD=[REDACTED]" && !ktext.includes("fixture-review-secret"));
+  ck("runner: USERPROFILE is scrubbed from recorded output", !ktext.includes(fakeProfile) && kres("profile").tail.includes("profile ~"));
+  if (process.platform === "win32") console.log("SKIP runner: run file is 0600 in a 0700 directory (POSIX modes are not enforced on win32)");
+  else ck("runner: run file is 0600 in a 0700 directory", (fs.statSync(kfile).mode & 0o777) === 0o600 && (fs.statSync(kruns).mode & 0o777) === 0o700);
+
   // Both CLIs from a checkout whose path has a space: the adaptor prints the view, the runner finds its default manifest.
   const sp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo sp ace-"));
   for (const dir of ["adaptor", "pipeline"]) fs.cpSync(path.join(root, dir), path.join(sp, dir), { recursive: true });
@@ -246,6 +274,7 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
 // Mutation checks: each broken adaptor must be caught by at least one test.
 const src = fs.readFileSync(adaptorPath, "utf8");
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-mut-"));
+fs.copyFileSync(path.join(root, "adaptor/redact.mjs"), path.join(tmp, "redact.mjs")); // so each mutant's relative import resolves
 const MUTANTS = [
   ["guess OK when a step has no record", `state = "UNKNOWN"; reason = started ? "no record for this step in the latest run" : "no run record";`, `state = "OK"; reason = null;`],
   ["show RUNNING for a stale start", `if (live && fresh(beat)) { state = "RUNNING";`, `if (true) { state = "RUNNING";`],

@@ -105,6 +105,7 @@ for (const r of await suite(real, true)) { count++; console.log(r.pass ? "PASS" 
   const src = fs.readFileSync(adaptorPath, "utf8");
   const mtmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-nd-mut-"));
   fs.copyFileSync(path.join(root, "adaptor/jaryo-adaptor.mjs"), path.join(mtmp, "jaryo-adaptor.mjs"));
+  fs.copyFileSync(path.join(root, "adaptor/redact.mjs"), path.join(mtmp, "redact.mjs"));
   const MUTANTS = [
     ["expire an entry one millisecond late", `else if (now >= made + e.ttlMs) {`, `else if (now > made + e.ttlMs) {`],
     ["never expire an entry", `else if (now >= made + e.ttlMs) {`, `else if (false) {`],
