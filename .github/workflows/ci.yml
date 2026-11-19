@@ -57,6 +57,7 @@ jobs:
           node tests/decisions.test.mjs reference/index.html
           node tests/render.test.mjs
           node tests/reference-a11y.test.mjs
+          node tests/cli.test.mjs
       - name: Spec file hashes
         working-directory: spec
         run: shasum -a 256 -c HASHES.txt

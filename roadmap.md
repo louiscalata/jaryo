@@ -43,8 +43,8 @@ Not done:
 - [ ] Owner confirmation of spec v0.6. The spec header states v0.6 is "not yet reviewed or confirmed by the owner", and section 10 lists FAILED under "Proposed in v0.6". The 15 Codex rounds cover v0.5e only.
 - [x] Show a FAILED step on the app reference screen. Done 2026-11-19 (LOU-27): `spec/reference/index.html` and `spec/reference/hero.html` are v0.6 and show a failed step (Write audit log); spec v0.6 is confirmed by the owner.
 - [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
-- [ ] Choose the first real pipeline (open decision below).
-- [ ] Choose the install route (open decision below).
+- [x] Choose the first real pipeline (2026-11-19: Nisi).
+- [x] Choose the install route (2026-11-19: CLI, LOU-29).
 - [ ] Connect one independent, named pipeline and render it, then meet the exit test above. The adaptor and reader-boundary mutants in ADAPTOR-V0 show the guess-a-status rule holds for the two spikes; they are not that exit test.
 - [ ] Test the Nisi journal adaptor on a journal from a real Nisi run, not only synthetic and generated ones; regenerate the corpus when Nisi changes.
 - [ ] Refresh the pitch page's figures. It is dated v0.5e, 2026-11-07, and still quotes "63 adaptor checks" and "21 renderer checks" and says the spec has no failed state, where ADAPTOR-V0 now records 245 combined adaptor checks, 27 renderer checks and spec v0.6.
@@ -67,12 +67,12 @@ Exit: a gated run completes, and a cancelled or refused one leaves the pipeline 
 
 Exit: three people who did not build it install it on their own pipeline and reach a first view without help.
 
-- [ ] Replace the placeholder install line and connect path with real ones. Nothing installs today.
+- [x] Replace the placeholder install line and connect path with real ones. Done 2026-11-19: the install line and connect path run the read-only CLI from a clone; no package is published yet.
 
 ### Decisions needed from the owner
 
-- [ ] Install route: CLI, MCP, or an MCP-Apps-style host. MCP alone does not draw a UI; the pitch's landscape section suggests riding an existing protocol.
-- [ ] First real pipeline: not chosen. Spec decision 5 keeps the lab separate from AGIW Suite, so a pipeline outside it is the default; the AGIW inference monitor fits only if that separation is lifted, and the lab notes disagree on it.
+- [x] Install route: decided 2026-11-19 (LOU-29): a read-only CLI, `spec/adaptor/jaryo-cli.mjs`. MCP alone does not draw a UI; an MCP or MCP-Apps front end can be added later on `spec/adaptor/sources.mjs`.
+- [x] First real pipeline: decided 2026-11-19 (LOU-29): Nisi, outside AGIW Suite as spec decision 5 requires, connected read-only through its run journal.
 - [ ] Maintenance ownership: confirm who maintains the spec, screens and tests.
 - [ ] Confirm or reject FAILED as a sixth state (spec v0.6).
 - [ ] Go or hold. The pitch recommends going to stage 1 and then stage 2, and building no more screens before a real pipeline is connected.
