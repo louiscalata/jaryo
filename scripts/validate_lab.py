@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from catalog_wording import PHRASE_FILES, catalog_wording_errors  # noqa: E402 - scripts dir added above
+from catalog_wording import PHRASE_FILES, catalog_wording_errors
 
 LAB = Path(__file__).resolve().parents[1]
 ROOT = LAB.parent

@@ -73,8 +73,7 @@ def catalog_wording_errors(fams: list[dict], curated_n: int, texts: dict[str, st
         )
     if counts["legacy"] + counts["red"] != optional_n:
         errors.append(
-            f"README breakdown counts {counts['legacy']} legacy + "
-            f"{counts['red']} Red != {optional_n} optional"
+            f"README breakdown counts {counts['legacy']} legacy + {counts['red']} Red != {optional_n} optional"
         )
     sentence = breakdown_sentence(fams, curated_n)
     if sentence not in texts.get("README.md", ""):
