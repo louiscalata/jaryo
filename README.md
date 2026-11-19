@@ -47,6 +47,7 @@ Open `index.html` in your browser. Embedded data loads if fetch is blocked.
 
 ```bash
 python3 scripts/validate_lab.py
+python3 scripts/test_validate_catalog_wording.py
 python3 scripts/export_tokens.py --check
 python3 scripts/test_export_tokens.py
 python3 scripts/check_assets.py

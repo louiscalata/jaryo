@@ -62,8 +62,9 @@ and explicit full-result layout expectations. Its optional
 a saved baseline module; baseline agreement is separate from oracle evidence.
 
 Expected:
-- `data/curated-85.json` has 17 families and 85 options, with unique IDs. The extended catalog's first 17 families use those same option records.
-- Extended catalog phrase, in the README and the lab: 19 families · 85 curated + 12 optional (97 total)
+- `data/curated-85.json` has 17 families and 85 curated options, with unique IDs. The extended catalog's first 17 families use those same option records.
+- Extended catalog phrase, in README.md, AGENTS.md, REVIEW-CHECKLIST.md, docs/CHECKS.md and the lab: 19 families · 85 curated + 12 optional (97 total)
+- The README breakdown sentence (monochrome, color, legacy, Red) is derived from the extended catalog counts and must appear there.
 - The family list in `index.html` matches `data/curated-extended.json`
 - The summary line starts at `0 / 19 families chosen (validated)`
 - F18 and F19 are present. Each of their options has provenance, and each F19 option has its color tokens.
