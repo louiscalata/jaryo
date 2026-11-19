@@ -10,7 +10,7 @@ Report the checks that actually ran. Use NOT_RUN with a reason for missing evide
 - `data/curated-85.json` — the original 17 families and 85 option records. Preserve their IDs and content; whole-file byte identity is not a historical guarantee.
 - `data/curated-extended.json` and `data/embedded-data.js` — 19 families and 97 options, including optional F18/F19.
 - `assets/fonts/` — bundled IBM Plex Sans, IBM Plex Mono and Libre Baskerville. Licenses: `docs/FONTS.md`.
-- `tokens/jaryo.tokens.json` — DTCG-inspired string-value export from `scripts/export_tokens.py`. An export is not proof that another product consumes it.
+- `tokens/jaryo.tokens.json` — DTCG 2025.10 conformant export (Design Tokens Format Module 2025.10 and Color Module 2025.10) from `scripts/export_tokens.py`. An export is not proof that another product consumes it.
 - `scripts/` — validators, persistence and DOM tests; browser scripts are under `scripts/browser/`.
 - `spec/` — interface spec, reference screens, read-only adaptor and sample pipeline, separate from the lab.
 - `spec/HASHES.txt` — tracked reference, adaptor and pipeline hashes. Update it in the same change that edits a listed file.

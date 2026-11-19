@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Write tokens/jaryo.tokens.json from the custom properties in lab.css.
 
-DTCG-inspired string-value export; this is not a DTCG 2025.10 conformant file.
-Groups: color (light and dark), dimension, fontFamily, fontWeight, typography.
+The file is DTCG 2025.10 conformant: Design Tokens Format Module 2025.10 and
+Color Module 2025.10.
+Groups: color (light and dark), dimension, letterSpacing, fontFamily,
+fontWeight, typography.
 Font stacks are copied from the CSS. This script does not choose a face.
+The --track* custom properties are em values. They are exported as numbers in
+the letterSpacing group because DTCG dimensions allow only px and rem.
 """
 
 from __future__ import annotations
@@ -61,16 +65,45 @@ def split_stack(raw: str) -> list[str]:
     return [p for p in parts if p]
 
 
+def round_number(number: float) -> int | float:
+    rounded = round(number, 4)
+    return int(rounded) if float(rounded).is_integer() else rounded
+
+
+def hex_digits(value: str) -> str:
+    digits = value.lstrip("#").lower()
+    if len(digits) == 3:
+        digits = "".join(digit * 2 for digit in digits)
+    return digits
+
+
 def color_token(value: str) -> dict:
-    return {"$type": "color", "$value": value.lower()}
+    digits = hex_digits(value)
+    components = [round_number(int(digits[i : i + 2], 16) / 255) for i in (0, 2, 4)]
+    return {
+        "$type": "color",
+        "$value": {"colorSpace": "srgb", "components": components, "hex": "#" + digits},
+    }
 
 
-def dimension_token(name: str, value: str) -> dict | None:
-    if re.fullmatch(r"-?\d+(?:\.\d+)?px", value) or re.fullmatch(r"-?\d+(?:\.\d+)?em", value):
-        return {"$type": "dimension", "$value": value}
-    if name.startswith("track") and value == "0":
-        return {"$type": "dimension", "$value": "0em"}
-    return None
+def dimension_value(number: float, unit: str) -> dict:
+    return {"value": round_number(number), "unit": unit}
+
+
+def dimension_token(value: str) -> dict | None:
+    match = re.fullmatch(r"(-?\d+(?:\.\d+)?)(px|rem)", value)
+    if not match:
+        return None
+    return {"$type": "dimension", "$value": dimension_value(float(match.group(1)), match.group(2))}
+
+
+def letter_spacing_token(value: str) -> dict | None:
+    if value == "0":
+        return {"$type": "number", "$value": 0}
+    match = re.fullmatch(r"(-?\d+(?:\.\d+)?)em", value)
+    if not match:
+        return None
+    return {"$type": "number", "$value": round_number(float(match.group(1)))}
 
 
 def build() -> dict:
@@ -84,6 +117,7 @@ def build() -> dict:
     colors_light = {}
     colors_dark = {}
     dimensions = {}
+    letter_spacing = {}
     families = {}
     weights = {}
 
@@ -91,8 +125,14 @@ def build() -> dict:
         if re.fullmatch(r"#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?", value):
             colors_light[name] = color_token(value)
             continue
-        dim = dimension_token(name, value)
-        if dim and (name.startswith("fs-") or name.startswith("s") or name in {"hit"} or name.startswith("track")):
+        if name.startswith("track"):
+            spacing = letter_spacing_token(value)
+            if spacing is None:
+                raise SystemExit(f"unclassified letter spacing declaration: --{name}: {value}")
+            letter_spacing[name] = spacing
+            continue
+        dim = dimension_token(value)
+        if dim and (name.startswith("fs-") or name.startswith("s") or name == "hit"):
             dimensions[name] = dim
             continue
         if name.startswith("fw-") and value.isdigit():
@@ -115,6 +155,10 @@ def build() -> dict:
         else:
             raise SystemExit(f"unclassified dark declaration: --{name}: {value}")
 
+    def track_px(spacing: str, size: str) -> dict:
+        em = letter_spacing[spacing]["$value"]
+        return dimension_value(em * dimensions[size]["$value"]["value"], "px")
+
     typography = {
         "body": {
             "$type": "typography",
@@ -122,7 +166,7 @@ def build() -> dict:
                 "fontFamily": "{fontFamily.font-reading}",
                 "fontSize": "{dimension.fs-3}",
                 "fontWeight": "{fontWeight.regular}",
-                "letterSpacing": "{dimension.track-body}",
+                "letterSpacing": track_px("track-body", "fs-3"),
                 "lineHeight": float(light["lh-body"]),
             },
         },
@@ -132,7 +176,7 @@ def build() -> dict:
                 "fontFamily": "{fontFamily.font-reading}",
                 "fontSize": "{dimension.fs-4}",
                 "fontWeight": "{fontWeight.bold}",
-                "letterSpacing": "{dimension.track-display-tight}",
+                "letterSpacing": track_px("track-display-tight", "fs-4"),
                 "lineHeight": float(light["lh-tight"]),
             },
         },
@@ -142,7 +186,7 @@ def build() -> dict:
                 "fontFamily": "{fontFamily.font-display}",
                 "fontSize": "{dimension.fs-display}",
                 "fontWeight": "{fontWeight.bold}",
-                "letterSpacing": "{dimension.track-display}",
+                "letterSpacing": track_px("track-display", "fs-display"),
                 "lineHeight": float(light["lh-tight"]),
             },
         },
@@ -152,7 +196,7 @@ def build() -> dict:
                 "fontFamily": "{fontFamily.font-machine}",
                 "fontSize": "{dimension.fs-1}",
                 "fontWeight": "{fontWeight.semibold}",
-                "letterSpacing": "{dimension.track-meta}",
+                "letterSpacing": track_px("track-meta", "fs-1"),
                 "lineHeight": float(light["lh-ui"]),
             },
         },
@@ -162,6 +206,10 @@ def build() -> dict:
         "$description": DESCRIPTION,
         "color": {"light": colors_light, "dark": colors_dark},
         "dimension": dimensions,
+        "letterSpacing": {
+            "$description": "Letter spacing in em: multiply by the font size.",
+            **letter_spacing,
+        },
         "fontFamily": families,
         "fontWeight": weights,
         "typography": typography,
