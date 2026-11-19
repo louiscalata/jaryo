@@ -95,3 +95,23 @@ for (const [label, mut] of [
   ok(!d.getElementById("inspector").classList.contains("sheet-open") && !d.querySelector(".spine-wrap").inert, "widen: sheet closed, inert cleared");
   ok(br.open && inChooser(), "widen: focus stays in the open chooser");
 }
+// 3. FAILED step semantics
+{
+  const w = boot(), d = w.document;
+  const audit = d.querySelector('.step[data-id="audit_log"]');
+  ok(audit && audit.textContent.includes("[FAILED]") && audit.classList.contains("is-failed") && !audit.classList.contains("is-blocked"), "failed chip and class");
+  ok((audit.getAttribute("aria-label") || "").startsWith("Write audit log, step id audit_log, failed"), "failed aria-label starts with state word");
+  ok(d.getElementById("opt-list").hidden, "a failed step outside the optional group leaves the group collapsed");
+  d.getElementById("run-top").click();
+  ok(/1 failed/.test(d.getElementById("rev-body").textContent), "review mentions 1 failed");
+}
+// 3b. F12: a FAILED step inside the optional group also forces it open
+{
+  const w = boot(s => s.replace('h: "Keep a 1% sample", state: "ok"', 'h: "Keep a 1% sample", state: "failed", reason: "ran and failed: exit 2"')), d = w.document;
+  ok(!d.getElementById("opt-list").hidden && d.getElementById("ug").getAttribute("aria-disabled") === "true", "F12 failed inside → open and cannot hide");
+}
+// 3c. FAILED shape (spec §5): an unfilled row with one solid 6px rule, no hatch strip; BLOCKED keeps its double rule
+{
+  ok(/\.step\.is-failed, \.spine\.has-sel \.step\.is-failed \{ border-left: 6px solid var\(--blocked\); \}/.test(src) && /\.spine \.step\.is-failed\[aria-pressed="true"\] \{ border-left: 6px solid var\(--sel-blocked\); \}/.test(src), "FAILED rule is 6px solid, and drawn in sel-blocked when selected");
+  ok(!/\.step\.is-failed[^{]*\{[^}]*background/.test(src) && !/\.step\.is-failed::before/.test(src) && /\.st\.failed \{ color: var\(--blocked\); \}/.test(src), "FAILED row has no fill and no hatch, and its chip is an outline");
+}

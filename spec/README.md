@@ -8,7 +8,7 @@ It is separate from the interactive design lab at the repository root. The lab c
 
 | Path | What |
 |---|---|
-| `docs/spec/JARYO-INTERFACE-SPEC.md` | Interface spec v0.6 (the reference screens are still v0.5e) |
+| `docs/spec/JARYO-INTERFACE-SPEC.md` | Interface spec v0.6, confirmed by the owner on 2026-11-19 (both reference screens show a FAILED step) |
 | `reference/` | App and website reference screens, plus static adaptor views |
 | `adaptor/` | Two read-only adaptors (`manifest + run record → view`): `jaryo-adaptor.mjs` for the sample pipeline's record, `nisi-journal-adaptor.mjs` for a Nisi run journal (unauthenticated: the hash chain is not checked), and `differential-nisi.mjs`, which judges the Nisi adaptor against Nisi's own reader |
 | `pipeline/` | Sample pipeline, token and contrast checks, fixtures (including the Nisi differential corpus), and recorded runs |
