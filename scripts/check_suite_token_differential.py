@@ -23,11 +23,10 @@ from pathlib import Path
 
 sys.setrecursionlimit(20000)
 MAXB = 4 * 1024 * 1024
-HEX36 = re.compile(r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\Z")
+EXPORT_HEX = re.compile(r"#[0-9a-f]{6}\Z")
 HEXANY = re.compile(r"#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\Z")
-DIM = re.compile(r"-?[0-9]+(?:\.[0-9]+)?(?:px|em)\Z")
 JSWS = "\t\n\x0b\x0c\r                  　﻿"
-GROUPS = {"color", "dimension", "fontFamily", "fontWeight", "typography"}
+GROUPS = ("color", "dimension", "letterSpacing", "fontFamily", "fontWeight", "typography")
 
 
 class InvalidInputError(Exception):
@@ -128,11 +127,42 @@ def ref(group, v):
     return isinstance(v, str) and re.match(r"\{" + group + r"\.[A-Za-z0-9-]+\}\Z", v) is not None
 
 
+def valid_dimension(v):
+    return (
+        isinstance(v, dict)
+        and set(v) == {"value", "unit"}
+        and isinstance(v["value"], float)
+        and v["unit"] in ("px", "rem")
+    )
+
+
+def valid_color(v):
+    return (
+        isinstance(v, dict)
+        and set(v) == {"colorSpace", "components", "hex"}
+        and v["colorSpace"] == "srgb"
+        and isinstance(v["hex"], str)
+        and EXPORT_HEX.fullmatch(v["hex"]) is not None
+        and isinstance(v["components"], list)
+        and len(v["components"]) == 3
+        and all(
+            isinstance(c, float) and 0 <= c <= 1 and abs(c * 255 - int(v["hex"][i : i + 2], 16)) <= 0.5
+            for i, c in zip((1, 3, 5), v["components"])
+        )
+    )
+
+
+def token_type(group):
+    return "number" if group == "letterSpacing" else group
+
+
 def valid(group, v):
     if group == "color":
-        return isinstance(v, str) and HEX36.match(v) is not None
+        return valid_color(v)
     if group == "dimension":
-        return isinstance(v, str) and DIM.match(v) is not None
+        return valid_dimension(v)
+    if group == "letterSpacing":
+        return isinstance(v, float)
     if group == "fontFamily":
         if isinstance(v, list):
             return len(v) > 0 and all(isinstance(i, str) and i.strip(JSWS) != "" for i in v)
@@ -146,7 +176,7 @@ def valid(group, v):
             ref("fontFamily", v["fontFamily"])
             and ref("dimension", v["fontSize"])
             and ref("fontWeight", v["fontWeight"])
-            and ref("dimension", v["letterSpacing"])
+            and (valid_dimension(v["letterSpacing"]) or ref("dimension", v["letterSpacing"]))
             and isinstance(v["lineHeight"], float)
             and v["lineHeight"] > 0
         )
@@ -167,13 +197,13 @@ def export_inventory(root):
         if "$value" in node or "$type" in node:
             if (
                 "$value" not in node
-                or not strict(node.get("$type"), group)
+                or not strict(node.get("$type"), token_type(group))
                 or not valid(group, node["$value"])
                 or set(node) - {"$type", "$value", "$description"}
                 or depth != (3 if group == "color" else 2)
             ):
                 raise InvalidInputError("token")
-            out.append({"name": name, "type": group, "value": node["$value"]})
+            out.append({"name": name, "type": node["$type"], "value": node["$value"]})
             return
         keys = sorted((k for k in node if k != "$description"), key=u16)
         if not keys:
@@ -181,6 +211,8 @@ def export_inventory(root):
         for k in keys:
             if k.startswith("$"):
                 raise InvalidInputError("prop")
+            if group == "color" and depth == 1 and k not in ("light", "dark"):
+                raise InvalidInputError("theme")
             visit(node[k], ptr(name, k), group, depth + 1)
 
     desc(root)
@@ -239,16 +271,16 @@ def names(left, right, color):
         if n not in b:
             continue
         x, y = a[n], b[n]
-        exact = strict(x["value"], y["value"])
-        normalized = exact or (
-            (color or x["type"] == "color") and norm(x["value"]) is not None and norm(x["value"]) == norm(y["value"])
-        )
+        export_value = x["value"]["hex"] if color else x["value"]
+        exact = strict(export_value, y["value"])
+        hex_color = norm(x["value"]["hex"]) if x["type"] == "color" else None
+        normalized = exact or (hex_color is not None and hex_color == norm(y["value"]))
         row = {"name": n}
         if color:
             row.update(exportName=x["src"], suiteName=y["src"])
         else:
             row.update(exportType=x["type"], suiteType=y["type"])
-        row.update(exportValue=x["value"], suiteValue=y["value"], exact=exact, normalized=normalized)
+        row.update(exportValue=export_value, suiteValue=y["value"], exact=exact, normalized=normalized)
         shared.append(row)
     return {
         "shared": shared,
@@ -432,15 +464,19 @@ class CorpusGenerator:
             "fontFamily": "{fontFamily." + self.random.choice(["sans", "mono-1", "A"]) + "}",
             "fontSize": "{dimension.fs-" + str(self.random.randint(1, 5)) + "}",
             "fontWeight": "{fontWeight.regular}",
-            "letterSpacing": "{dimension.track}",
+            "letterSpacing": self.random.choice(["{dimension.track}", self.valid_value("dimension")]),
             "lineHeight": self.random.choice([1, 1.5, 1.25, 2, 0.5]),
         }
 
     def valid_value(self, group):
         if group == "color":
-            return self.hexcolor()
+            hex_color = self.hexcolor(6).lower()
+            components = [round(int(hex_color[i : i + 2], 16) / 255, 4) for i in (1, 3, 5)]
+            return {"colorSpace": "srgb", "components": components, "hex": hex_color}
         if group == "dimension":
-            return self.random.choice(["44px", "0px", "-1px", "0.5em", "-0.01em", "12.25px", "100em"])
+            return {"value": self.random.choice([44, 0, -1, 12.25]), "unit": self.random.choice(["px", "rem"])}
+        if group == "letterSpacing":
+            return self.random.choice([0, -0.01, 0.06])
         if group == "fontFamily":
             return self.random.choice(
                 [["A"], ["A", "B"], ["IBM Plex Sans", "sans-serif"], "{fontFamily.sans}", "{fontFamily.a-1}"]
@@ -450,7 +486,7 @@ class CorpusGenerator:
         return self.typography()
 
     def token(self, group):
-        t = {"$type": group, "$value": self.valid_value(group)}
+        t = {"$type": token_type(group), "$value": self.valid_value(group)}
         if self.random.random() < 0.15:
             t["$description"] = self.random.choice(["d", "", "x" * 5])
         if self.random.random() < 0.5:
@@ -461,13 +497,11 @@ class CorpusGenerator:
         root = {}
         if self.random.random() < 0.3:
             root["$description"] = "fixture"
-        groups = self.random.sample(
-            ["color", "dimension", "fontFamily", "fontWeight", "typography"], self.random.randint(1, 5)
-        )
+        groups = self.random.sample(GROUPS, self.random.randint(1, len(GROUPS)))
         for g in groups:
             if g == "color":
                 node = {}
-                for th in self.random.sample(THEMES, self.random.randint(1, 3)):
+                for th in self.random.sample(["light", "dark"], self.random.randint(1, 2)):
                     node[th] = {n: self.token("color") for n in self.random.sample(NAMES, self.random.randint(1, 5))}
                     if self.random.random() < 0.1:
                         node[th]["$description"] = "theme"
@@ -567,7 +601,8 @@ class CorpusGenerator:
                     pal[th] = {}
                     for n, t in names.items():
                         if self.random.random() < 0.8 and isinstance(t, dict):
-                            pal[th][n] = self.variant(t.get("$value"))
+                            value = t.get("$value")
+                            pal[th][n] = self.variant(value.get("hex") if isinstance(value, dict) else value)
                     for n in self.random.sample(NAMES + ["text", "accent"], self.random.randint(0, 2)):
                         pal[th].setdefault(n, self.hexcolor(self.random.choice([3, 4, 6, 8])))
         for th in self.random.sample(THEMES, self.random.randint(0, 2)):
@@ -702,7 +737,7 @@ class CorpusGenerator:
                     pass
             suite = self.gen_suite(exp)
             yield {"e": self.maybe_textmut(self.dump(exp), 0.08), "s": self.maybe_textmut(self.dump(suite), 0.12)}
-        good = json.dumps({"color": {"light": {"bg": {"$type": "color", "$value": "#fff"}}}})
+        good = json.dumps({"color": {"light": {"bg": self.token("color")}}})
         for _ in range(parser_count):
             base = self.dump(self.rand_json(0) if self.random.random() < 0.7 else self.gen_suite(self.gen_export()))
             for _ in range(self.random.randint(1, 3)):

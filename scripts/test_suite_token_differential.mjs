@@ -9,7 +9,9 @@ import { fileURLToPath } from 'node:url';
 import { compareTokenTexts } from './suite_token_differential.mjs';
 
 const token = (type, value) => ({ $type: type, $value: value });
-const colorExport = (value = '#ffffff') => ({ color: { light: { bg: token('color', value) } } });
+const srgb = hex => ({ colorSpace: 'srgb', components: [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255), hex });
+const dimension = (value, unit = 'px') => ({ value, unit });
+const colorExport = (value = srgb('#ffffff')) => ({ color: { light: { bg: token('color', value) } } });
 const colorSuite = (value = '#ffffff') => ({ palette: { light: { bg: value } } });
 const text = (value) => JSON.stringify(value);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
@@ -17,7 +19,7 @@ const typography = () => ({
   fontFamily: '{fontFamily.sans}',
   fontSize: '{dimension.fs-3}',
   fontWeight: '{fontWeight.regular}',
-  letterSpacing: '{dimension.track-body}',
+  letterSpacing: dimension(-0.16),
   lineHeight: 1.5,
 });
 
@@ -37,6 +39,10 @@ export function runChecks(compare) {
   const reject = (left, right) => assert.throws(() => compare(left, right), (error) => error.code === 'INVALID_INPUT');
   const goodExport = text(colorExport());
   const goodSuite = text(colorSuite());
+  const missingColorValue = [
+    ['', 'object'], ['/colorSpace', 'string'], ['/components', 'array'],
+    ['/components/0', 'number'], ['/components/1', 'number'], ['/components/2', 'number'], ['/hex', 'string'],
+  ].map(([suffix, exportType]) => ({ name: `/color/light/bg/$value${suffix}`, exportType, suiteType: 'missing' }));
 
   check('case-only color normalization and complete base report', () => {
     const result = report(colorExport(), colorSuite('#FFFFFF'));
@@ -45,7 +51,7 @@ export function runChecks(compare) {
       export: { sha256: digest(goodExport) },
       suite: { sha256: digest(text(colorSuite('#FFFFFF'))) },
     });
-    assert.deepEqual(result.inventories.export, [{ name: '/color/light/bg', type: 'color', value: '#ffffff' }]);
+    assert.deepEqual(result.inventories.export, [{ name: '/color/light/bg', type: 'color', value: srgb('#ffffff') }]);
     assert.deepEqual(result.inventories.suite, [{ name: '/palette/light/bg', type: 'string', value: '#FFFFFF' }]);
     assert.deepEqual(result.rawNames, {
       shared: [], exportOnly: ['/color/light/bg'], suiteOnly: ['/palette/light/bg'],
@@ -63,7 +69,7 @@ export function runChecks(compare) {
       { name: '/color/light', exportType: 'object', suiteType: 'missing' },
       { name: '/color/light/bg', exportType: 'object', suiteType: 'missing' },
       { name: '/color/light/bg/$type', exportType: 'string', suiteType: 'missing' },
-      { name: '/color/light/bg/$value', exportType: 'string', suiteType: 'missing' },
+      ...missingColorValue,
       { name: '/palette', exportType: 'missing', suiteType: 'object' },
       { name: '/palette/light', exportType: 'missing', suiteType: 'object' },
       { name: '/palette/light/bg', exportType: 'missing', suiteType: 'string' },
@@ -71,11 +77,11 @@ export function runChecks(compare) {
     assert.deepEqual(result.summary, {
       exportTokens: 1, suiteLeaves: 1, rawShared: 0, rawExact: 0, rawNormalized: 0,
       exportOnly: 1, suiteOnly: 1, colorShared: 1, colorExact: 0, colorNormalized: 1,
-      colorDifferent: 0, colorExportOnly: 0, colorSuiteOnly: 0, structuralDifferences: 8,
+      colorDifferent: 0, colorExportOnly: 0, colorSuiteOnly: 0, structuralDifferences: 14,
     });
   });
   check('exact color match', () => {
-    const result = report(colorExport('#abc'), colorSuite('#abc'));
+    const result = report(colorExport(srgb('#aabbcc')), colorSuite('#aabbcc'));
     assert.equal(result.colors.shared[0].exact, true);
     assert.equal(result.colors.shared[0].normalized, true);
     assert.equal(result.summary.colorExact, 1);
@@ -83,26 +89,32 @@ export function runChecks(compare) {
     assert.equal(result.summary.colorDifferent, 0);
   });
   check('different colors remain different', () => {
-    const result = report(colorExport('#010203'), colorSuite('#010204'));
+    const result = report(colorExport(srgb('#010203')), colorSuite('#010204'));
     assert.equal(result.colors.shared[0].exact, false);
     assert.equal(result.colors.shared[0].normalized, false);
     assert.equal(result.summary.colorNormalized, 0);
     assert.equal(result.summary.colorDifferent, 1);
   });
+  check('components within half a channel step preserve the export hex', () => {
+    const value = { colorSpace: 'srgb', components: [0.5, 0.5, 0], hex: '#7f8000' };
+    const result = report(colorExport(value), colorSuite('#7f8000'));
+    assert.deepEqual(result.inventories.export[0].value, value);
+    assert.equal(result.colors.shared[0].exact, true);
+  });
   for (const [name, left, right, normalized] of [
-    ['short and long hex', '#AbC', '#aabbcc', true],
-    ['opaque long alpha', '#abc', '#aabbccff', true],
-    ['opaque short alpha', '#abc', '#abcf', true],
-    ['alpha retained', '#abc', '#abce', false],
-    ['black is not white', '#000', '#fff', false],
+    ['short and long hex', '#aabbcc', '#AbC', true],
+    ['opaque long alpha', '#aabbcc', '#aabbccff', true],
+    ['opaque short alpha', '#aabbcc', '#abcf', true],
+    ['alpha retained', '#aabbcc', '#abce', false],
+    ['black is not white', '#000000', '#fff', false],
     ['hex digits are not discarded', '#123456', '#123457', false],
   ]) check(name, () => {
-    const result = report(colorExport(left), colorSuite(right));
+    const result = report(colorExport(srgb(left)), colorSuite(right));
     assert.equal(result.colors.shared[0].normalized, normalized);
     assert.equal(result.summary.colorDifferent, normalized ? 0 : 1);
   });
   check('missing color name', () => {
-    const left = colorExport(); left.color.light.fg = token('color', '#000');
+    const left = colorExport(); left.color.light.fg = token('color', srgb('#000000'));
     const result = report(left, colorSuite());
     assert.deepEqual(result.colors.exportOnly, ['/light/fg']);
     assert.deepEqual(result.colors.suiteOnly, []);
@@ -129,7 +141,7 @@ export function runChecks(compare) {
     assert.deepEqual(result.colors.suiteOnly, ['/light/BG']);
   });
   check('semantic aliases are not guessed', () => {
-    const result = report({ color: { light: { fg: token('color', '#000') } } }, { palette: { light: { text: '#000' } } });
+    const result = report({ color: { light: { fg: token('color', srgb('#000000')) } } }, { palette: { light: { text: '#000' } } });
     assert.deepEqual(result.colors.shared, []);
     assert.deepEqual(result.colors.exportOnly, ['/light/fg']);
     assert.deepEqual(result.colors.suiteOnly, ['/light/text']);
@@ -137,7 +149,7 @@ export function runChecks(compare) {
   check('secondary color mapping excludes dimension and font tokens', () => {
     const left = {
       ...colorExport(),
-      dimension: { hit: token('dimension', '44px') },
+      dimension: { hit: token('dimension', dimension(44)) },
       fontFamily: { sans: token('fontFamily', ['A', 'B']) },
     };
     const result = report(left, { metadata: 'fixture' });
@@ -149,10 +161,10 @@ export function runChecks(compare) {
     assert.equal(result.summary.exportTokens, 3);
   });
   check('exact raw name and normalized raw color', () => {
-    const result = report(colorExport('#abc'), { color: { light: { bg: '#AABBCC' } } });
+    const result = report(colorExport(srgb('#aabbcc')), { color: { light: { bg: '#AABBCC' } } });
     assert.deepEqual(result.rawNames.shared, [{
       name: '/color/light/bg', exportType: 'color', suiteType: 'string',
-      exportValue: '#abc', suiteValue: '#AABBCC', exact: false, normalized: true,
+      exportValue: srgb('#aabbcc'), suiteValue: '#AABBCC', exact: false, normalized: true,
     }]);
     assert.equal(result.summary.rawShared, 1);
     assert.equal(result.summary.rawExact, 0);
@@ -163,14 +175,14 @@ export function runChecks(compare) {
     assert.deepEqual(result.colors.suiteOnly, []);
   });
   check('raw exact values are counted', () => {
-    const result = report({ dimension: { hit: token('dimension', '44px') } }, { dimension: { hit: '44px' } });
+    const result = report({ letterSpacing: { track: token('number', 0.06) } }, { letterSpacing: { track: 0.06 } });
     assert.equal(result.rawNames.shared[0]?.exact, true);
     assert.equal(result.rawNames.shared[0]?.normalized, true);
     assert.equal(result.summary.rawExact, 1);
     assert.equal(result.summary.rawNormalized, 1);
   });
   check('raw dimensions are not normalized', () => {
-    const result = report({ dimension: { hit: token('dimension', '44px') } }, { dimension: { hit: '44PX' } });
+    const result = report({ dimension: { hit: token('dimension', dimension(44)) } }, { dimension: { hit: '44px' } });
     assert.equal(result.rawNames.shared[0]?.exact, false);
     assert.equal(result.rawNames.shared[0]?.normalized, false);
   });
@@ -193,18 +205,21 @@ export function runChecks(compare) {
   check('all export groups and description metadata', () => {
     const left = {
       $description: 'Fixture export.',
-      color: { light: { bg: { ...token('color', '#fff'), $description: 'Fixture color.' } } },
-      dimension: { tracking: token('dimension', '-0.01em') },
+      color: { light: { bg: { ...token('color', srgb('#ffffff')), $description: 'Fixture color.' } } },
+      dimension: { size: token('dimension', dimension(1.25, 'rem')) },
+      letterSpacing: { $description: 'em multipliers', tracking: token('number', -0.01) },
       fontFamily: { sans: token('fontFamily', ['A']), alias: token('fontFamily', '{fontFamily.sans}') },
       fontWeight: { regular: token('fontWeight', 400) },
       typography: { body: token('typography', typography()) },
     };
     const result = report(left, { metadata: 'fixture' });
-    assert.equal(result.summary.exportTokens, 6);
+    assert.equal(result.summary.exportTokens, 7);
     assert.deepEqual(result.inventories.export.map((entry) => entry.name), [
-      '/color/light/bg', '/dimension/tracking', '/fontFamily/alias', '/fontFamily/sans', '/fontWeight/regular', '/typography/body',
+      '/color/light/bg', '/dimension/size', '/fontFamily/alias', '/fontFamily/sans', '/fontWeight/regular', '/letterSpacing/tracking', '/typography/body',
     ]);
-    assert.equal(result.inventories.export[5].value.lineHeight, 1.5);
+    assert.deepEqual(result.inventories.export[1].value, dimension(1.25, 'rem'));
+    assert.deepEqual(result.inventories.export[5], { name: '/letterSpacing/tracking', type: 'number', value: -0.01 });
+    assert.deepEqual(result.inventories.export[6].value, typography());
   });
   check('Suite null, arrays and empty objects remain leaves', () => {
     const result = report(colorExport(), { z: null, b: [1, { a: true }], a: {}, n: 1, truth: false });
@@ -219,18 +234,18 @@ export function runChecks(compare) {
     assert.deepEqual(result.rawNames.suiteOnly, ['/a', '/b', '/n', '/truth', '/z']);
   });
   check('JSON pointer escaping prevents name collisions', () => {
-    const left = { dimension: { 'a/b~c': token('dimension', '1px') } };
+    const left = { dimension: { 'a/b~c': token('dimension', dimension(1)) } };
     const right = { dimension: { 'a/b~c': '1px', 'a~1b~0c': '2px' } };
     const result = report(left, right);
     assert.equal(result.rawNames.shared[0]?.name, '/dimension/a~1b~0c');
     assert.deepEqual(result.rawNames.suiteOnly, ['/dimension/a~01b~00c']);
   });
   check('color pointer escaping', () => {
-    const result = report({ color: { 'light/a': { '~bg': token('color', '#fff') } } }, { palette: { 'light/a': { '~bg': '#fff' } } });
-    assert.equal(result.colors.shared[0].name, '/light~1a/~0bg');
+    const result = report({ color: { light: { 'a/~bg': token('color', srgb('#ffffff')) } } }, { palette: { light: { 'a/~bg': '#fff' } } });
+    assert.equal(result.colors.shared[0].name, '/light/a~1~0bg');
   });
   check('sorted report names and deterministic serialized output', () => {
-    const left = { color: { light: { z: token('color', '#111'), a: token('color', '#fff') }, dark: { a: token('color', '#000') } } };
+    const left = { color: { light: { z: token('color', srgb('#111111')), a: token('color', srgb('#ffffff')) }, dark: { a: token('color', srgb('#000000')) } } };
     const right = { palette: { light: { z: '#111', a: '#FFF' }, dark: { a: '#000' } }, z: 1, a: 2 };
     const result = report(left, right);
     assert.equal(JSON.stringify(result), JSON.stringify(report(left, right)));
@@ -242,8 +257,8 @@ export function runChecks(compare) {
     assert.deepEqual(result.rawNames.suiteOnly, [...result.rawNames.suiteOnly].sort());
   });
   check('inventories sort full escaped pointers across nested siblings', () => {
-    const result = report({ color: { a: { x: token('color', '#fff') }, 'a-b': { x: token('color', '#000') } } }, { a: { x: 1 }, 'a-b': 2 });
-    assert.deepEqual(result.inventories.export.map(entry => entry.name), ['/color/a-b/x', '/color/a/x']);
+    const result = report({ color: { light: { '/': token('color', srgb('#ffffff')), a: token('color', srgb('#000000')) } } }, { a: { x: 1 }, 'a-b': 2 });
+    assert.deepEqual(result.inventories.export.map(entry => entry.name), ['/color/light/a', '/color/light/~1']);
     assert.deepEqual(result.inventories.suite.map(entry => entry.name), ['/a-b', '/a/x']);
   });
   check('palette prefix requires a path separator', () => {
@@ -264,7 +279,7 @@ export function runChecks(compare) {
     assert.equal(result.inventories.export[0].value, value);
   });
   check('group description is metadata', () => {
-    const result = report({ dimension: { $description: 'd', a: token('dimension', '1px') } }, { a: 1 });
+    const result = report({ dimension: { $description: 'd', a: token('dimension', dimension(1)) } }, { a: 1 });
     assert.equal(result.summary.exportTokens, 1);
     assert.equal(result.inventories.export[0].name, '/dimension/a');
   });
@@ -287,9 +302,9 @@ export function runChecks(compare) {
     assert.deepEqual(result.structure, [
       { name: '/color/light/bg', exportType: 'object', suiteType: 'string' },
       { name: '/color/light/bg/$type', exportType: 'string', suiteType: 'missing' },
-      { name: '/color/light/bg/$value', exportType: 'string', suiteType: 'missing' },
+      ...missingColorValue,
     ]);
-    assert.equal(result.summary.structuralDifferences, 3);
+    assert.equal(result.summary.structuralDifferences, 9);
   });
   check('structure records array lengths and missing descendants', () => {
     const left = { fontFamily: { sans: token('fontFamily', ['A', 'B']) } };
@@ -301,7 +316,7 @@ export function runChecks(compare) {
     ]);
   });
   check('same structure does not imply equal values', () => {
-    const result = report(colorExport('#fff'), colorExport('#000'));
+    const result = report(colorExport(), colorExport(srgb('#000000')));
     assert.deepEqual(result.structure, []);
     assert.equal(result.summary.structuralDifferences, 0);
     assert.equal(result.summary.rawShared, 0);
@@ -330,27 +345,38 @@ export function runChecks(compare) {
 
   for (const [name, value] of [
     ['empty export', {}], ['description-only export', { $description: 'No tokens.' }],
-    ['unknown group', { motion: { duration: token('dimension', '1px') } }],
+    ['unknown group', { motion: { duration: token('dimension', dimension(1)) } }],
     ['empty group', { dimension: {} }], ['primitive group', { dimension: 1 }],
     ['array group', { dimension: [] }], ['null group', { dimension: null }],
     ['missing value', { dimension: { hit: { $type: 'dimension' } } }],
-    ['missing type', { dimension: { hit: { $value: '44px' } } }],
-    ['extra leaf field', { dimension: { hit: { ...token('dimension', '44px'), extra: true } } }],
-    ['wrong group type', { dimension: { hit: token('color', '#fff') } }],
+    ['missing type', { dimension: { hit: { $value: dimension(44) } } }],
+    ['extra leaf field', { dimension: { hit: { ...token('dimension', dimension(44)), extra: true } } }],
+    ['wrong group type', { dimension: { hit: token('color', dimension(44)) } }],
     ['wrong description type', { ...colorExport(), $description: 1 }],
-    ['wrong leaf description type', { color: { light: { bg: { ...token('color', '#fff'), $description: 1 } } } }],
+    ['wrong leaf description type', { color: { light: { bg: { ...token('color', srgb('#ffffff')), $description: 1 } } } }],
     ['null value', { color: { light: { bg: token('color', null) } } }],
     ['color number', { color: { light: { bg: token('color', 123) } } }],
-    ['color alpha is outside export schema', colorExport('#abcd')],
-    ['long alpha is outside export schema', colorExport('#aabbccdd')],
+    ['legacy color string', colorExport('#ffffff')],
+    ['color alpha is outside export schema', colorExport({ ...srgb('#aabbcc'), hex: '#abcd' })],
+    ['long alpha is outside export schema', colorExport({ ...srgb('#aabbcc'), hex: '#aabbccdd' })],
+    ['short export hex', colorExport({ ...srgb('#aabbcc'), hex: '#abc' })],
+    ['uppercase export hex', colorExport({ ...srgb('#aabbcc'), hex: '#AABBCC' })],
+    ['hex disagrees with components', colorExport({ ...srgb('#aabbcc'), hex: '#aabbcd' })],
+    ['extra color property', colorExport({ ...srgb('#ffffff'), alpha: 1 })],
+    ['unsupported color space', colorExport({ ...srgb('#ffffff'), colorSpace: 'display-p3' })],
+    ['component outside unit interval', colorExport({ ...srgb('#ffffff'), components: [1, 1.001, 1] })],
     ['dimension number', { dimension: { hit: token('dimension', 44) } }],
-    ['dimension unit', { dimension: { hit: token('dimension', '44rem') } }],
-    ['dimension trailing content', { dimension: { hit: token('dimension', '44px;x') } }],
-    ['dimension leading content', { dimension: { hit: token('dimension', 'x44px') } }],
-    ['color token at shallow depth', { color: { bg: token('color', '#fff') } }],
-    ['dimension token at deep depth', { dimension: { a: { b: token('dimension', '1px') } } }],
+    ['em dimension', { dimension: { hit: token('dimension', dimension(0.06, 'em')) } }],
+    ['legacy dimension string', { dimension: { hit: token('dimension', '44px') } }],
+    ['dimension extra property', { dimension: { hit: token('dimension', { ...dimension(44), extra: 0 }) } }],
+    ['dimension nonnumeric value', { dimension: { hit: token('dimension', dimension('44')) } }],
+    ['letter spacing string', { letterSpacing: { track: token('number', '0.06') } }],
+    ['letter spacing boolean', { letterSpacing: { track: token('number', true) } }],
+    ['color token at shallow depth', { color: { light: token('color', srgb('#ffffff')) } }],
+    ['unsupported color theme', { color: { custom: { bg: token('color', srgb('#ffffff')) } } }],
+    ['dimension token at deep depth', { dimension: { a: { b: token('dimension', dimension(1)) } } }],
     ['empty group beside valid group', { ...colorExport(), dimension: {} }],
-    ['reserved group property', { color: { $x: { bg: token('color', '#fff') } } }],
+    ['reserved group property', { color: { light: { $x: token('color', srgb('#ffffff')) } } }],
     ['empty font array', { fontFamily: { sans: token('fontFamily', []) } }],
     ['empty font name', { fontFamily: { sans: token('fontFamily', ['']) } }],
     ['whitespace font name', { fontFamily: { sans: token('fontFamily', [' ']) } }],
@@ -373,10 +399,14 @@ export function runChecks(compare) {
     ['hostile markup', '<img src=x onerror=alert(1)>'],
     ['invalid hex length', '#fffff'], ['invalid hex digit', '#ggg'],
   ]) check(`reject ${name}`, () => {
-    reject(text(colorExport(value)), goodSuite);
+    reject(text(colorExport({ ...srgb('#ffffff'), hex: value })), goodSuite);
     reject(goodExport, text(colorSuite(value)));
   });
 
+  check('typography permits a dimension reference for letter spacing', () => {
+    const value = { ...typography(), letterSpacing: '{dimension.track-body}' };
+    assert.deepEqual(report({ typography: { body: token('typography', value) } }, { a: 1 }).inventories.export[0].value, value);
+  });
   for (const [field, value] of [
     ['fontFamily', '{dimension.sans}'], ['fontSize', 14], ['fontSize', ['{dimension.a}']], ['fontWeight', '{fontFamily.bold}'],
     ['letterSpacing', '0.06em'], ['lineHeight', '1.5'], ['lineHeight', 0], ['lineHeight', -1],
@@ -396,7 +426,7 @@ export function runChecks(compare) {
     ['empty palette theme', { palette: { light: {} } }], ['palette theme scalar', { palette: { light: 1 } }],
     ['palette theme array', { palette: { light: [] } }], ['nonempty palette theme array', { palette: { light: ['#fff'] } }],
     ['palette color array', { palette: { light: { bg: ['#fff'] } } }], ['palette color number', { palette: { light: { bg: 1 } } }],
-    ['palette color object', { palette: { light: { bg: token('color', '#fff') } } }],
+    ['palette color object', { palette: { light: { bg: srgb('#ffffff') } } }],
   ]) check(`reject ${name}`, () => reject(goodExport, text(value)));
 
   for (const [name, value] of [
@@ -422,10 +452,10 @@ export function runChecks(compare) {
     '{"outer":{"a":1,"a":2}}', '{"outer":[{"a":1,"a":2}]}',
   ]) check(`reject duplicate Suite keys ${value}`, () => reject(goodExport, value));
   check('reject duplicate export value', () => {
-    reject('{"color":{"light":{"bg":{"$type":"color","$value":"#fff","$value":"#000"}}}}', goodSuite);
+    reject(goodExport.replace('"$value":', `"$value":${text(srgb('#000000'))},"$value":`), goodSuite);
   });
   check('reject escaped duplicate export value', () => {
-    reject('{"color":{"light":{"bg":{"$type":"color","$value":"#fff","\\u0024value":"#000"}}}}', goodSuite);
+    reject(goodExport.replace('"$value":', `"$value":${text(srgb('#000000'))},"\\u0024value":`), goodSuite);
   });
   for (const key of ['__proto__', 'constructor', 'prototype']) {
     check(`reject dangerous key ${key}`, () => {
