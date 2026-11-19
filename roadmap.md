@@ -197,3 +197,6 @@ do not diagnose the hosted WebKit failure; its cause remains open above.
 Full Lab/spec suites, native CLI/FIFO checks, complete mutation campaigns,
 full-tree Ruff, exporter reruns, Node 22, browser/server checks, Suite contract
 execution, deployed consumption and current-head CI are NOT_RUN for this record.
+The Suite contract was executed on 2026-11-19
+([run record](docs/SUITE-TOKEN-DIFFERENTIAL.md#suite-contract-run-2026-11-19)).
+Deployed consumption stays NOT_RUN.
