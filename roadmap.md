@@ -41,7 +41,7 @@ Done, on pipelines this project wrote or generated:
 Not done:
 
 - [ ] Owner confirmation of spec v0.6. The spec header states v0.6 is "not yet reviewed or confirmed by the owner", and section 10 lists FAILED under "Proposed in v0.6". The 15 Codex rounds cover v0.5e only.
-- [ ] Show a FAILED step on the app reference screen. `spec/reference/index.html` and `spec/reference/hero.html` are still v0.5e and have no FAILED rendering; only the adaptor view pages do.
+- [x] Show a FAILED step on the app reference screen. Done 2026-11-19 (LOU-27): `spec/reference/index.html` and `spec/reference/hero.html` are v0.6 and show a failed step (Write audit log); spec v0.6 is confirmed by the owner.
 - [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
 - [x] Choose the first real pipeline (2026-11-19: Nisi).
 - [x] Choose the install route (2026-11-19: CLI, LOU-29).
@@ -197,3 +197,6 @@ do not diagnose the hosted WebKit failure; its cause remains open above.
 Full Lab/spec suites, native CLI/FIFO checks, complete mutation campaigns,
 full-tree Ruff, exporter reruns, Node 22, browser/server checks, Suite contract
 execution, deployed consumption and current-head CI are NOT_RUN for this record.
+The Suite contract was executed on 2026-11-19
+([run record](docs/SUITE-TOKEN-DIFFERENTIAL.md#suite-contract-run-2026-11-19)).
+Deployed consumption stays NOT_RUN.

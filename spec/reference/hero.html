@@ -95,11 +95,14 @@ h1 { font-family: var(--mono); font-size: clamp(30px, 6vw, 52px); line-height: 1
 fetch_orders   ok   1.9s
 dedupe_v2      ok   4.4s
 score_risk     ...
+audit_log      FAIL exit 1
 load_wh        ERR  no credential</pre></div>
       <span class="arrow" aria-hidden="true">→</span>
       <div><span class="lbl">After: Jaryo's view</span><pre>│ Fetch today's orders   ● [OK]
 │ Clean customer rows    ● [OK]
 │ Score order risk       ▶ [RUNNING]
+│ Write audit log        ✕ [FAILED]
+│   ran and failed: exit 1
 │ Load to warehouse      ✕ [BLOCKED]
 │   needs: warehouse credential</pre></div>
     </div>

@@ -96,15 +96,18 @@ a { color: inherit; }
 .st.ok { color: var(--ok); }
 .st.run { color: var(--run); }
 .st.blocked { color: var(--blocked); background: var(--blocked-bg); }
+.st.failed { color: var(--blocked); }
 .st.unknown { color: var(--unknown); border-style: dashed; }
 .st.review { color: var(--text); border-width: 2px; }
 .step[aria-pressed="true"] .st { background: var(--sel-fg); }
-/* blocked step: hatch strip + double rule + reason line (state grammar v4) */
+/* blocked step: hatch strip + double rule + reason line (state grammar v4); failed step (v0.6): unfilled row, single solid rule */
 .step.is-blocked { background: var(--blocked-bg); padding-left: 30px; }
 .step.is-blocked, .spine.has-sel .step.is-blocked { border-left: 6px double var(--blocked); }
 .step.is-blocked::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
   background: repeating-linear-gradient(135deg, transparent 0 4px, var(--blocked) 4px 5px); }
 .spine .step.is-blocked[aria-pressed="true"] { border-left: 6px double var(--sel-blocked); }
+.step.is-failed, .spine.has-sel .step.is-failed { border-left: 6px solid var(--blocked); }
+.spine .step.is-failed[aria-pressed="true"] { border-left: 6px solid var(--sel-blocked); }
 .spine .step.is-unknown[aria-pressed="true"] { border: 2px dashed var(--sel-fg); }
 .spine .step.is-unknown[aria-pressed="true"]::before { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--sel-sub) 4px 5px); }
 .step[aria-pressed="true"] .opt-tag { color: var(--sel-sub); }
@@ -280,12 +283,12 @@ dialog.review::backdrop { background: rgba(0,0,0,.72); }
     { id: "geo_enrich", h: "Add region from address", state: "ok", optional: true, in: ["dedupe_v2"], out: ["score_risk"], runs: [], binds: [["rows", "dedupe_v2.out"]] },
     { id: "sample_1pct", h: "Keep a 1% sample", state: "ok", optional: true, in: ["dedupe_v2"], out: [], runs: [], binds: [["rows", "dedupe_v2.out"]] },
     { id: "score_risk", h: "Score order risk", state: "run", in: ["dedupe_v2"], out: ["audit_log", "?u1"], runs: [["#42", "RUNNING", "—", "—"], ["#41", "OK", "31 s", "12,211"]], binds: [["rows", "dedupe_v2.out"], ["model", "risk-v3 (declared)"]], ticks: 3, run: "#42" },
-    { id: "audit_log", h: "Write audit log", state: "ok", branch: true, in: ["score_risk"], out: [], runs: [["#41", "OK", "0.6 s", "12,211"]], binds: [["events", "score_risk.out"]] },
+    { id: "audit_log", h: "Write audit log", state: "failed", branch: true, in: ["score_risk"], out: [], reason: "ran and failed: exit 1 (audit store full)", runs: [["#41", "FAILED", "0.6 s", "—"]], binds: [["events", "score_risk.out"]] },
     { id: "?u1", h: "Undiscovered step", state: "unknown", unknown: true, in: ["score_risk"], out: ["load_wh"], runs: null, binds: [] },
     { id: "load_wh", h: "Load to warehouse", state: "blocked", reason: "needs: warehouse credential (not set)", in: ["?u1"], out: [], runs: [], binds: [["rows", "?u1.out (unknown)"], ["credential", "— unset —"]] },
   ];
   const byId = Object.fromEntries(steps.map(s => [s.id, s]));
-  const STATE = { ok: ["ok", "● [OK]"], run: ["run", "▶ [RUNNING]"], blocked: ["blocked", "✕ [BLOCKED]"], unknown: ["unknown", "? [UNKNOWN]"] };
+  const STATE = { ok: ["ok", "● [OK]"], run: ["run", "▶ [RUNNING]"], blocked: ["blocked", "✕ [BLOCKED]"], failed: ["failed", "✕ [FAILED]"], unknown: ["unknown", "? [UNKNOWN]"] };
   // Screen readers should hear the word, not the glyph and brackets.
   const stateWord = k => STATE[k][1].slice(STATE[k][1].indexOf("[") + 1, -1).toLowerCase();
   const caps = { run: true, logs: true, retry: true, pause: false };
@@ -302,7 +305,7 @@ dialog.review::backdrop { background: rgba(0,0,0,.72); }
     const ticks = s.ticks != null ? `<span class="tick"><span aria-hidden="true">${"=".repeat(shown)}&gt;${"·".repeat(8 - shown)}</span> ${s.ticks} this run</span>` : "";
     const reason = s.reason ? `<span class="reason">${esc(s.reason)}</span>` : "";
     const opt = s.optional ? `<span class="opt-tag">optional · </span>` : "";
-    return `<button type="button" class="step${s.state === "blocked" ? " is-blocked" : ""}${s.unknown ? " is-unknown" : ""}" data-id="${esc(s.id)}" aria-pressed="false">
+    return `<button type="button" class="step${s.state === "blocked" ? " is-blocked" : ""}${s.state === "failed" ? " is-failed" : ""}${s.unknown ? " is-unknown" : ""}" data-id="${esc(s.id)}" aria-pressed="false">
       <span class="ports" aria-hidden="true"><span class="port in"></span><span class="port out"></span></span>
       <span class="h">${opt}${esc(s.h)}</span>
       <span class="t">${s.unknown ? "not declared by adaptor — edge seen in run log" : "step_id: " + esc(s.id)}</span>
@@ -321,8 +324,8 @@ dialog.review::backdrop { background: rgba(0,0,0,.72); }
   function renderSpine() {
     const main = steps.filter(s => !s.optional && !s.branch);
     const opts = steps.filter(s => s.optional);
-    // Owner 2026-11-07: a hidden group that holds a blocked / unknown / review step opens itself and says why
-    const attention = opts.filter(o => o.state === "blocked" || o.state === "unknown" || o.review);
+    // Owner 2026-11-07: a hidden group that holds a blocked / failed / unknown / review step opens itself and says why
+    const attention = opts.filter(o => o.state === "blocked" || o.state === "failed" || o.state === "unknown" || o.review);
     const forced = attention.length > 0;
     if (forced) showOptional = true;
     let html = "";
@@ -387,7 +390,7 @@ dialog.review::backdrop { background: rgba(0,0,0,.72); }
     let runs;
     if (s.runs === null) runs = `<div class="empty"><p>Unknown: the adaptor has not declared this step, so Jaryo cannot show its runs. Its existence is inferred from a run-log edge.</p><button class="btn">Show the log line</button></div>`;
     else if (!s.runs.length) runs = `<div class="empty"><p>${s.state === "blocked" ? "This step has never run: it is blocked (" + esc(s.reason.replace("needs: ", "")) + ")." : "This step has never run: it is optional and switched off."}</p><button class="btn">${s.state === "blocked" ? "Set warehouse credential" : "Turn step on"}</button></div>`;
-    else runs = `<div class="ledger-wrap" role="region" aria-label="Runs of ${esc(s.h)}" tabindex="0"><table class="ledger"><thead><tr><th scope="col">run</th><th scope="col">state</th><th scope="col">time</th><th scope="col">rows</th></tr></thead><tbody>${s.runs.map(r => `<tr${r[1] === "RUNNING" ? ' class="running"' : ""}><td>${esc(r[0])}</td><td class="stc"><span class="st ${r[1] === "OK" ? "ok" : "run"}">${r[1] === "OK" ? "● [OK]" : "▶ [RUNNING]"}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")}</tbody></table></div>`;
+    else runs = `<div class="ledger-wrap" role="region" aria-label="Runs of ${esc(s.h)}" tabindex="0"><table class="ledger"><thead><tr><th scope="col">run</th><th scope="col">state</th><th scope="col">time</th><th scope="col">rows</th></tr></thead><tbody>${s.runs.map(r => `<tr${r[1] === "RUNNING" ? ' class="running"' : ""}><td>${esc(r[0])}</td><td class="stc"><span class="st ${r[1] === "OK" ? "ok" : r[1] === "FAILED" ? "failed" : "run"}">${r[1] === "OK" ? "● [OK]" : r[1] === "FAILED" ? "✕ [FAILED]" : "▶ [RUNNING]"}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")}</tbody></table></div>`;
     el.innerHTML = `<h2 id="insp-h" tabindex="-1">${esc(s.h)}</h2><p class="sub">${s.unknown ? "undeclared · inferred" : "step_id: " + esc(s.id)}</p>
       <p><span class="st ${cls}">${word}</span>${s.reason ? `<span class="reason">${esc(s.reason)}</span>` : ""}</p>
       ${pager}
@@ -494,8 +497,9 @@ dialog.review::backdrop { background: rgba(0,0,0,.72); }
   // review gate for the consequential primary action
   function openReview(opener) {
     const blocked = steps.filter(s => s.state === "blocked").map(s => s.h);
+    const failed = steps.filter(s => s.state === "failed").map(s => s.h);
     const unknown = steps.filter(s => s.unknown).length;
-    $("#rev-body").textContent = `${steps.filter(s => !s.optional).length} steps will run. ${blocked.length} blocked (${blocked.join(", ")}); ${unknown} undiscovered step. The run will stop at the blocked step.`;
+    $("#rev-body").textContent = `${steps.filter(s => !s.optional).length} steps will run. ${blocked.length} blocked (${blocked.join(", ")}); ${failed.length} failed (${failed.join(", ")}); ${unknown} undiscovered step. The run will stop at the blocked step.`;
     const d = $("#review"); d.showModal(); $("#rev-cancel").focus();
     d.onclose = () => { (shown(opener) ? opener : visibleOpener()).focus(); };
   }
