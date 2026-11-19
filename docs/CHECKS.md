@@ -130,12 +130,16 @@ screen readers, layout, hardware and current-head CI require separate evidence.
 
 ## Sample-record security checks
 
-`adaptor-security.test.mjs` passes 70/70 checks; the pre-change adaptor at
-`aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1` passes 20/70 and fails 50. The
-focused cases cover corrupt suffixes and per-step recovery, foreign results,
-restarts, heartbeat and clock isolation, credential redaction, private keys,
-ordinary filenames and empty tails. Renderer checks also require credentials
-to be absent from the generated page source and the inspector DOM.
+`adaptor-security.test.mjs` passes 72/72 checks. Against the original 70
+checks, the pre-change adaptor at `aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1`
+passed 20/70 and failed 50. The focused cases cover corrupt suffixes and
+per-step recovery, foreign results, restarts, heartbeat and clock isolation,
+credential redaction, private keys (including PGP blocks and orphan END
+markers), ordinary filenames and empty tails. The runner redacts its full
+output before keeping the last six lines, redacts every failure and review
+reason, and writes run files owner-only (LOU-56). Renderer checks also
+require credentials to be absent from the generated page source and the
+inspector DOM.
 
 For the differential command above, save the pre-change adaptor in a private
 temporary directory and set `BASELINE_ADAPTOR` to that module:
@@ -145,7 +149,7 @@ git show aa39fc000de5de11dfdfb1073fc7f1b9b5ea74d1:spec/adaptor/jaryo-adaptor.mjs
 BASELINE_ADAPTOR="$TMPDIR/baseline-adaptor.mjs"
 ```
 
-The mutation mode catches 48/48 distinct behavioral mutants by named assertion
+The mutation mode catches 51/51 distinct behavioral mutants by named assertion
 failures after successful imports. Syntax errors, failed imports and
 non-assertion failures are rejected as invalid witnesses. The differential
 mode uses a separate stream model for 8,192 hostile records, whole-view
