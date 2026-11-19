@@ -5,14 +5,16 @@ import { createHash } from "node:crypto"; import { fileURLToPath, pathToFileURL 
 import { suite, NOW, HB, manifest, start, result, stamp, lines } from "./adaptor-security.test.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = name => { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : null; };
-const mode = process.argv[2], adaptorPath = path.join(root, "adaptor/jaryo-adaptor.mjs");
+const mode = process.argv[2], adaptorPath = path.join(root, "adaptor/jaryo-adaptor.mjs"), redactPath = path.join(root, "adaptor/redact.mjs");
 const real = await import(pathToFileURL(adaptorPath).href), report = { mode };
 const output = arg("--output"), save = () => { if (output) fs.writeFileSync(output, JSON.stringify(report, null, 2) + "\n"); };
 
 if (mode === "mutations") {
   assert.ok(suite(real).every(r => r.pass), "unmodified adaptor must pass before mutation");
-  const source = fs.readFileSync(adaptorPath, "utf8"), mutants = [];
-  const add = (name, from, to) => mutants.push({ name, from, to });
+  // The redaction rules live in adaptor/redact.mjs, which the adaptor imports; each mutant changes one of the two files.
+  const sources = { adaptor: fs.readFileSync(adaptorPath, "utf8"), redact: fs.readFileSync(redactPath, "utf8") }, mutants = [];
+  const add = (name, from, to, file = "adaptor") => mutants.push({ name, from, to, file });
+  const addRedact = (name, from, to) => add(name, from, to, "redact");
   add("lose every corrupt boundary", "invalidAt.push(events.length);", "");
   add("lose malformed JSON boundary", "catch { invalidAt.push(events.length);", "catch {");
   add("lose non-object boundary", "else { invalidAt.push(events.length);", "else {");
@@ -43,29 +45,37 @@ if (mode === "mutations") {
   add("trust future timestamps", "lastTs !== null && lastTs > now + SKEW_MS", "false");
   add("reject exact stale boundary", "now - ts <= hb.staleAfterMs", "now - ts < hb.staleAfterMs");
   add("reject exact future boundary", "lastTs > now + SKEW_MS", "lastTs >= now + SKEW_MS");
-  add("turn empty output into blank output", "if (!tail.length) return [];", "");
+  addRedact("turn empty output into blank output", "if (!tail.length) return [];", "");
   add("emit raw credentials", "redactTail(record.tail)", "record.tail");
   add("select lines before redaction", "redactTail(record.tail)", "redactTail(record.tail.slice(-TAIL_LINES))");
-  const replacements = source.split("\n").filter(line => line.trimStart().startsWith(".replace(") && line.includes("REDACTED"));
+  const replacements = sources.redact.split("\n").filter(line => line.trimStart().startsWith(".replace(") && line.includes("REDACTED"));
   assert.equal(replacements.length, 5);
-  for (const [i, line] of replacements.entries()) add(`omit redaction family ${i + 1}`, line, "");
+  for (const [i, line] of replacements.entries()) addRedact(`omit redaction family ${i + 1}`, line, "");
   const key = replacements[0], auth = replacements[1], assignments = replacements[3], providers = replacements[4];
-  add("private keys only match one line", key, key.replace("[\\s\\S]*?", ".*?"));
-  add("require private key end marker", key, key.replace("|$)", ")"));
-  add("ignore typed private keys", key, key.replaceAll("[A-Z0-9 ]*", ""));
-  add("redact Basic only", auth, auth.replace("Bearer|Basic", "Basic"));
-  add("redact Bearer only", auth, auth.replace("Bearer|Basic", "Bearer"));
-  add("case-sensitive credential names", assignments, assignments.replace("/gi,", "/g,"));
-  add("treat filenames as credential names", assignments, assignments.replaceAll("[\\w-]*", "[\\w.-]*"));
-  add("omit API-key assignments", assignments, assignments.replace("|api[_-]?key", ""));
-  add("omit provider sk credentials", providers, providers.replace("sk-[A-Za-z0-9_-]{16,}|", ""));
-  add("omit provider github credentials", providers, providers.replace("github_pat_[A-Za-z0-9_]{16,}|", ""));
+  addRedact("private keys only match one line", key, key.replace("[\\s\\S]*?", ".*?"));
+  addRedact("require private key end marker", key, key.replace("|$)", ")"));
+  addRedact("ignore typed private keys", key, key.replaceAll("[A-Z0-9 ]*", ""));
+  addRedact("ignore PGP private key blocks", key, key.replaceAll("(?: BLOCK)?", ""));
+  addRedact("omit orphan key end markers", "return redactOrphanKeyEnds(blocks)", "return blocks");
+  addRedact("keep key lines before an orphan end marker", "out.length && KEY_BODY_LINE.test(", "false && KEY_BODY_LINE.test(");
+  addRedact("redact Basic only", auth, auth.replace("Bearer|Basic", "Basic"));
+  addRedact("redact Bearer only", auth, auth.replace("Bearer|Basic", "Bearer"));
+  addRedact("case-sensitive credential names", assignments, assignments.replace("/gi,", "/g,"));
+  addRedact("treat filenames as credential names", assignments, assignments.replaceAll("[\\w-]*", "[\\w.-]*"));
+  addRedact("omit API-key assignments", assignments, assignments.replace("|api[_-]?key", ""));
+  addRedact("omit provider sk credentials", providers, providers.replace("sk-[A-Za-z0-9_-]{16,}|", ""));
+  addRedact("omit provider github credentials", providers, providers.replace("github_pat_[A-Za-z0-9_]{16,}|", ""));
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "adaptor-security-mutants-")), hashes = new Set(), results = [];
   for (const [i, m] of mutants.entries()) {
+    const source = sources[m.file];
     assert.ok(source.includes(m.from), `mutation anchor: ${m.name}`);
-    const changed = source.split(m.from).join(m.to), hash = createHash("sha256").update(changed).digest("hex");
+    const changed = source.split(m.from).join(m.to), hash = createHash("sha256").update(m.file + "\0" + changed).digest("hex");
     assert.ok(!hashes.has(hash), `distinct mutation: ${m.name}`); hashes.add(hash);
-    const file = path.join(scratch, `${i + 1}.mjs`); fs.writeFileSync(file, changed);
+    // Each mutant gets its own directory holding both modules, so the adaptor's relative import resolves.
+    const dir = path.join(scratch, String(i + 1)); fs.mkdirSync(dir);
+    fs.writeFileSync(path.join(dir, "jaryo-adaptor.mjs"), m.file === "adaptor" ? changed : sources.adaptor);
+    fs.writeFileSync(path.join(dir, "redact.mjs"), m.file === "redact" ? changed : sources.redact);
+    const file = path.join(dir, "jaryo-adaptor.mjs");
     let failures = [], invalid = null;
     try {
       const checks = suite(await import(pathToFileURL(file).href));

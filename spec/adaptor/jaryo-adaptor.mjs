@@ -3,6 +3,7 @@
 // with one named exception: RUNNING, which needs an open run, a heartbeat the manifest declares, and a recent, valid
 // timestamp from that step (see ADAPTOR-V0.md).
 import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
+import { redactTail } from "./redact.mjs";
 
 export const KNOWN_ACTIONS = ["run", "pause", "retry", "cancel", "logs", "deploy", "delete", "overwrite"];
 // retry can re-execute consequential steps, so it is reviewed too.
@@ -36,18 +37,8 @@ export function readRecord(text) {
   return { events, warnings, invalidAt };
 }
 
-// Remove common credential forms before selecting lines or truncating text.
-// Joining first keeps multiline private keys from escaping the tail window.
-function redactTail(tail) {
-  if (!tail.length) return [];
-  return tail.map(String).join("\n")
-    .replace(/-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z0-9 ]*PRIVATE KEY-----|$)/g, "[REDACTED PRIVATE KEY]")
-    .replace(/\b(Bearer|Basic)\s+[A-Za-z0-9+/_=.-]+/gi, "$1 [REDACTED]")
-    .replace(/([a-z][a-z\d+.-]*:\/\/)[^\s/:@]+:[^\s/@]+@/gi, "$1[REDACTED]@")
-    .replace(/(\b[\w-]*(?:token|secret|password|passwd|api[_-]?key|authorization|credential|private[_-]?key|access[_-]?key)[\w-]*["']?\s*[:=]\s*)(?:"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|[^\s,;]+)/gi, "$1[REDACTED]")
-    .replace(/\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|(?:AKIA|ASIA)[A-Z0-9]{16}|xox[baprs]-[A-Za-z0-9-]{10,})\b/g, "[REDACTED]")
-    .split("\n");
-}
+// redactTail (adaptor/redact.mjs) removes common credential forms before lines are selected or text is truncated.
+// It joins the tail first, so multiline private keys cannot escape the tail window.
 
 function normalise(manifest, warnings) {
   const m = manifest && typeof manifest === "object" ? manifest : {};

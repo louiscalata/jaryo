@@ -234,6 +234,7 @@ const src = fs.readFileSync(adaptorPath, "utf8");
 // Mutants are written to a temporary directory with a copy of jaryo-adaptor.mjs, so their relative import resolves.
 const mtmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-nj-mut-"));
 fs.copyFileSync(path.join(root, "adaptor/jaryo-adaptor.mjs"), path.join(mtmp, "jaryo-adaptor.mjs"));
+fs.copyFileSync(path.join(root, "adaptor/redact.mjs"), path.join(mtmp, "redact.mjs"));
 const MUTANTS = [
   ["show OK because the footer is present", `state = "UNKNOWN"; reason = "no journal entry for this step in the latest run";`, `state = footer ? "OK" : "UNKNOWN"; reason = null;`],
   ["copy every Nisi state", `if (Object.prototype.hasOwnProperty.call(COPIED, e.state)) {`, `if (typeof e.state === "string" && e.state !== "RUNNING") {`],
