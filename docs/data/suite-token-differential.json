@@ -2,7 +2,7 @@
   "schema": "jaryo-suite-token-differential/v1",
   "sources": {
     "export": {
-      "sha256": "bd464e747a2461defd3810f977079d93e3475879358a77ddc8e17be04db88493"
+      "sha256": "7d23cf27ee6eac5d322263cb929f6fe72c5b9a4a3bd8e10e10ffe64919fead22"
     },
     "suite": {
       "sha256": "619a1f91378c6073e92d1a0382297e66e5e7df16de7e7551015df0ed08e1563c"
@@ -22,289 +22,579 @@
     "colorDifferent": 5,
     "colorExportOnly": 26,
     "colorSuiteOnly": 28,
-    "structuralDifferences": 449
+    "structuralDifferences": 695
   },
   "inventories": {
     "export": [
       {
         "name": "/color/dark/bg",
         "type": "color",
-        "value": "#0c0c0c"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0471,
+            0.0471,
+            0.0471
+          ],
+          "hex": "#0c0c0c"
+        }
       },
       {
         "name": "/color/dark/border",
         "type": "color",
-        "value": "#f0f0f0"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9412,
+            0.9412,
+            0.9412
+          ],
+          "hex": "#f0f0f0"
+        }
       },
       {
         "name": "/color/dark/chip",
         "type": "color",
-        "value": "#121212"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0706,
+            0.0706,
+            0.0706
+          ],
+          "hex": "#121212"
+        }
       },
       {
         "name": "/color/dark/fg",
         "type": "color",
-        "value": "#f0f0f0"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9412,
+            0.9412,
+            0.9412
+          ],
+          "hex": "#f0f0f0"
+        }
       },
       {
         "name": "/color/dark/fg2",
         "type": "color",
-        "value": "#d9d9d9"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.851,
+            0.851,
+            0.851
+          ],
+          "hex": "#d9d9d9"
+        }
       },
       {
         "name": "/color/dark/focus",
         "type": "color",
-        "value": "#ffd75e"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            0.8431,
+            0.3686
+          ],
+          "hex": "#ffd75e"
+        }
       },
       {
         "name": "/color/dark/focus-halo",
         "type": "color",
-        "value": "#0c0c0c"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0471,
+            0.0471,
+            0.0471
+          ],
+          "hex": "#0c0c0c"
+        }
       },
       {
         "name": "/color/dark/hair",
         "type": "color",
-        "value": "#6b6b6b"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4196,
+            0.4196,
+            0.4196
+          ],
+          "hex": "#6b6b6b"
+        }
       },
       {
         "name": "/color/dark/hover",
         "type": "color",
-        "value": "#242424"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1412,
+            0.1412,
+            0.1412
+          ],
+          "hex": "#242424"
+        }
       },
       {
         "name": "/color/dark/inv-bg",
         "type": "color",
-        "value": "#f0f0f0"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9412,
+            0.9412,
+            0.9412
+          ],
+          "hex": "#f0f0f0"
+        }
       },
       {
         "name": "/color/dark/inv-fg",
         "type": "color",
-        "value": "#0c0c0c"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0471,
+            0.0471,
+            0.0471
+          ],
+          "hex": "#0c0c0c"
+        }
       },
       {
         "name": "/color/dark/muted",
         "type": "color",
-        "value": "#ababab"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6706,
+            0.6706,
+            0.6706
+          ],
+          "hex": "#ababab"
+        }
       },
       {
         "name": "/color/dark/red",
         "type": "color",
-        "value": "#f62131"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9647,
+            0.1294,
+            0.1922
+          ],
+          "hex": "#f62131"
+        }
       },
       {
         "name": "/color/dark/red-on",
         "type": "color",
-        "value": "#0c0c0c"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0471,
+            0.0471,
+            0.0471
+          ],
+          "hex": "#0c0c0c"
+        }
       },
       {
         "name": "/color/dark/rule",
         "type": "color",
-        "value": "#f0f0f0"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9412,
+            0.9412,
+            0.9412
+          ],
+          "hex": "#f0f0f0"
+        }
       },
       {
         "name": "/color/dark/surface",
         "type": "color",
-        "value": "#121212"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0706,
+            0.0706,
+            0.0706
+          ],
+          "hex": "#121212"
+        }
       },
       {
         "name": "/color/dark/surface-2",
         "type": "color",
-        "value": "#1a1a1a"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.102,
+            0.102,
+            0.102
+          ],
+          "hex": "#1a1a1a"
+        }
       },
       {
         "name": "/color/light/bg",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/border",
         "type": "color",
-        "value": "#000000"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "hex": "#000000"
+        }
       },
       {
         "name": "/color/light/chip",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/fg",
         "type": "color",
-        "value": "#000000"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "hex": "#000000"
+        }
       },
       {
         "name": "/color/light/fg2",
         "type": "color",
-        "value": "#1f1f1f"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1216,
+            0.1216,
+            0.1216
+          ],
+          "hex": "#1f1f1f"
+        }
       },
       {
         "name": "/color/light/focus",
         "type": "color",
-        "value": "#000000"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "hex": "#000000"
+        }
       },
       {
         "name": "/color/light/focus-halo",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/hair",
         "type": "color",
-        "value": "#8a8a8a"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5412,
+            0.5412,
+            0.5412
+          ],
+          "hex": "#8a8a8a"
+        }
       },
       {
         "name": "/color/light/hover",
         "type": "color",
-        "value": "#ebebeb"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9216,
+            0.9216,
+            0.9216
+          ],
+          "hex": "#ebebeb"
+        }
       },
       {
         "name": "/color/light/inv-bg",
         "type": "color",
-        "value": "#000000"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "hex": "#000000"
+        }
       },
       {
         "name": "/color/light/inv-fg",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/muted",
         "type": "color",
-        "value": "#4d4d4d"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.302,
+            0.302,
+            0.302
+          ],
+          "hex": "#4d4d4d"
+        }
       },
       {
         "name": "/color/light/red",
         "type": "color",
-        "value": "#c21a27"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7608,
+            0.102,
+            0.1529
+          ],
+          "hex": "#c21a27"
+        }
       },
       {
         "name": "/color/light/red-on",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/rule",
         "type": "color",
-        "value": "#000000"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "hex": "#000000"
+        }
       },
       {
         "name": "/color/light/surface",
         "type": "color",
-        "value": "#ffffff"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "hex": "#ffffff"
+        }
       },
       {
         "name": "/color/light/surface-2",
         "type": "color",
-        "value": "#f4f4f4"
+        "value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9569,
+            0.9569,
+            0.9569
+          ],
+          "hex": "#f4f4f4"
+        }
       },
       {
         "name": "/dimension/fs-0",
         "type": "dimension",
-        "value": "11px"
+        "value": {
+          "value": 11,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-1",
         "type": "dimension",
-        "value": "12px"
+        "value": {
+          "value": 12,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-2",
         "type": "dimension",
-        "value": "13px"
+        "value": {
+          "value": 13,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-3",
         "type": "dimension",
-        "value": "14px"
+        "value": {
+          "value": 14,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-4",
         "type": "dimension",
-        "value": "16px"
+        "value": {
+          "value": 16,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-5",
         "type": "dimension",
-        "value": "20px"
+        "value": {
+          "value": 20,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-6",
         "type": "dimension",
-        "value": "24px"
+        "value": {
+          "value": 24,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-7",
         "type": "dimension",
-        "value": "32px"
+        "value": {
+          "value": 32,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/fs-display",
         "type": "dimension",
-        "value": "48px"
+        "value": {
+          "value": 48,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/hit",
         "type": "dimension",
-        "value": "44px"
+        "value": {
+          "value": 44,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s1",
         "type": "dimension",
-        "value": "4px"
+        "value": {
+          "value": 4,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s2",
         "type": "dimension",
-        "value": "8px"
+        "value": {
+          "value": 8,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s3",
         "type": "dimension",
-        "value": "12px"
+        "value": {
+          "value": 12,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s4",
         "type": "dimension",
-        "value": "16px"
+        "value": {
+          "value": 16,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s5",
         "type": "dimension",
-        "value": "24px"
+        "value": {
+          "value": 24,
+          "unit": "px"
+        }
       },
       {
         "name": "/dimension/s6",
         "type": "dimension",
-        "value": "32px"
-      },
-      {
-        "name": "/dimension/track",
-        "type": "dimension",
-        "value": "0.06em"
-      },
-      {
-        "name": "/dimension/track-body",
-        "type": "dimension",
-        "value": "0em"
-      },
-      {
-        "name": "/dimension/track-display",
-        "type": "dimension",
-        "value": "0.04em"
-      },
-      {
-        "name": "/dimension/track-display-tight",
-        "type": "dimension",
-        "value": "-0.01em"
-      },
-      {
-        "name": "/dimension/track-meta",
-        "type": "dimension",
-        "value": "0.06em"
-      },
-      {
-        "name": "/dimension/track-open",
-        "type": "dimension",
-        "value": "0.12em"
+        "value": {
+          "value": 32,
+          "unit": "px"
+        }
       },
       {
         "name": "/fontFamily/font-display",
@@ -372,13 +662,46 @@
         "value": 600
       },
       {
+        "name": "/letterSpacing/track",
+        "type": "number",
+        "value": 0.06
+      },
+      {
+        "name": "/letterSpacing/track-body",
+        "type": "number",
+        "value": 0
+      },
+      {
+        "name": "/letterSpacing/track-display",
+        "type": "number",
+        "value": 0.04
+      },
+      {
+        "name": "/letterSpacing/track-display-tight",
+        "type": "number",
+        "value": -0.01
+      },
+      {
+        "name": "/letterSpacing/track-meta",
+        "type": "number",
+        "value": 0.06
+      },
+      {
+        "name": "/letterSpacing/track-open",
+        "type": "number",
+        "value": 0.12
+      },
+      {
         "name": "/typography/body",
         "type": "typography",
         "value": {
           "fontFamily": "{fontFamily.font-reading}",
           "fontSize": "{dimension.fs-3}",
           "fontWeight": "{fontWeight.regular}",
-          "letterSpacing": "{dimension.track-body}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
           "lineHeight": 1.5
         }
       },
@@ -389,7 +712,10 @@
           "fontFamily": "{fontFamily.font-display}",
           "fontSize": "{dimension.fs-display}",
           "fontWeight": "{fontWeight.bold}",
-          "letterSpacing": "{dimension.track-display}",
+          "letterSpacing": {
+            "value": 1.92,
+            "unit": "px"
+          },
           "lineHeight": 1.2
         }
       },
@@ -400,7 +726,10 @@
           "fontFamily": "{fontFamily.font-machine}",
           "fontSize": "{dimension.fs-1}",
           "fontWeight": "{fontWeight.semibold}",
-          "letterSpacing": "{dimension.track-meta}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
           "lineHeight": 1.35
         }
       },
@@ -411,7 +740,10 @@
           "fontFamily": "{fontFamily.font-reading}",
           "fontSize": "{dimension.fs-4}",
           "fontWeight": "{fontWeight.bold}",
-          "letterSpacing": "{dimension.track-display-tight}",
+          "letterSpacing": {
+            "value": -0.16,
+            "unit": "px"
+          },
           "lineHeight": 1.2
         }
       }
@@ -1320,12 +1652,6 @@
       "/dimension/s4",
       "/dimension/s5",
       "/dimension/s6",
-      "/dimension/track",
-      "/dimension/track-body",
-      "/dimension/track-display",
-      "/dimension/track-display-tight",
-      "/dimension/track-meta",
-      "/dimension/track-open",
       "/fontFamily/font-display",
       "/fontFamily/font-machine",
       "/fontFamily/font-reading",
@@ -1335,6 +1661,12 @@
       "/fontWeight/bold",
       "/fontWeight/regular",
       "/fontWeight/semibold",
+      "/letterSpacing/track",
+      "/letterSpacing/track-body",
+      "/letterSpacing/track-display",
+      "/letterSpacing/track-display-tight",
+      "/letterSpacing/track-meta",
+      "/letterSpacing/track-open",
       "/typography/body",
       "/typography/display",
       "/typography/meta",
@@ -1797,6 +2129,36 @@
     },
     {
       "name": "/color/dark/bg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/bg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1812,6 +2174,36 @@
     },
     {
       "name": "/color/dark/border/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/border/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1827,6 +2219,36 @@
     },
     {
       "name": "/color/dark/chip/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/chip/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1842,6 +2264,36 @@
     },
     {
       "name": "/color/dark/fg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1857,6 +2309,36 @@
     },
     {
       "name": "/color/dark/fg2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/fg2/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1877,6 +2359,36 @@
     },
     {
       "name": "/color/dark/focus-halo/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus-halo/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1887,6 +2399,36 @@
     },
     {
       "name": "/color/dark/focus/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/focus/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1902,6 +2444,36 @@
     },
     {
       "name": "/color/dark/hair/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hair/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1917,6 +2489,36 @@
     },
     {
       "name": "/color/dark/hover/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/hover/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1932,6 +2534,36 @@
     },
     {
       "name": "/color/dark/inv-bg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-bg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1947,6 +2579,36 @@
     },
     {
       "name": "/color/dark/inv-fg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/inv-fg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1962,6 +2624,36 @@
     },
     {
       "name": "/color/dark/muted/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/muted/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1982,6 +2674,36 @@
     },
     {
       "name": "/color/dark/red-on/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red-on/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -1992,6 +2714,36 @@
     },
     {
       "name": "/color/dark/red/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/red/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2007,6 +2759,36 @@
     },
     {
       "name": "/color/dark/rule/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/rule/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2027,6 +2809,36 @@
     },
     {
       "name": "/color/dark/surface-2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface-2/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2037,6 +2849,36 @@
     },
     {
       "name": "/color/dark/surface/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/dark/surface/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2057,6 +2899,36 @@
     },
     {
       "name": "/color/light/bg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/bg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2072,6 +2944,36 @@
     },
     {
       "name": "/color/light/border/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/border/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2087,6 +2989,36 @@
     },
     {
       "name": "/color/light/chip/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/chip/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2102,6 +3034,36 @@
     },
     {
       "name": "/color/light/fg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2117,6 +3079,36 @@
     },
     {
       "name": "/color/light/fg2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/fg2/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2137,6 +3129,36 @@
     },
     {
       "name": "/color/light/focus-halo/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus-halo/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2147,6 +3169,36 @@
     },
     {
       "name": "/color/light/focus/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/focus/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2162,6 +3214,36 @@
     },
     {
       "name": "/color/light/hair/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hair/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2177,6 +3259,36 @@
     },
     {
       "name": "/color/light/hover/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/hover/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2192,6 +3304,36 @@
     },
     {
       "name": "/color/light/inv-bg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-bg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2207,6 +3349,36 @@
     },
     {
       "name": "/color/light/inv-fg/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/inv-fg/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2222,6 +3394,36 @@
     },
     {
       "name": "/color/light/muted/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/muted/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2242,6 +3444,36 @@
     },
     {
       "name": "/color/light/red-on/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red-on/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2252,6 +3484,36 @@
     },
     {
       "name": "/color/light/red/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/red/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2267,6 +3529,36 @@
     },
     {
       "name": "/color/light/rule/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/rule/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2287,6 +3579,36 @@
     },
     {
       "name": "/color/light/surface-2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface-2/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2297,6 +3619,36 @@
     },
     {
       "name": "/color/light/surface/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/colorSpace",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/components",
+      "exportType": "array",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/components/0",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/components/1",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/components/2",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/color/light/surface/$value/hex",
       "exportType": "string",
       "suiteType": "missing"
     },
@@ -2317,7 +3669,17 @@
     },
     {
       "name": "/dimension/fs-0/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-0/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-0/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2332,7 +3694,17 @@
     },
     {
       "name": "/dimension/fs-1/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-1/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-1/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2347,7 +3719,17 @@
     },
     {
       "name": "/dimension/fs-2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-2/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-2/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2362,7 +3744,17 @@
     },
     {
       "name": "/dimension/fs-3/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-3/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-3/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2377,7 +3769,17 @@
     },
     {
       "name": "/dimension/fs-4/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-4/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-4/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2392,7 +3794,17 @@
     },
     {
       "name": "/dimension/fs-5/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-5/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-5/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2407,7 +3819,17 @@
     },
     {
       "name": "/dimension/fs-6/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-6/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-6/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2422,7 +3844,17 @@
     },
     {
       "name": "/dimension/fs-7/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-7/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-7/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2437,7 +3869,17 @@
     },
     {
       "name": "/dimension/fs-display/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-display/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/fs-display/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2452,7 +3894,17 @@
     },
     {
       "name": "/dimension/hit/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/hit/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/hit/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2467,7 +3919,17 @@
     },
     {
       "name": "/dimension/s1/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s1/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s1/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2482,7 +3944,17 @@
     },
     {
       "name": "/dimension/s2/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s2/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s2/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2497,7 +3969,17 @@
     },
     {
       "name": "/dimension/s3/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s3/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s3/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2512,7 +3994,17 @@
     },
     {
       "name": "/dimension/s4/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s4/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s4/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2527,7 +4019,17 @@
     },
     {
       "name": "/dimension/s5/$value",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s5/$value/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/dimension/s5/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -2542,97 +4044,17 @@
     },
     {
       "name": "/dimension/s6/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track",
       "exportType": "object",
       "suiteType": "missing"
     },
     {
-      "name": "/dimension/track-body",
-      "exportType": "object",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-body/$type",
+      "name": "/dimension/s6/$value/unit",
       "exportType": "string",
       "suiteType": "missing"
     },
     {
-      "name": "/dimension/track-body/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display",
-      "exportType": "object",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display-tight",
-      "exportType": "object",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display-tight/$type",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display-tight/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display/$type",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-display/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-meta",
-      "exportType": "object",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-meta/$type",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-meta/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-open",
-      "exportType": "object",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-open/$type",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track-open/$value",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track/$type",
-      "exportType": "string",
-      "suiteType": "missing"
-    },
-    {
-      "name": "/dimension/track/$value",
-      "exportType": "string",
+      "name": "/dimension/s6/$value/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -3029,6 +4451,106 @@
       "name": "/interaction/unknownHatch",
       "exportType": "missing",
       "suiteType": "string"
+    },
+    {
+      "name": "/letterSpacing",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/$description",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-body",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-body/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-body/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display-tight",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display-tight/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display-tight/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-display/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-meta",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-meta/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-meta/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-open",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-open/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track-open/$value",
+      "exportType": "number",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track/$type",
+      "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/letterSpacing/track/$value",
+      "exportType": "number",
+      "suiteType": "missing"
     },
     {
       "name": "/logoSelection",
@@ -3682,7 +5204,17 @@
     },
     {
       "name": "/typography/body/$value/letterSpacing",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/letterSpacing/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/body/$value/letterSpacing/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -3722,7 +5254,17 @@
     },
     {
       "name": "/typography/display/$value/letterSpacing",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/letterSpacing/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/display/$value/letterSpacing/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -3762,7 +5304,17 @@
     },
     {
       "name": "/typography/meta/$value/letterSpacing",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/letterSpacing/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/meta/$value/letterSpacing/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {
@@ -3802,7 +5354,17 @@
     },
     {
       "name": "/typography/title/$value/letterSpacing",
+      "exportType": "object",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/letterSpacing/unit",
       "exportType": "string",
+      "suiteType": "missing"
+    },
+    {
+      "name": "/typography/title/$value/letterSpacing/value",
+      "exportType": "number",
       "suiteType": "missing"
     },
     {

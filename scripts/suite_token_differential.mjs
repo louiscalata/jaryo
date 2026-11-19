@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const MAX_BYTES = 4 * 1024 * 1024;
 const MAX_DEPTH = 64;
 const MAX_NODES = 100000;
-const TYPES = new Set(['color', 'dimension', 'fontFamily', 'fontWeight', 'typography']);
+const GROUPS = new Set(['color', 'dimension', 'letterSpacing', 'fontFamily', 'fontWeight', 'typography']);
 const own = (value, key) => Object.hasOwn(value, key);
 const kind = value => value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
 const pointer = (base, key) => `${base}/${String(key).replace(/~/g, '~0').replace(/\//g, '~1')}`;
@@ -107,9 +107,19 @@ export function normalizeColor(value) {
   return `#${hex}`;
 }
 
+function validDimension(value) {
+  return kind(value) === 'object' && Object.keys(value).length === 2
+    && Number.isFinite(value.value) && ['px', 'rem'].includes(value.unit);
+}
+
 function validateValue(type, value) {
-  if (type === 'color') return typeof value === 'string' && /^#(?:[\da-f]{3}|[\da-f]{6})$/i.test(value);
-  if (type === 'dimension') return typeof value === 'string' && /^-?\d+(?:\.\d+)?(?:px|em)$/.test(value);
+  if (type === 'color') return kind(value) === 'object' && Object.keys(value).length === 3
+    && value.colorSpace === 'srgb' && typeof value.hex === 'string' && /^#[0-9a-f]{6}$/.test(value.hex)
+    && Array.isArray(value.components) && value.components.length === 3
+    && value.components.every((c, i) => Number.isFinite(c) && c >= 0 && c <= 1
+      && Math.abs(c * 255 - parseInt(value.hex.slice(1 + 2 * i, 3 + 2 * i), 16)) <= 0.5);
+  if (type === 'dimension') return validDimension(value);
+  if (type === 'number') return Number.isFinite(value);
   if (type === 'fontFamily') return (Array.isArray(value) && value.length > 0 && value.every(item => typeof item === 'string' && item.trim().length > 0))
     || (typeof value === 'string' && /^\{fontFamily\.[A-Za-z0-9-]+\}$/.test(value));
   if (type === 'fontWeight') return Number.isInteger(value) && value >= 1 && value <= 1000;
@@ -117,7 +127,8 @@ function validateValue(type, value) {
     if (kind(value) !== 'object') return false;
     const refs = { fontFamily: 'fontFamily', fontSize: 'dimension', fontWeight: 'fontWeight', letterSpacing: 'dimension' };
     return isDeepStrictEqual(sorted(Object.keys(value)), sorted([...Object.keys(refs), 'lineHeight']))
-      && Object.entries(refs).every(([key, group]) => typeof value[key] === 'string' && new RegExp(`^\\{${group}\\.[A-Za-z0-9-]+\\}$`).test(value[key]))
+      && Object.entries(refs).every(([key, group]) => (key === 'letterSpacing' && validDimension(value[key]))
+        || (typeof value[key] === 'string' && new RegExp(`^\\{${group}\\.[A-Za-z0-9-]+\\}$`).test(value[key])))
       && typeof value.lineHeight === 'number' && value.lineHeight > 0;
   }
   return false;
@@ -125,13 +136,13 @@ function validateValue(type, value) {
 
 function exportInventory(root) {
   const result = [];
-  function visit(value, name, group, depth) {
+  function visit(value, name, type, depth) {
     if (kind(value) !== 'object') invalid('export group must be an object');
     if (own(value, '$description') && typeof value.$description !== 'string') invalid('export description must be text');
     if (own(value, '$value') || own(value, '$type')) {
-      if (!own(value, '$value') || value.$type !== group || !validateValue(group, value.$value)
+      if (!own(value, '$value') || value.$type !== type || !validateValue(type, value.$value)
           || Object.keys(value).some(key => !['$type', '$value', '$description'].includes(key))
-          || depth !== (group === 'color' ? 3 : 2)) invalid('invalid export token shape or value');
+          || depth !== (type === 'color' ? 3 : 2)) invalid('invalid export token shape or value');
       result.push({ name, type: value.$type, value: value.$value });
       return;
     }
@@ -139,13 +150,14 @@ function exportInventory(root) {
     if (!keys.length) invalid('empty export group');
     for (const key of keys) {
       if (key.startsWith('$')) invalid('unsupported export property');
-      visit(value[key], pointer(name, key), group, depth + 1);
+      if (type === 'color' && depth === 1 && !['light', 'dark'].includes(key)) invalid('unsupported export theme');
+      visit(value[key], pointer(name, key), type, depth + 1);
     }
   }
   if (own(root, '$description') && typeof root.$description !== 'string') invalid('export description must be text');
   for (const group of sorted(Object.keys(root).filter(key => key !== '$description'))) {
-    if (!TYPES.has(group)) invalid('unsupported export group');
-    visit(root[group], pointer('', group), group, 1);
+    if (!GROUPS.has(group)) invalid('unsupported export group');
+    visit(root[group], pointer('', group), group === 'letterSpacing' ? 'number' : group, 1);
   }
   if (!result.length) invalid('export contains no tokens');
   return result.sort(byName);
@@ -185,11 +197,13 @@ function compareNames(left, right, color = false) {
   const b = new Map(right.map(item => [item.name, item]));
   const shared = sorted(a.keys()).filter(name => b.has(name)).map(name => {
     const x = a.get(name), y = b.get(name);
-    const exact = isDeepStrictEqual(x.value, y.value);
-    const normalized = exact || ((color || x.type === 'color') && normalizeColor(x.value) !== null && normalizeColor(x.value) === normalizeColor(y.value));
+    const exportValue = color ? x.value.hex : x.value;
+    const exact = isDeepStrictEqual(exportValue, y.value);
+    const hex = x.type === 'color' ? normalizeColor(x.value.hex) : null;
+    const normalized = exact || (hex !== null && hex === normalizeColor(y.value));
     return color
-      ? { name, exportName: x.sourceName, suiteName: y.sourceName, exportValue: x.value, suiteValue: y.value, exact, normalized }
-      : { name, exportType: x.type, suiteType: y.type, exportValue: x.value, suiteValue: y.value, exact, normalized };
+      ? { name, exportName: x.sourceName, suiteName: y.sourceName, exportValue, suiteValue: y.value, exact, normalized }
+      : { name, exportType: x.type, suiteType: y.type, exportValue, suiteValue: y.value, exact, normalized };
   });
   return { shared, exportOnly: sorted(a.keys()).filter(name => !b.has(name)), suiteOnly: sorted(b.keys()).filter(name => !a.has(name)) };
 }

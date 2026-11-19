@@ -9,7 +9,7 @@ choice file is a different input from the lab's token export.
 ## Snapshot and complete receipt
 
 - Lab: `tokens/jaryo.tokens.json` at Jaryo
-  `18f3b121efe9bda7eb888f3faa5d0ee6f4cf3344`.
+  `da38e11`.
 - Suite: `jaryo/tokens.json` at commit
   `5694d16e8d77e8a0dddd5cf597ac1a91f2db1784`.
 - Input SHA-256 values and the complete inventories, unilateral names, shared
@@ -27,8 +27,9 @@ commit. The Suite contract was not executed, and no Suite source was changed.
 
 ## Results
 
-The lab has **69 atomic tokens**: 34 color, 22 dimension, 6 fontFamily,
-3 fontWeight, and 4 typography. A typography `$value` is one composite token.
+The lab has **69 atomic tokens**: 34 color, 16 dimension, 6 number (the
+`letterSpacing` group), 6 fontFamily, 3 fontWeight, and 4 typography.
+A typography `$value` is one composite token.
 Root `$description` is metadata, excluded from the token inventory.
 
 The Suite has **167 leaves**, including metadata and configuration. Arrays and
@@ -69,18 +70,22 @@ shared names.
 
 ## Structural differences
 
-The raw JSON walk includes **253** lab nodes and **198** Suite nodes, including
+The raw JSON walk includes **499** lab nodes and **198** Suite nodes, including
 containers, metadata, token wrappers, array elements, and value components.
-Only the root object shares a raw path. The **449** structural rows consist of
-**252** raw paths absent from the Suite and **197** absent from the lab; there
+Only the root object shares a raw path. The **695** structural rows consist of
+**498** raw paths absent from the Suite and **197** absent from the lab; there
 are **0** same-path type changes and **0** same-path array-length changes.
 These raw node counts differ from atomic token/leaf inventory counts.
 
-The export uses `color`, `dimension`, `fontFamily`, `fontWeight`, and `typography`
-groups with `$type`/`$value` wrappers. No standalone JSON Schema is tracked;
-`scripts/export_tokens.py` defines this DTCG-inspired string-value contract.
-The comparison validates those groups and value types; it does not claim DTCG
-2025.10 compliance. The Suite instead declares `agiw.jaryo-tokens.v1`, puts
+The export uses `color`, `dimension`, `letterSpacing`, `fontFamily`, `fontWeight`,
+and `typography` groups with `$type`/`$value` wrappers. The comparison validates
+exactly those groups and the DTCG 2025.10 value formats used by the export.
+A color `$value` has `colorSpace` set to `srgb`, a `components` array of three
+numbers from 0 to 1 inclusive, and a `hex` string that must round-trip with
+the components. A dimension `$value` has a numeric `value` and a `unit` of `px`
+or `rem`; the comparison rejects `em`. Tokens in the `letterSpacing` group have
+`$type` `number`, while `letterSpacing` in a typography token is a `px`
+dimension object. The Suite instead declares `agiw.jaryo-tokens.v1`, puts
 primitive colors under `palette`, dimensions and other settings under `scale`
 and `interaction`, and records choices, variants, patterns, and provenance.
 The full raw path/type inventory in the receipt makes every structural
@@ -110,9 +115,10 @@ Names use escaped JSON Pointers and case-sensitive UTF-16 sorting across
 complete pointers, including both inventories. Exact value
 comparison retains JSON types and array order and ignores object insertion
 order. Hex normalization lowercases digits, expands short forms, and includes
-opaque `ff` alpha when absent; it preserves nonopaque alpha. Export colors use
-3 or 6 hex digits, matching the exporter; Suite palette colors may also use
-4 or 8. Other CSS syntax, whitespace, units, font aliases, and typography
+opaque `ff` alpha when absent; it preserves nonopaque alpha. The comparison
+uses each export color's 6-digit lowercase `$value.hex`, which must agree with
+`components`. Suite palette colors may use 3, 4, 6 or 8 hex digits.
+Other CSS syntax, whitespace, units, font aliases, and typography
 references are not normalized or resolved. Output is deterministic for the
 same input bytes; hashes identify those bytes, not just their parsed values.
 
