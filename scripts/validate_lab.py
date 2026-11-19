@@ -5,6 +5,10 @@ from __future__ import annotations
 import json, re, sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from catalog_wording import PHRASE_FILES, catalog_wording_errors
+
 LAB = Path(__file__).resolve().parents[1]
 ROOT = LAB.parent
 errors = []
@@ -88,22 +92,19 @@ else:
 # Catalog phrase is derived from the extended file, not a hand-typed leftover.
 if ext_path.exists():
     n_fam = len(fams)
-    n_opt = len(ids)
     curated_n = int(ext["source_catalog"]["curated_count"])
-    optional_n = n_opt - curated_n
-    phrase = f"{n_fam} families · {curated_n} curated + {optional_n} optional ({n_opt} total)"
-    readme_text = (LAB / "README.md").read_text(encoding="utf-8")
-    index_html = (LAB / "index.html").read_text(encoding="utf-8")
+    wording_texts = {rel: (LAB / rel).read_text(encoding="utf-8") for rel in PHRASE_FILES}
+    index_html = wording_texts["index.html"]
     lab_js = (LAB / "lab.js").read_text(encoding="utf-8")
-    if phrase not in readme_text:
-        fail(f"README.md missing catalog phrase {phrase}")
-    if phrase not in index_html:
-        fail(f"index.html missing catalog phrase {phrase}")
+    for message in catalog_wording_errors(fams, curated_n, wording_texts):
+        fail(message)
     template = "${families} families · ${curated} curated + ${optional} optional (${total} total)"
     if template not in lab_js:
         fail("lab.js does not build the catalog phrase from the loaded counts")
     stale = ("17 × 5", "85 options", "97 options (85 original)")
-    for label, text in (("README.md", readme_text), ("index.html", index_html), ("lab.js", lab_js)):
+    stale_texts = dict(wording_texts)
+    stale_texts["lab.js"] = lab_js
+    for label, text in stale_texts.items():
         for old in stale:
             if old in text:
                 fail(f"stale count phrase {old!r} in {label}")
