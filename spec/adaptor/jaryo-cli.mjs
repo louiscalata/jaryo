@@ -68,15 +68,20 @@ export function main(argv) {
       const out = path.resolve(args.out);
       const manifestReal = fs.realpathSync(args.manifest);
       const targetReal = fs.realpathSync(target);
+      // Anything already at --out (a file, a folder or a symlink, even a dangling one) counts as existing.
+      let existing = null;
+      try { existing = fs.lstatSync(out); } catch { existing = null; }
+      if (existing && !args.force) return err("output exists (use --force)");
       let outReal;
-      try { outReal = fs.existsSync(out) ? fs.realpathSync(out) : path.join(fs.realpathSync(path.dirname(out)), path.basename(out)); } catch { return err("output folder does not exist"); }
+      try { outReal = existing ? fs.realpathSync(out) : path.join(fs.realpathSync(path.dirname(out)), path.basename(out)); } catch { return err("output path cannot be resolved"); }
+      if (existing && !fs.statSync(outReal).isFile()) return err("output is not a regular file");
       if (outReal === manifestReal || outReal === targetReal) return err("refusing to overwrite manifest or target");
-      {
-        const rel = statTarget.isDirectory() ? path.relative(targetReal, outReal) : null;
-        if (rel && !rel.startsWith("..") && !path.isAbsolute(rel)) return err("refusing to write inside target directory");
-      }
-      if (fs.existsSync(out) && !args.force) return err("output exists (use --force)");
-      fs.writeFileSync(out, renderViewPage(view));
+      // Never write into the pipeline's own folder: the target directory, or the folder holding a target file.
+      const home = statTarget.isDirectory() ? targetReal : path.dirname(targetReal);
+      const rel = path.relative(home, outReal);
+      if (!rel.startsWith("..") && !path.isAbsolute(rel)) return err("refusing to write inside the target's folder");
+      // Without --force, O_EXCL: fail rather than follow or replace anything created since the check.
+      fs.writeFileSync(existing ? outReal : out, renderViewPage(view), { flag: existing ? "w" : "wx" });
       return 0;
     }
     console.log(summarize(view, kind));

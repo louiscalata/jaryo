@@ -74,5 +74,17 @@ r = spawnSync(process.execPath, [path.join(root, "adaptor", "build-view-page.mjs
 ok(r.status === 0, "build-view-page cli");
 ok(fs.readFileSync(outHtml, "utf8") === renderViewPage(view), "renderViewPage matches cli");
 
+// --out hardening (Glimmer review): never into the target's folder, never through a dangling symlink
+{
+  const besideJournal = path.join(path.dirname(journal), "jaryo-view-test.html");
+  const r1 = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--out", besideJournal], { encoding: "utf8" });
+  ok(r1.status === 2 && !fs.existsSync(besideJournal), "out beside a target file (inside its folder) is refused");
+  const d2 = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-link-"));
+  const link = path.join(d2, "view.html"); fs.symlinkSync(path.join(d2, "elsewhere.html"), link);
+  const r2 = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--out", link], { encoding: "utf8" });
+  ok(r2.status === 2 && !fs.existsSync(path.join(d2, "elsewhere.html")), "a dangling symlink at out is refused and not followed");
+  const r3 = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--out", link, "--force"], { encoding: "utf8" });
+  ok(r3.status === 2 && !fs.existsSync(path.join(d2, "elsewhere.html")), "a dangling symlink at out is refused even with --force");
+}
 console.log(`${n - failed}/${n} passed`);
 process.exit(failed ? 1 : 0);
