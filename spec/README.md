@@ -35,11 +35,21 @@ JSDOM=/path/to/node_modules/jsdom node tests/reference-a11y.test.mjs
 
 Optional: `node pipeline/run.mjs` runs the sample pipeline and writes a new run record.
 
+## Connect a pipeline (read-only)
+
+From `spec/`:
+
+```sh
+node adaptor/jaryo-cli.mjs connect pipeline/fixtures/nisi-bundle-demo-journal.jsonl --manifest pipeline/nisi-bundle-demo.manifest.json
+node adaptor/jaryo-cli.mjs connect pipeline/fixtures/nisi-bundle-demo-journal.jsonl --manifest pipeline/nisi-bundle-demo.manifest.json --out /tmp/jaryo-view.html
+node tests/cli.test.mjs
+```
+
 jsdom has no layout or safe-area insets, so the browser-facing tests say nothing about the CSS.
 
 ## Limits
 
-- Design spec and spike only. Not installable. The Nisi journal adaptor reads a recorded journal file, not a running pipeline, and its view is labelled unauthenticated.
+- Design spec and spike only. It runs as a read-only CLI from a clone (no package yet); Nisi is the first independent pipeline. The Nisi journal adaptor reads a recorded journal file, not a running pipeline, and its view is labelled unauthenticated.
 - No screen-reader pass and no physical-device pass yet. The accessibility-tree pass is markup structure only.
 - Personal design-pick exports, internal review receipts, and Jev notes are not included.
 - The reference screens use the Copper Workshop (F17.01) tokens as their own skin. The lab at the repository root lists Copper as an EXAMPLE only and does not record it as anyone's choice; the two statements apply to different things.
