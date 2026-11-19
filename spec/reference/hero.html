@@ -6,7 +6,7 @@
 <title>Jaryo Install Hero</title>
 <style>
 /* F15.01 Install Line Hero — one install command AND a primary GUI connect path; copy with aria-live.
-   Copper Workshop tokens (F17.01). SAMPLE: the command and link are placeholders; nothing installs. */
+   Copper Workshop tokens (F17.01). SAMPLE: the command is real (the read-only CLI, run from a clone); the connect button, links and results shown are samples. */
 :root {
   --bg:#0B1012; --surface:#141A1C; --text:#F4F1EA; --muted:#9AA3A8; --border:#5A676C;
   --focus:#E8D7A8; --copper:#C47A3A; --copper-ink:#0B1012; --ok:#8FC4A0;
@@ -60,7 +60,7 @@ h1 { font-family: var(--mono); font-size: clamp(30px, 6vw, 52px); line-height: 1
 </style>
 </head>
 <body>
-<div class="sample" role="note">SAMPLE — website reference for F15.01. Command, links and results are placeholders; nothing installs.</div>
+<div class="sample" role="note">SAMPLE — website reference for F15.01. The command is real; the connect button, links and results shown are samples.</div>
 <nav aria-label="Site">
   <span class="mark">JARYO</span>
   <div class="links"><a href="#how">How it works</a><a href="#adaptors">What you get</a></div>
@@ -75,16 +75,16 @@ h1 { font-family: var(--mono); font-size: clamp(30px, 6vw, 52px); line-height: 1
     <section class="path" aria-labelledby="cli-h">
       <h2 id="cli-h">Terminal</h2>
       <div class="cmd">
-        <code id="cmd">jaryo connect ./my-pipeline</code>
+        <code id="cmd">node spec/adaptor/jaryo-cli.mjs connect journal.jsonl --manifest pipeline.json --out view.html</code>
         <button class="btn" id="copy" aria-describedby="cmd">Copy</button>
       </div>
       <p class="copied" id="copied" aria-live="polite"></p>
-      <p>Placeholder command. Discovery lists what it checked and what it found before showing anything.</p>
+      <p>This runs from a clone of the repo, with no package yet, and only reads the journal and manifest.</p>
     </section>
     <section class="path" aria-labelledby="gui-h">
       <h2 id="gui-h">No terminal</h2>
       <button type="button" class="btn primary" id="connect">Open connect UI</button>
-      <p>Pick a folder or an MCP server; Jaryo shows each step it can see, and marks the rest <span style="font-family:var(--mono)">? [UNKNOWN]</span>.</p>
+      <p>The CLI writes one static page you open in a browser; it shows each step it can see, and marks the rest <span style="font-family:var(--mono)">? [UNKNOWN]</span>.</p>
     </section>
   </div>
 

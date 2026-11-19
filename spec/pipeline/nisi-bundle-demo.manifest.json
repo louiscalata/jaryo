@@ -1,0 +1,22 @@
+{
+    "id": "project-a",
+    "name": "Nisi bundle-restart demo",
+    "declares": {
+        "actions": [
+            "logs"
+        ],
+        "events": false
+    },
+    "steps": [
+        {
+            "id": "tests",
+            "name": "Run the tests",
+            "needs": []
+        },
+        {
+            "id": "fixed-run",
+            "name": "Record the fixed run",
+            "needs": []
+        }
+    ]
+}

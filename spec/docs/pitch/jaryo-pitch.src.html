@@ -173,7 +173,7 @@ load_wh        ERR  no credential</pre></div>
 │ Score order risk       ▶ [RUNNING]
 │ Load to warehouse      ✕ [BLOCKED]
 │   needs: warehouse credential</pre></div>
-        <p class="cap">Sample from the website reference screen. The command and results are placeholders.</p>
+        <p class="cap">Sample from the website reference screen. The command is real; the results shown are a sample.</p>
       </div>
     </div>
 
@@ -220,8 +220,8 @@ load_wh        ERR  no credential</pre></div>
           <ul>
             <li><b>No independent pipeline.</b> A read-only adaptor spike exists, but only on a sample pipeline written alongside it. The two reference screens run a fictional sample.</li>
             <li><b>No user testing.</b> The only human input so far is the owner's 17 design picks and five behaviour decisions.</li>
-            <li><b>Install route undecided.</b> CLI, MCP or another way is open. MCP alone doesn't draw a UI.</li>
-            <li><b>Install line is a placeholder.</b> Nothing installs; the website is a reference screen.</li>
+            <li><b>No package yet.</b> The install route is a read-only CLI (chosen 2026-11-19); it runs from a clone. MCP alone doesn't draw a UI, so an MCP or MCP-Apps front end would be added later on the same adapter layer.</li>
+            <li><b>One independent pipeline.</b> Nisi is connected read-only through its run journal, tested on a journal from Nisi's own demo. No live pipeline yet.</li>
             <li><b>Accessibility is partly proven.</b> Contrast and keyboard paths are measured. No screen reader has been used, and the border contrast margin is thin (3.007:1 against a 3:1 minimum).</li>
             <li><b>No physical iPhone.</b> The home-screen (standalone) launch has not been run; its safe-area padding rests on a code review.</li>
             <li><b>Rule not met everywhere.</b> The reference screen still shows a few inert placeholder buttons (Change, Set credential) that its sample adaptor does not declare.</li>
@@ -250,7 +250,7 @@ load_wh        ERR  no credential</pre></div>
         <div class="box"><h3>Consequential actions get a review</h3><p>The design requires run, deploy, delete and overwrite to pass a summary that states what will happen and what is blocked, with Cancel focused. Only Run is shown so far.</p></div>
         <div class="box"><h3>A layer, not a platform</h3><p>The intent is an interface over the pipeline you already run, not a canvas where you rebuild it. This is the claim most in need of proof.</p></div>
         <div class="box"><h3>Built for hands and eyes</h3><p>44px targets, a 56px one-handed thumb bar, full keyboard paths, visible focus, state as word plus glyph, and a pure black-and-white mode.</p></div>
-        <div class="box"><h3>Design picks are made</h3><p>17 design picks and 5 owner decisions are recorded. The spec, reference screens and tests are in this repository. The install route and first independent pipeline remain open.</p></div>
+        <div class="box"><h3>Design picks are made</h3><p>17 design picks and 5 owner decisions are recorded. The spec, reference screens and tests are in this repository. The install route (a CLI) and the first independent pipeline (Nisi) are chosen.</p></div>
         <div class="box"><h3>Gaps are written down</h3><p>The spec lists what it has not covered, and so does this page. Reviewer approval is recorded as advice, not as proof that users want it.</p></div>
       </div>
       <div class="cols2">
@@ -310,7 +310,7 @@ load_wh        ERR  no credential</pre></div>
         <h3>Decisions needed from the owner</h3>
         <ul>
           <li><b>Maintenance ownership:</b> confirm who maintains the spec, screens and tests.</li>
-          <li><b>Install route:</b> CLI, MCP, or an MCP-Apps-style host. The landscape suggests riding an existing protocol.</li>
+          <li><b>Install route:</b> decided 2026-11-19: a read-only CLI, with MCP or an MCP-Apps host possible later on the same adapter layer.</li>
           <li><b>First pipeline: not chosen.</b> Spec decision 5 keeps the lab separate from AGIW Suite, so a pipeline outside it is the default. The AGIW inference monitor fits only if that separation is lifted, and the lab notes disagree on it.</li>
           <li><b>Lab maintenance:</b> use the repository README and canonical roadmap for the lab’s implemented behavior and outstanding checks.</li>
           <li><b>Go or hold.</b> Recommended: go to stage 1 and then stage 2, and build no more screens before a real pipeline is connected.</li>
