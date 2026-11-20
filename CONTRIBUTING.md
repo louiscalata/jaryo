@@ -1,6 +1,6 @@
 # Contributing
 
-Jaryo is a work-in-progress interface design lab for comparing layouts, typography and controls. It is a documentation and design tool, not a production product.
+Jaryo is an installable kit and a work-in-progress interface design lab for comparing layouts, typography and controls.
 
 ## Open the lab
 
