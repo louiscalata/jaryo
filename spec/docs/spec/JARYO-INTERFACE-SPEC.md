@@ -5,7 +5,7 @@ Status: **DESIGN SPEC**. Jaryo is an installable kit; this document is the desig
 
 ## Sources
 - **Picks:** the 17 design picks, recorded against the lab-v1 catalog (personal pick export not published).
-- **Reference screens:** `index.html`, the app (v0.6, sha256 `6a7b4f2f…`), and `hero.html`, the website (v0.6, sha256 `f5342a18…`), in `reference/`. Both use a fictional sample pipeline.
+- **Reference screens:** `index.html`, the app (v0.6, sha256 `6a7b4f2f…`), and `hero.html`, the website (v0.6, sha256 `75281542…`), in `reference/`. Both use a fictional sample pipeline.
 
 ## 1. What Jaryo looks like
 A pipeline reads top to bottom as **one vertical bus**. Each step is a hard-edged **box with its frame broken at the IN and OUT ports**. It is named in plain language, with the exact step id beneath in mono.
