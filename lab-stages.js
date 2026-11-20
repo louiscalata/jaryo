@@ -272,7 +272,7 @@
         <div class="brawl" data-people="Lead/P1|Partner/P2">
           <p class="brawl-sub">CHARACTER</p>
           <div class="rail">
-            <button type="button" data-step="-1" aria-label="Previous character">Prev</button>
+            <button type="button" data-step="-1" aria-label="Previous character">Previous</button>
             <div>
               <p class="rail-name" data-person>Lead</p>
               <p class="rail-tag" data-tag>P1</p>

@@ -399,7 +399,7 @@
     "F04.04": () => `<div class="card-actions">
       <button class="btn primary" type="button" tabindex="-1">RUN</button>
       <button class="btn" type="button" tabindex="-1">DRY-RUN</button>
-      <button class="btn" type="button" tabindex="-1" aria-label="run options">▾</button>
+      <button class="btn" type="button" tabindex="-1">RUN OPTIONS <span aria-hidden="true">▾</span></button>
     </div>`,
     "F04.09": () => `<div class="card-actions">
       <button class="btn primary" type="button" tabindex="-1">PREVIEW</button>
