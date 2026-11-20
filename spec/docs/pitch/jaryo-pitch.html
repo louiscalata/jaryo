@@ -155,7 +155,7 @@ ul.src a { display: inline-block; padding-block: 15px; }
         <h1>Your pipeline,<br>visual.</h1>
         <p class="lede">Jaryo is designed to read what a pipeline already exposes (steps, inputs, runs, logs) and give it a graphical interface. The design shows only what the pipeline declares, draws everything else as unknown, and puts every consequential action behind a review.</p>
       </div>
-      <div class="where" role="note"><b>Where it stands</b>A design spec and two reference screens, built on a fictional pipeline, plus a read-only adaptor spike on a sample pipeline written alongside it. No independent pipeline is connected, nobody outside the design process has used it, and nothing installs yet. This page says what is proven, what is not, and what happens next.</div>
+      <div class="where" role="note"><b>Where it stands</b>The reference screens use a fictional pipeline. The read-only CLI runs from a source checkout and can read a recorded Nisi journal. A live integration, a packaged release and user testing are still pending.</div>
       <div class="cta">
         <a class="btn primary" href="#plan">See the plan</a>
         <a class="btn" href="#try">Try the miniature</a>
@@ -201,7 +201,7 @@ load_wh        ERR  no credential</pre></div>
 
     <section class="s" id="status" aria-labelledby="status-h">
       <div style="display:grid;gap:8px"><h2 id="status-h">What works and what doesn't</h2>
-      <p class="sub">The working rows were re-checked on 2026-11-07 against the files, the tests and the running screens. The open rows come from the lab's own lists of what is not covered. The check also found two faults, both now fixed.</p></div>
+      <p class="sub">The screen checks date to 2026-11-07. The adaptor and CLI evidence includes later work. See the <a href="../../../roadmap.md">roadmap</a> for the remaining acceptance checks.</p></div>
       <div class="cols2">
         <div class="box">
           <h3><span class="chip ok">● [VERIFIED]</span> Working today</h3>
@@ -218,10 +218,9 @@ load_wh        ERR  no credential</pre></div>
         <div class="box">
           <h3><span class="chip blocked">✕ [NOT YET]</span> Not working or not done</h3>
           <ul>
-            <li><b>No independent pipeline.</b> A read-only adaptor spike exists, but only on a sample pipeline written alongside it. The two reference screens run a fictional sample.</li>
+            <li><b>Live pipeline acceptance.</b> The read-only adaptor has replayed a journal from Nisi’s bundle-restart demo. The end-to-end check against live pipeline activity is still pending.</li>
             <li><b>No user testing.</b> The only human input so far is the owner's 17 design picks and five behaviour decisions.</li>
             <li><b>No package yet.</b> The install route is a read-only CLI (chosen 2026-11-19); it runs from a clone. MCP alone doesn't draw a UI, so an MCP or MCP-Apps front end would be added later on the same adapter layer.</li>
-            <li><b>One independent pipeline.</b> Nisi is connected read-only through its run journal, tested on a journal from Nisi's own demo. No live pipeline yet.</li>
             <li><b>Accessibility is partly proven.</b> Contrast and keyboard paths are measured. No screen reader has been used, and the border contrast margin is thin (3.007:1 against a 3:1 minimum).</li>
             <li><b>No physical iPhone.</b> The home-screen (standalone) launch has not been run; its safe-area padding rests on a code review.</li>
             <li><b>Rule not met everywhere.</b> The reference screen still shows a few inert placeholder buttons (Change, Set credential) that its sample adaptor does not declare.</li>
@@ -301,10 +300,10 @@ load_wh        ERR  no credential</pre></div>
       <div class="plan">
         <div class="stg"><div class="num">0</div><div class="body"><h3>Publish the design source <span class="chip run">[COMPLETE]</span></h3><p>The spec, reference screens, adaptor and tests are published in this repository under <code>spec/</code>.</p></div></div>
         <div class="stg"><div class="num">1</div><div class="body"><h3>Close the checks that need no backend</h3><p>Use the reference screens with VoiceOver and NVDA. Run them on a physical iPhone, including the home-screen launch. Do the native file-picker Esc check by hand.</p><p class="exit"><b>Exit</b> Each check has a written pass or fail, and every failure is fixed or listed.</p></div></div>
-        <div class="stg"><div class="num">2</div><div class="body"><h3>One real pipeline, read-only</h3><p>Write down the host, adaptor and state boundaries, and choose the install route. Define what an adaptor must declare: steps, links between them, inputs, runs, logs, actions and the reason for any it lacks. Connect one real pipeline and render it. Started: a spike on a self-authored sample pipeline already holds the rule in code. Not yet done: a pipeline written independently.</p><p class="exit"><b>Exit</b> For a named real pipeline, a fixture that omits one referenced step and one status from the adaptor output renders them as UNKNOWN. Every step and state shown matches the pipeline's own run record, and a deliberate guess-a-status change makes a test fail.</p></div></div>
+        <div class="stg"><div class="num">2</div><div class="body"><h3>One real pipeline, read-only</h3><p>Write down the host, adaptor and state boundaries. Define what an adaptor must declare: steps, links between them, inputs, runs, logs, actions and the reason for any it lacks. The CLI has replayed a recorded Nisi demo journal. Run the live pipeline check below.</p><p class="exit"><b>Exit</b> For a named real pipeline, a fixture that omits one referenced step and one status from the adaptor output renders them as UNKNOWN. Every step and state shown matches the pipeline's own run record, and a deliberate guess-a-status change makes a test fail.</p></div></div>
         <div class="stg"><div class="num">3</div><div class="body"><h3>Test with people</h3><p>Proposed: five visually oriented users who don't use a terminal. Five is a starting number, not a sample size. Give each a fixed set of tasks, such as finding why a run is blocked and cancelling a review.</p><p class="exit"><b>Exit</b> Each task has a pass rule written beforehand (for example, 4 of 5 complete it unaided). Failures are fixed before stage 4.</p></div></div>
         <div class="stg"><div class="num">4</div><div class="body"><h3>Gated actions</h3><p>Enable one declared action, such as retry, behind the review gate against a sandbox pipeline. Decide who may run actions. Repeat the stage 2 test on a second, different pipeline.</p><p class="exit"><b>Exit</b> A gated run completes, and a cancelled or refused one leaves the pipeline untouched on both pipelines.</p></div></div>
-        <div class="stg"><div class="num">5</div><div class="body"><h3>Make it installable</h3><p>Turn the placeholder install line and connect path into real ones, publish the website, and cut a versioned release.</p><p class="exit"><b>Exit</b> Three people who did not build it install it on their own pipeline and reach a first view without help.</p></div></div>
+        <div class="stg"><div class="num">5</div><div class="body"><h3>Make it installable</h3><p>The read-only CLI and connect command already run from a clone. Package a versioned release, document how to install it, and publish the website.</p><p class="exit"><b>Exit</b> Three people who did not build it install it on their own pipeline and reach a first view without help.</p></div></div>
       </div>
       <div class="box">
         <h3>Decisions needed from the owner</h3>

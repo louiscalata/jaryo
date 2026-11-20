@@ -6,7 +6,7 @@ The first section is the project's goal and its staged plan. The sections after 
 
 ## Project goal: an interface over a pipeline you already run
 
-Jaryo is meant to read what a pipeline already declares (steps, inputs, runs, logs), draw exactly that and nothing more, draw everything else as `? [UNKNOWN]`, and put every consequential action behind a review. The plan and its exit tests are the pitch page's ("The plan", `spec/docs/pitch/jaryo-pitch.src.html`, built to `spec/docs/pitch/jaryo-pitch.html`). Today the repository holds a design spec, two reference screens on a fictional pipeline and a read-only adaptor spike. No independent pipeline is connected, nobody outside the design process has used it, and nothing installs (`spec/README.md`, Limits).
+Jaryo is meant to read what a pipeline already declares (steps, inputs, runs, logs), draw exactly that and nothing more, draw everything else as `? [UNKNOWN]`, and put every consequential action behind a review. The plan and its exit tests are the pitch page's ("The plan", `spec/docs/pitch/jaryo-pitch.src.html`, built to `spec/docs/pitch/jaryo-pitch.html`). Today the repository holds a design spec, two reference screens on a fictional pipeline and a read-only CLI that runs from a clone. The CLI has replayed a recorded Nisi demo journal. Live pipeline acceptance, a packaged release and user testing are still pending (`spec/README.md`, Limits).
 
 ### Stage 0: publish the design source
 
@@ -46,8 +46,8 @@ Not done:
 - [x] Choose the first real pipeline (2026-11-19: Nisi).
 - [x] Choose the install route (2026-11-19: CLI, LOU-29).
 - [ ] Connect one independent, named pipeline and render it, then meet the exit test above. The adaptor and reader-boundary mutants in ADAPTOR-V0 show the guess-a-status rule holds for the two spikes; they are not that exit test.
-- [ ] Test the Nisi journal adaptor on a journal from a real Nisi run, not only synthetic and generated ones; regenerate the corpus when Nisi changes.
-- [ ] Refresh the pitch page's figures. It is dated v0.5e, 2026-11-07, and still quotes "63 adaptor checks" and "21 renderer checks" and says the spec has no failed state, where ADAPTOR-V0 now records 245 combined adaptor checks, 27 renderer checks and spec v0.6.
+- [x] Replay a journal from Nisi’s deterministic bundle-restart demo through the read-only CLI. The demo runs without model calls. The tracked fixture and reader result are recorded in [ADAPTOR-V0](spec/docs/adaptor/ADAPTOR-V0.md); regenerate the differential corpus when Nisi’s reader changes.
+- [x] Refresh the [pitch page](spec/docs/pitch/jaryo-pitch.src.html) for spec v0.6 and its FAILED state. The pitch records 598 adaptor checks and 51 renderer checks. Its 15 review rounds apply to v0.5e.
 
 ### Stage 3: test with people
 
