@@ -148,7 +148,7 @@ if ext_path.exists():
 # DOM/HTML basics
 index = (LAB / "index.html").read_text(encoding="utf-8")
 for needle in ("family-nav", "cards", "jaryo"):
-    if needle not in index.lower() and needle not in index:
+    if needle not in index.lower():
         warn(f"index.html may be missing {needle}")
 
 if errors:
