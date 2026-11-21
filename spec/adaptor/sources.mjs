@@ -5,30 +5,41 @@ import fs from "node:fs"; import path from "node:path";
 import { readJournalFile, buildJournalView } from "./nisi-journal-adaptor.mjs";
 import { buildView, latestRecordFile } from "./jaryo-adaptor.mjs";
 
+function loadNisi(manifest, target, now) {
+  const input = readJournalFile(target);
+  return { view: buildJournalView(manifest, input, now), inputPaths: [target] };
+}
+
+function loadRecord(manifest, target, now) {
+  const latest = latestRecordFile(fs.readdirSync(target));
+  const recordPath = latest ? path.join(target, latest) : null;
+  const text = recordPath ? fs.readFileSync(recordPath, "utf8") : "";
+  return { view: buildView(manifest, text, now), inputPaths: recordPath ? [recordPath] : [] };
+}
+
 export const SOURCES = Object.freeze({
   nisi: Object.freeze({
     label: "Nisi run journal (nisi-run-journal-v1), read-only, unauthenticated",
-    load(manifest, target, now) {
-      const input = readJournalFile(target);
-      return buildJournalView(manifest, input, now);
-    },
+    load: (...args) => loadNisi(...args).view,
+    loadWithInputs: loadNisi,
   }),
   record: Object.freeze({
     label: "Jaryo run record directory (run-NNNN.jsonl), read-only",
-    load(manifest, target, now) {
-      const fileNames = fs.readdirSync(target);
-      const latest = latestRecordFile(fileNames);
-      const text = latest ? fs.readFileSync(path.join(target, latest), "utf8") : "";
-      return buildView(manifest, text, now);
-    },
+    load: (...args) => loadRecord(...args).view,
+    loadWithInputs: loadRecord,
   }),
 });
 
-export function connect({ kind, manifestPath, target, now = Date.now() }) {
+export function connectWithInputs({ kind, manifestPath, target, now = Date.now() }) {
   if (!manifestPath) throw new Error("missing manifest");
   if (!target) throw new Error("missing target");
   const src = SOURCES[kind];
   if (!src) throw new Error(`unknown kind: ${kind}`);
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-  return src.load(manifest, target, now);
+  const loaded = src.loadWithInputs(manifest, target, now);
+  return { ...loaded, inputPaths: [manifestPath, ...loaded.inputPaths] };
+}
+
+export function connect({ kind, manifestPath, target, now = Date.now() }) {
+  return connectWithInputs({ kind, manifestPath, target, now }).view;
 }
