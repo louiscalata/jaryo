@@ -657,18 +657,19 @@ class CorpusGenerator:
 
     def dump(self, value):
         r = self.random.random()
-        try:
-            if r < 0.3:
-                return json.dumps(value)
-            if r < 0.5:
-                return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-            if r < 0.7:
-                return json.dumps(value, indent=self.random.choice([1, 2, "\t"]), ensure_ascii=False)
-            if r < 0.85:
-                return json.dumps(value, sort_keys=True)
-            return " \n" + json.dumps(value, indent=2) + "\r\n\t "
-        except TypeError:
+        if r < 0.3:
             return json.dumps(value)
+        if r < 0.5:
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        if r < 0.7:
+            return json.dumps(value, indent=self.random.choice([1, 2, "\t"]), ensure_ascii=False)
+        if r < 0.85:
+            try:
+                return json.dumps(value, sort_keys=True)
+            except TypeError:
+                # A stale list edit can add an integer index to a string-keyed dictionary.
+                return json.dumps(value)
+        return " \n" + json.dumps(value, indent=2) + "\r\n\t "
 
     def _text_mutations(self):
         return [
