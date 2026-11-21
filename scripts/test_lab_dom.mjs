@@ -391,7 +391,7 @@ async function persistenceDom({ raw = null, readFails = false, catalogFails = fa
   if (stages) window.eval(fs.readFileSync(path.join(LAB, "lab-stages.js"), "utf8"));
   window.eval(labJs.replace('document.addEventListener("DOMContentLoaded", boot);', `
     window.__persistenceTest = { boot, saveChoices, resetChoices, importPayloadText, exportPayload,
-      snapshot: () => ({ status: persistenceStatus, storageOk, recoveryRaw,
+      snapshot: () => ({ status: persistenceStatus, storageOk: persistenceStatus !== "unavailable", recoveryRaw,
         choices, rejects: persistenceRejects, envelopeCatalogVersion }) };
   `));
   const api = window.__persistenceTest;

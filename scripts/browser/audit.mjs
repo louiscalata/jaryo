@@ -54,7 +54,7 @@ for (const m of modes) for (const w of widths) {
     if (shotDir && (v.name === "F01" || v.name === "F17")) {
       fs.mkdirSync(shotDir, { recursive: true });
       await page.evaluate(() => window.scrollTo(0, 0));
-      await page.screenshot({ path: path.join(shotDir, `${m.name}-${w}-${v.name}.png`), fullPage: w <= 375 ? false : false });
+      await page.screenshot({ path: path.join(shotDir, `${m.name}-${w}-${v.name}.png`), fullPage: false });
     }
   }
   rec.ruleTotals = agg;

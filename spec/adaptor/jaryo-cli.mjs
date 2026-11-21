@@ -75,7 +75,13 @@ export function main(argv) {
       if (existing && !args.force) return err("output exists (use --force)");
       let outReal;
       try { outReal = existing ? fs.realpathSync(out) : path.join(fs.realpathSync(path.dirname(out)), path.basename(out)); } catch { return err("output path cannot be resolved"); }
-      if (existing && !fs.statSync(outReal).isFile()) return err("output is not a regular file");
+      if (existing) {
+        const outStat = fs.statSync(outReal, { bigint: true });
+        if (!outStat.isFile()) return err("output is not a regular file");
+        const sameFile = (a, b) => a.dev === b.dev && (a.ino === 0n || b.ino === 0n || a.ino === b.ino);
+        const protectedFiles = [manifestReal, targetReal].map(p => fs.statSync(p, { bigint: true }));
+        if (protectedFiles.some(source => sameFile(outStat, source))) return err("refusing to overwrite manifest or target");
+      }
       if (outReal === manifestReal || outReal === targetReal) return err("refusing to overwrite manifest or target");
       // Never write into the pipeline's own folder: the target directory, or the folder holding a target file.
       const home = statTarget.isDirectory() ? targetReal : path.dirname(targetReal);

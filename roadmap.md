@@ -201,3 +201,23 @@ execution, deployed consumption and current-head CI are NOT_RUN for this record.
 The Suite contract was executed on 2026-11-19
 ([run record](docs/SUITE-TOKEN-DIFFERENTIAL.md#suite-contract-run-2026-11-19)).
 Deployed consumption stays NOT_RUN.
+
+## Candidate source safety pass — 2026-11-21
+
+The clean main audit at `a39eb5bb57476c07a870490868a42c7d78c7da76` found
+bounded correctness and cleanup issues in the adaptor, sample runner, viewer,
+and asset checker. A local-only candidate on `codex/jaryo-readonly-safety-fixes`
+addresses prototype-sensitive step IDs, hard-link overwrites, argument-limit
+timestamp aggregation, runner output overflow and run-directory permissions,
+and a string-prefix asset-root check. It also removes confirmed dead state and
+simplifies a redundant screenshot option. Targeted regressions are included.
+Hosted CI and a package release are not claimed by this candidate.
+
+The documented Mac-safe checks passed: DOM 47/47, CLI 27/27, adaptor 601/601,
+render 52/52, view contracts 211/211, reference accessibility tree 16/16, and
+spec hashes 77/77. The added asset-root regression passed 1/1, the asset
+checker reported `OK`, Ruff passed on its two touched Python files, and
+`git diff --check` passed. Hosted current-head CI, browser execution, real
+screen readers, and physical-device checks remain NOT_RUN. Claude security
+review is recommended; Fable was unavailable, and the Daybreak cloud workspace
+has no scan environment. No API Free Pool request was made.

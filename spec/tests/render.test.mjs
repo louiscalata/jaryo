@@ -42,6 +42,14 @@ ok(d.querySelectorAll(".step").length === 3, "two declared steps and one undisco
 ok(/Read-only snapshot/.test(d.getElementById("ro").textContent) && /cannot run or change anything/.test(d.getElementById("ro").textContent), "the page says it is a read-only snapshot");
 ok(/event stream: declared/.test(d.getElementById("caps").textContent) && /not declared: pause/.test(d.getElementById("caps").textContent), "capabilities say 'not declared' for missing actions");
 
+// External pipeline IDs can collide with Object.prototype names.
+const protoView = buildView({ id: "proto", name: "Prototype", declares: { actions: ["run"] }, steps: [
+  { id: "__proto__", name: "Prototype key", needs: [] } ] }, "", Date.now());
+const protoWindow = boot(page(protoView)), protoButton = protoWindow.document.querySelector(".step");
+protoButton.click();
+ok(protoButton.getAttribute("aria-pressed") === "true" && protoWindow.document.getElementById("live").textContent === "Selected Prototype key, unknown.", "a declared step with id __proto__ remains selectable and updates ARIA state");
+protoWindow.close();
+
 // selection, in place
 const btns = [...d.querySelectorAll(".step")];
 btns[0].click();

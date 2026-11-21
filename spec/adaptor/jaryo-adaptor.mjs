@@ -83,7 +83,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   // Timestamps: valid strings only; a timestamp ahead of now is not trusted.
   const stampOf = e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN);
   const stamps = current.map(stampOf).filter(Number.isFinite);
-  let lastTs = stamps.length ? Math.max(...stamps) : null;
+  let lastTs = stamps.reduce((latest, ts) => latest === null || ts > latest ? ts : latest, null);
   if (lastTs !== null && lastTs > now + SKEW_MS) { warnings.push("record has a timestamp in the future; liveness cannot be judged"); lastTs = null; }
   const runOpen = !!started && !ended;
   // Liveness is judged only against the window the manifest declares. No declared heartbeat: never RUNNING.
@@ -120,7 +120,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
     } else if (si >= 0) {
       // This step's own newest sign of life: its latest step-start or a heartbeat after it.
       const beats = evs.filter(([i, e]) => i >= si && (e.event === "step-start" || e.event === "heartbeat")).map(([, e]) => stampOf(e)).filter(Number.isFinite);
-      const beat = lastTs !== null && beats.length ? Math.max(...beats) : null;
+      const beat = lastTs !== null ? beats.reduce((latest, ts) => latest === null || ts > latest ? ts : latest, null) : null;
       if (live && fresh(beat)) { state = "RUNNING"; reason = fi >= 0 ? "started again after an earlier result" : null; }
       else {
         state = "UNKNOWN";

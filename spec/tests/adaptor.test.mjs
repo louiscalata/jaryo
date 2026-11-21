@@ -155,6 +155,23 @@ const real = await import(pathToFileURL(adaptorPath));
 let failed = 0, count = 0;
 for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAIL", r.name); if (!r.pass) failed++; }
 
+// Large valid records must not exceed the engine's spread-argument limit while finding timestamps.
+{
+  const timestamp = new Date(T0 + 1000).toISOString();
+  const heartbeat = JSON.stringify({ step: "a", event: "heartbeat", run: 1, ts: timestamp });
+  const records = [
+    JSON.stringify({ event: "run-start", run: 1, ts: timestamp }),
+    JSON.stringify({ step: "a", event: "step-start", run: 1, ts: timestamp }),
+    ...Array(150000).fill(heartbeat),
+  ].join("\n");
+  let largeView = null;
+  try { largeView = real.buildView(M, records, T0 + 2000); } catch {}
+  count++;
+  const pass = largeView?.steps[0]?.state === "RUNNING";
+  console.log(pass ? "PASS" : "FAIL", "adaptor: a valid large heartbeat record remains readable");
+  if (!pass) failed++;
+}
+
 // Runner: real child processes against a temporary manifest.
 {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-run-"));
@@ -168,11 +185,14 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
   const mf = path.join(tmp, "m.json"), runs = path.join(tmp, "runs"); fs.writeFileSync(mf, JSON.stringify(man));
   const run = () => spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", mf, "--runs-dir", runs, "--cwd", tmp], { encoding: "utf8" });
   run(); run(); run();
+  if (process.platform !== "win32") fs.chmodSync(runs, 0o755);
   fs.unlinkSync(path.join(runs, "run-0001.jsonl")); // pruning an old record must not make the next run reuse a file
   const r4 = run();
   const files = fs.readdirSync(runs).sort();
   const ck = (name, c) => { count++; console.log(c ? "PASS" : "FAIL", name); if (!c) failed++; };
   ck("runner: after pruning, the next run gets a new number and its own file", files.join() === "run-0002.jsonl,run-0003.jsonl,run-0004.jsonl" && /run 4:/.test(r4.stdout));
+  if (process.platform === "win32") console.log("SKIP runner: an existing run directory is 0700 (POSIX modes are not enforced on win32)");
+  else ck("runner: an existing run directory is restricted to owner-only before writing", (fs.statSync(runs).mode & 0o777) === 0o700);
   const recs = fs.readFileSync(path.join(runs, "run-0004.jsonl"), "utf8").trim().split("\n").map(x => JSON.parse(x));
   const last = id => recs.filter(r => r.step === id && r.status).pop();
   ck("runner: exit 0 is ok, exit 3 is failed with the exit code", last("good").status === "ok" && last("bad").status === "failed" && last("bad").exit === 3);
@@ -228,6 +248,19 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
   const loud = brecs.find(r => r.step === "loud" && r.status), fits = brecs.find(r => r.step === "fits" && r.status);
   ck("runner: a step that writes more than 1 MiB to one stream is failed with ENOBUFS and stopped", loud.status === "failed" && /ENOBUFS/.test(loud.reason || "") && loud.ms < 1900);
   ck("runner: a step just under 1 MiB is still ok", fits.status === "ok" && fits.tail.includes("end"));
+
+  // A command that ignores SIGTERM must still be stopped after an output-cap failure.
+  if (process.platform === "win32") console.log("SKIP runner: ignored SIGTERM termination path (signal handlers differ on win32)");
+  else {
+    const stubborn = { id: "stubborn", name: "Stubborn", declares: { actions: ["run"] }, steps: [
+      { id: "loud", name: "Loud", needs: [], cmd: ["node", "-e", "process.on('SIGTERM', () => {}); process.stdout.write('x'.repeat(1100000)); setTimeout(() => process.exit(0), 3000)"] } ] };
+    const smf = path.join(tmp, "stubborn.json"), sruns = path.join(tmp, "stubborn-runs"); fs.writeFileSync(smf, JSON.stringify(stubborn));
+    const stopped = spawnSync("node", [path.join(root, "pipeline/run.mjs"), "--manifest", smf, "--runs-dir", sruns, "--cwd", tmp], { encoding: "utf8", timeout: 6000 });
+    const sfile = path.join(sruns, "run-0001.jsonl");
+    const srecs = fs.existsSync(sfile) ? fs.readFileSync(sfile, "utf8").trim().split("\n").map(x => JSON.parse(x)) : [];
+    const loudStop = srecs.find(r => r.step === "loud" && r.status);
+    ck("runner: an over-limit child that ignores SIGTERM is force-stopped promptly", stopped.status === 0 && !stopped.error && loudStop?.status === "failed" && /ENOBUFS/.test(loudStop.reason || "") && loudStop.ms < 1800);
+  }
 
   // Redaction happens before the tail window: a key whose BEGIN line falls outside the last six lines must not leak.
   const body = Array.from({ length: 8 }, (_, i) => `Rml4dHVyZUtleUJvZHk${i}`);

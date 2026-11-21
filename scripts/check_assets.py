@@ -35,7 +35,9 @@ def check_file(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     for ref in local_refs(text):
         target = (path.parent / ref).resolve()
-        if not str(target).startswith(str(ROOT)):
+        try:
+            target.relative_to(ROOT)
+        except ValueError:
             errors.append(f"{path.relative_to(ROOT)} -> {ref} escapes the repo")
             continue
         if not target.is_file():
