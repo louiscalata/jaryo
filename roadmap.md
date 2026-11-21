@@ -217,7 +217,8 @@ The documented Mac-safe checks passed: DOM 47/47, CLI 27/27, adaptor 601/601,
 render 52/52, view contracts 211/211, reference accessibility tree 16/16, and
 spec hashes 77/77. The added asset-root regression passed 1/1, the asset
 checker reported `OK`, Ruff passed on its two touched Python files, and
-`git diff --check` passed. Hosted current-head CI, browser execution, real
-screen readers, and physical-device checks remain NOT_RUN. Claude security
-review is recommended; Fable was unavailable, and the Daybreak cloud workspace
-has no scan environment. No API Free Pool request was made.
+`git diff --check` passed. Hosted CI run 442 later passed all four jobs:
+`check`, `chromium`, `browsers`, and `forced-colors`. Manual screen-reader and
+physical-device acceptance remain NOT_RUN. Claude security review is
+recommended; Fable was unavailable, and the Daybreak cloud workspace has no
+scan environment. No API Free Pool request was made.
