@@ -232,3 +232,9 @@ scan environment. No API Free Pool request was made.
 - [x] Daybreak Blue's read-only review reproduced the original hard-link defect. Its follow-up review of the fix was unavailable because the collaboration service reported `agent thread limit reached`. Claude Sonnet source review is NOT_RUN because the local sensitive-input guard rejected the prepared diff before inference; the guard was not bypassed. Fable 5.1 provided an abstract design brainstorm before code inspection.
 - [x] Root review clarified the refusal text to say it protects any input file, and the hard-link regression now checks that message as well as the unchanged source bytes.
 - [ ] Current-head GitHub CI must pass before merge. This is an unreleased source correction; no release or deployment is claimed.
+
+Code cleanup on 2026-11-21 narrowed the `TypeError` fallback in
+`scripts/check_suite_token_differential.py` to the sorted JSON branch. A stale
+list edit can add an integer index beside string keys, making `sort_keys=True`
+fail while the unsorted serialization succeeds. Ruff 0.17.4 passes on the
+changed file. No tests were run for this cleanup.
