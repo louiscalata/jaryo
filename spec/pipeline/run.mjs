@@ -1,6 +1,6 @@
 // The pipeline runner: runs the manifest's steps in dependency order and writes an append-only JSONL run record.
 // It imports only the shared credential redactor (adaptor/redact.mjs), not the adaptor; its steps do verify this repository.
-// Step output and reasons are redacted before they are written; run files are created owner-only (0600 in a 0700 directory).
+// Step output and reasons are redacted before they are written; run files are 0600 in a 0700 directory.
 // If the manifest declares a heartbeat ({ intervalMs, staleAfterMs }), it writes a heartbeat line every intervalMs
 // while a step runs, so a reader can tell a long step from a dead runner.
 // usage: node pipeline/run.mjs [--manifest <file>] [--runs-dir <dir>] [--cwd <dir>]
@@ -13,6 +13,8 @@ const dir = arg("--runs-dir", path.join(here, "pipeline/runs"));
 const cwd = arg("--cwd", here);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+if (!fs.lstatSync(dir).isDirectory()) throw new Error("runs path must be a directory, not a symlink");
+if (process.platform !== "win32") fs.chmodSync(dir, 0o700);
 
 // New file number = highest existing number + 1, created exclusively so two runners never share a file.
 let n, fd, file;
@@ -40,7 +42,8 @@ const runCmd = (cmd, beat) => new Promise(resolve => {
   const r = { status: null, signal: null, error: undefined, stdout: "", stderr: "" };
   const timer = beat ? setInterval(beat, beatMs) : null;
   let done = false;
-  const finish = () => { if (done) return; done = true; if (timer) clearInterval(timer); resolve(r); };
+  let killTimer = null;
+  const finish = () => { if (done) return; done = true; if (timer) clearInterval(timer); if (killTimer) clearTimeout(killTimer); resolve(r); };
   let child;
   try { child = spawn(cmd[0], cmd.slice(1), { cwd, env: process.env, stdio: ["ignore", "pipe", "pipe"] }); }
   catch (e) { r.error = e; finish(); return; }
@@ -48,7 +51,13 @@ const runCmd = (cmd, beat) => new Promise(resolve => {
   for (const k of ["stdout", "stderr"]) child[k].on("data", d => {
     if (r.error) return;
     sizes[k] += d.length;
-    if (sizes[k] > MAX_BUFFER) { r.error = Object.assign(new Error(`spawn ${cmd[0]} ENOBUFS`), { code: "ENOBUFS" }); child.kill("SIGTERM"); return; }
+    if (sizes[k] > MAX_BUFFER) {
+      r.error = Object.assign(new Error(`spawn ${cmd[0]} ENOBUFS`), { code: "ENOBUFS" });
+      child.kill("SIGTERM");
+      killTimer = setTimeout(() => { if (!done) child.kill("SIGKILL"); }, 500);
+      killTimer.unref?.();
+      return;
+    }
     bufs[k].push(d);
   });
   child.on("error", e => { if (!r.error) r.error = e; if (child.exitCode === null && child.pid === undefined) finish(); });

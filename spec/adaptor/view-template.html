@@ -97,7 +97,7 @@ dialog::backdrop { background:rgba(0,0,0,.72); }
       if (st === "RUNNING" && oldSnap) { st = "UNKNOWN"; why = "this snapshot is older than 2 minutes, so a running state is not trusted"; }
       return { id: s.id, name: s.name, state: st, reason: why, step: s };
     }).concat(V.undeclared.map(function (u) { return { id: u.logId, name: "Undiscovered step", state: u.state, reason: u.reason, undeclared: true }; }));
-    var sel = null, buttons = {}, opener = null;
+    var sel = null, buttons = Object.create(null), opener = null;
     var chipText = function (it) { return (G[it.state] || "?") + " [" + it.state + "]"; };
     var cls = function (it) { return CLS[it.state] || "unk"; };
     var nameOf = function (it) { return it.name + ", " + (it.undeclared ? "record id " : "step id ") + it.id + ", " + it.state.toLowerCase() + (it.step && it.step.consequential ? ", consequential" : "") + (it.reason ? ", " + it.reason : ""); };

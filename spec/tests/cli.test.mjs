@@ -86,5 +86,19 @@ ok(fs.readFileSync(outHtml, "utf8") === renderViewPage(view), "renderViewPage ma
   const r3 = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--out", link, "--force"], { encoding: "utf8" });
   ok(r3.status === 2 && !fs.existsSync(path.join(d2, "elsewhere.html")), "a dangling symlink at out is refused even with --force");
 }
+
+// --force must not overwrite a protected input through a hard link outside its folder.
+{
+  const protectedDir = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-protected-"));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-hardlink-out-"));
+  const protectedJournal = path.join(protectedDir, "journal.jsonl"), protectedManifest = path.join(protectedDir, "manifest.json");
+  fs.copyFileSync(journal, protectedJournal); fs.copyFileSync(manifest, protectedManifest);
+  for (const [source, label] of [[protectedJournal, "target"], [protectedManifest, "manifest"]]) {
+    const hardLink = path.join(outputDir, `${label}.html`), beforeSource = fs.readFileSync(source);
+    fs.linkSync(source, hardLink);
+    const r4 = spawnSync(process.execPath, [cli, "connect", protectedJournal, "--manifest", protectedManifest, "--out", hardLink, "--force"], { encoding: "utf8" });
+    ok(r4.status === 2 && fs.readFileSync(source).equals(beforeSource) && fs.readFileSync(hardLink).equals(beforeSource), `a hard link to the ${label} is refused and both paths stay unchanged`);
+  }
+}
 console.log(`${n - failed}/${n} passed`);
 process.exit(failed ? 1 : 0);

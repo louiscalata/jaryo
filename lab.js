@@ -9,7 +9,6 @@
   let DATA = null;
   /** @type {Record<string,string>} */
   let choices = {};
-  let storageOk = true;
   let storageMsg = "";
   let activeFamily = "F01";
   let activeTab = "compare";
@@ -120,7 +119,6 @@
     const view = persistenceView[next];
     if (!view) throw new Error("Unknown persistence state: " + next);
     persistenceStatus = next;
-    storageOk = next !== "unavailable";
     let words = view.words;
     // Normalization keeps the load diagnosis; an object with rejected IDs is
     // different from a non-object payload even when both map to malformed.
