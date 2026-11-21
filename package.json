@@ -1,0 +1,23 @@
+{
+  "name": "jaryo",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "description": "Read-only pipeline status CLI for Jaryo",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "jaryo": "spec/adaptor/jaryo-cli.mjs"
+  },
+  "files": [
+    "NOTICE",
+    "spec/adaptor/jaryo-cli.mjs",
+    "spec/adaptor/sources.mjs",
+    "spec/adaptor/jaryo-adaptor.mjs",
+    "spec/adaptor/nisi-journal-adaptor.mjs",
+    "spec/adaptor/redact.mjs",
+    "spec/adaptor/build-view-page.mjs",
+    "spec/adaptor/view-template.html"
+  ]
+}

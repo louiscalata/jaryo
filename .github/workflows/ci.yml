@@ -45,6 +45,7 @@ jobs:
           node scripts/test_focus_coverage.mjs
           node scripts/test_lab_dom.mjs
           node scripts/test_ci_runners.mjs
+          node scripts/test-cli-package.mjs
       - name: Spec checks
         working-directory: spec
         env:

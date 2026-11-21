@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Jaryo CLI, the install route chosen in LOU-29: `jaryo connect <target> --manifest <m.json>` reads a pipeline's
 // own record read-only through adaptor/sources.mjs and prints a summary, the view JSON, or a static page.
 import fs from "node:fs";
