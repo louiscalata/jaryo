@@ -34,8 +34,9 @@
     if (!btn) return false;
     const group = btn.parentElement;
     const list = Array.from(group.children).filter(function (el) { return el.matches && el.matches(selector); });
-    if (list.length < 2 || list.indexOf(btn) < 0) return false;
+    if (list.length < 2) return false;
     const i = list.indexOf(btn);
+    if (i < 0) return false;
     let j = null;
     if (event.key === "ArrowRight" || event.key === "ArrowDown") j = (i + 1) % list.length;
     else if (event.key === "ArrowLeft" || event.key === "ArrowUp") j = (i - 1 + list.length) % list.length;
