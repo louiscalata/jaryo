@@ -12,6 +12,42 @@ Status: a working spike, 2026-11-07 (record timestamps are UTC, so they read as 
 ## What it emits
 `jaryo-view/0`: `generatedAt`, `lastEventAt`, `pipeline`, `run`, `capabilities` (`declared`, `eventStream`, `heartbeat`), `actions[]` (declared, or `n/a` with a reason), `steps[]` (state, reason, needs, next, last output), `undeclared[]`, `review.counts`, `warnings[]`.
 
+## Connect another pipeline
+
+The pipeline host owns execution, declarations and run records. An adaptor reads
+one source format and translates its evidence into `jaryo-view/0`. A front end
+calls `connect` in [sources.mjs](../../adaptor/sources.mjs) and presents that view.
+The current CLI reads the inputs and may write an HTML snapshot at the operator's
+requested output path. It does not start, retry or change a pipeline.
+
+Before connecting a pipeline, record its source format, the location of its
+manifest and run records, and the following declarations. For each unavailable
+item, record why in the integration handoff. Omit unsupported capabilities from
+the manifest.
+
+| Item | What the host or adaptor supplies |
+|---|---|
+| Pipeline and steps | A stable pipeline `id` and one unique `steps[].id` per named step. The record must use those same step identifiers. For Nisi, match the manifest `id` to the journal's `config.projectId` and each step ID to an entry's `stage`. |
+| Links | Populate `steps[].needs` from declared upstream step IDs. Use an empty list for a step with no dependencies. If the source cannot describe dependencies, record that gap in the handoff. Step order gives no evidence of a dependency. |
+| Inputs and outputs | Identify the pipeline inputs and outputs that the host actually declares, and where to see them. The current view reads step dependencies but has no fields for individual data bindings or input values. |
+| Runs | Explain how the source identifies and selects a run. For `record`, use the last run in the newest numbered record file. For `nisi`, use the run of the journal's last entry. If the source supports liveness, declare the heartbeat and use the source's own step timestamps. |
+| Logs and events | Document the source of output and reasons, and which of them can be shared. Declare `events: true` or `events: false` only when the host can make that statement. The current CLI reads a snapshot. Keep raw logs private and use redacted diagnostic output. |
+| Actions | Put supported action names in `declares.actions`. Name unavailable actions and their reasons in the handoff. Declarations describe the host's capabilities. The read-only CLI has no action execution API. |
+
+Use `jaryo sources` to list accepted inputs, or run
+`node spec/adaptor/jaryo-cli.mjs sources` from the repository root. Pass the
+exported journal file for `--kind nisi` or the directory of numbered JSONL run
+records for `--kind record`.
+A new record format requires a new adaptor and an entry in `SOURCES`.
+
+Verify a real run by matching each displayed state to the selected source record.
+Then repeat against scratch copies with one step declaration and one recorded
+state removed. The undeclared row must be unnamed and UNKNOWN. The declared step
+without evidence must also be UNKNOWN. Check that the manifest and records keep
+the same bytes before and after the CLI reads them. Record what was verified
+about the source in the integration handoff. The Nisi adaptor explicitly marks
+its view unauthenticated.
+
 ## The rule, and its one exception
 A step's state is copied from a record. It is never inferred from dependencies or from absence. **Exception: RUNNING.** A record cannot say "still running"; it can only say a step started and nothing has ended it. RUNNING is shown only when the manifest declares a heartbeat, the run is open, the step has started, and that step's newest valid timestamp (its latest `step-start` or a `heartbeat` after it) is no older than the declared `staleAfterMs`. Clock skew is tolerated up to `SKEW_MS` (60 s): a step timestamp up to 60 s ahead of the clock counts as fresh, and a record whose newest timestamp is more than 60 s ahead is not trusted for liveness at all. Without a declared heartbeat a started step is UNKNOWN, never RUNNING. A page built from the view also refuses to show RUNNING once its snapshot is older than 2 minutes.
 
