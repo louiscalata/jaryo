@@ -19,7 +19,7 @@ Exit: each check has a written pass or fail, and every failure is fixed or liste
 - [ ] VoiceOver pass on the reference screens. NOT_RUN. Only a markup-structure check exists (`spec/tests/reference-a11y.test.mjs`); it is not a screen-reader result.
 - [ ] NVDA pass on the reference screens. NOT_RUN.
 - [ ] Run the reference screens on a physical iPhone, including the home-screen launch and its safe-area padding. NOT_RUN. The simulator evidence in `spec/docs/evidence/ios/` is not a physical device.
-- [ ] Native file-picker Esc check, by hand. NOT_RUN.
+- [x] Native file-picker Escape check. On November 20, 2026 PST, Safari 27.2 on macOS 27.2.1 opened the live lab at deployment `a637054`. In **Your Choices**, Option-Tab reached **Import JSON** and Return opened the macOS file picker. Escape dismissed the picker, returned keyboard focus to **Import JSON**, and left the empty choices unchanged. No file was selected. [LOU-26](https://linear.app/louiscalata/issue/LOU-26).
 
 ### Stage 2: one real pipeline, read-only
 
