@@ -20,9 +20,7 @@ def local_refs(text: str) -> list[str]:
     found += re.findall(r"""(?:href|src)\s*=\s*['"]([^'"]+)['"]""", text)
     out = []
     for raw in found:
-        if raw.startswith(("http://", "https://", "data:", "mailto:", "#", "//")):
-            continue
-        if raw.startswith("blob:"):
+        if raw.startswith(("http://", "https://", "data:", "mailto:", "#", "//", "blob:")):
             continue
         # Script templates such as href="${url}" are not file paths.
         if "${" in raw or raw.startswith("$"):
