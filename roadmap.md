@@ -42,7 +42,7 @@ Not done:
 
 - [x] Owner confirmation of spec v0.6: confirmed by the owner on 2026-11-19 ("If it works, yes"; LOU-27, #90). The 15 Codex rounds cover v0.5e only.
 - [x] Show a FAILED step on the app reference screen. Done 2026-11-19 (LOU-27): `spec/reference/index.html` and `spec/reference/hero.html` are v0.6 and show a failed step (Write audit log); spec v0.6 is confirmed by the owner.
-- [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
+- [x] Document the host, adaptor and view boundaries, required declarations, unsupported capabilities, and verification for a new pipeline. See [Connect another pipeline](spec/docs/adaptor/ADAPTOR-V0.md#connect-another-pipeline).
 - [x] Choose the first real pipeline (2026-11-19: Nisi).
 - [x] Choose the install route (2026-11-19: CLI, LOU-29).
 - [ ] Connect one independent, named pipeline and render it, then meet the exit test above. The adaptor and reader-boundary mutants in ADAPTOR-V0 show the guess-a-status rule holds for the two spikes; they are not that exit test.
