@@ -45,11 +45,21 @@ node adaptor/jaryo-cli.mjs connect pipeline/fixtures/nisi-bundle-demo-journal.js
 node tests/cli.test.mjs
 ```
 
+To install the prerelease CLI from a local tarball, run these commands from the repository root with Node.js 22 or later:
+
+```sh
+install_dir="$(mktemp -d)"
+npm pack --offline --pack-destination "$install_dir"
+npm install --prefix "$install_dir" --offline --ignore-scripts "$install_dir"/jaryo-*.tgz
+"$install_dir/node_modules/.bin/jaryo" sources
+"$install_dir/node_modules/.bin/jaryo" connect /path/to/journal.jsonl --manifest /path/to/manifest.json --json
+```
+
 jsdom has no layout or safe-area insets, so the browser-facing tests say nothing about the CSS.
 
 ## Limits
 
-- Design spec and spike only. It runs as a read-only CLI from a clone (no package yet); Nisi is the first independent pipeline. The Nisi journal adaptor reads a recorded journal file, not a running pipeline, and its view is labelled unauthenticated.
+- Design spec and spike only. The CLI reads existing pipeline records. Nisi is the first independent pipeline. The Nisi journal adaptor reads a recorded journal file, not a running pipeline, and its view is labelled unauthenticated.
 - No screen-reader pass and no physical-device pass yet. The accessibility-tree pass is markup structure only.
 - Personal design-pick exports, internal review receipts, and Jev notes are not included.
 - The reference screens use the Copper Workshop (F17.01) tokens as their own skin. The lab at the repository root lists Copper as an EXAMPLE only and does not record it as anyone's choice; the two statements apply to different things.
