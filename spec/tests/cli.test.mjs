@@ -100,5 +100,23 @@ ok(fs.readFileSync(outHtml, "utf8") === renderViewPage(view), "renderViewPage ma
     ok(r4.status === 2 && fs.readFileSync(source).equals(beforeSource) && fs.readFileSync(hardLink).equals(beforeSource), `a hard link to the ${label} is refused and both paths stay unchanged`);
   }
 }
+
+// A record-directory connection reads its selected JSONL file, not just the directory entry.
+{
+  const protectedRuns = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-record-hardlink-source-"));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-record-hardlink-out-"));
+  fs.writeFileSync(path.join(protectedRuns, "run-0001.jsonl"), "older record\n");
+  const source = path.join(protectedRuns, "run-0002.jsonl");
+  const output = path.join(outputDir, "view.html");
+  const bytes = fs.readFileSync(path.join(recordDir, latestRecordFile(fs.readdirSync(recordDir))));
+  fs.writeFileSync(source, bytes);
+  fs.linkSync(source, output);
+  const result = spawnSync(process.execPath,
+    [cli, "connect", protectedRuns, "--manifest", recordManifest, "--kind", "record", "--out", output, "--force"],
+    { encoding: "utf8" });
+  ok(result.status === 2 && result.stderr.includes("refusing to overwrite an input file") &&
+    fs.readFileSync(source).equals(bytes) && fs.readFileSync(output).equals(bytes),
+    "a hard link to the selected record-directory JSONL input is refused and both paths stay unchanged");
+}
 console.log(`${n - failed}/${n} passed`);
 process.exit(failed ? 1 : 0);

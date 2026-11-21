@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { connect, SOURCES } from "./sources.mjs";
+import { connectWithInputs, SOURCES } from "./sources.mjs";
 import { renderViewPage } from "./build-view-page.mjs";
 
 function err(msg) {
@@ -60,7 +60,7 @@ export function main(argv) {
     let statTarget = null;
     try { statTarget = fs.statSync(target); } catch { return err("missing target"); }
     if (!kind) kind = statTarget.isDirectory() ? "record" : "nisi";
-    const view = connect({ kind, manifestPath: args.manifest, target });
+    const { view, inputPaths } = connectWithInputs({ kind, manifestPath: args.manifest, target });
     if (args.json) {
       process.stdout.write(JSON.stringify(view, null, 2) + "\n");
       return 0;
@@ -79,10 +79,11 @@ export function main(argv) {
         const outStat = fs.statSync(outReal, { bigint: true });
         if (!outStat.isFile()) return err("output is not a regular file");
         const sameFile = (a, b) => a.dev === b.dev && (a.ino === 0n || b.ino === 0n || a.ino === b.ino);
-        const protectedFiles = [manifestReal, targetReal].map(p => fs.statSync(p, { bigint: true }));
-        if (protectedFiles.some(source => sameFile(outStat, source))) return err("refusing to overwrite manifest or target");
+        const protectedFiles = [manifestReal, targetReal, ...inputPaths.map(p => fs.realpathSync(p))]
+          .map(p => fs.statSync(p, { bigint: true }));
+        if (protectedFiles.some(source => sameFile(outStat, source))) return err("refusing to overwrite an input file");
       }
-      if (outReal === manifestReal || outReal === targetReal) return err("refusing to overwrite manifest or target");
+      if (outReal === manifestReal || outReal === targetReal) return err("refusing to overwrite an input file");
       // Never write into the pipeline's own folder: the target directory, or the folder holding a target file.
       const home = statTarget.isDirectory() ? targetReal : path.dirname(targetReal);
       const rel = path.relative(home, outReal);

@@ -198,6 +198,7 @@ do not diagnose the hosted WebKit failure; its cause remains open above.
 Full Lab/spec suites, native CLI/FIFO checks, complete mutation campaigns,
 full-tree Ruff, exporter reruns, Node 22, browser/server checks, Suite contract
 execution, deployed consumption and current-head CI are NOT_RUN for this record.
+
 The Suite contract was executed on 2026-11-19
 ([run record](docs/SUITE-TOKEN-DIFFERENTIAL.md#suite-contract-run-2026-11-19)).
 Deployed consumption stays NOT_RUN.
@@ -222,3 +223,12 @@ checker reported `OK`, Ruff passed on its two touched Python files, and
 physical-device acceptance remain NOT_RUN. Claude security review is
 recommended; Fable was unavailable, and the Daybreak cloud workspace has no
 scan environment. No API Free Pool request was made.
+
+## Read-only CLI hard-link guard — 2026-11-21
+
+- [x] Close a reproduced `--force` path that could overwrite the selected JSONL run record through an external hard link. Source loading now returns the exact file paths used to build the view; `connect()` keeps returning the same view shape, and the CLI checks those input-file identities before writing.
+- [x] Add a regression linking the selected `run-0002.jsonl` to an output path outside the run directory. The CLI refuses the output and both paths retain the original bytes. The new assertion failed before the fix (27/28 CLI checks) and passed after it (28/28).
+- [x] Targeted checks on current main `3ba5574`: `node spec/tests/cli.test.mjs` 28/28; `node spec/tests/adaptor.test.mjs` 601/601; `node spec/tests/hash-coverage.test.mjs` 77/77; all `spec/HASHES.txt` entries verified; Node syntax checks and `git diff --check` passed.
+- [x] Daybreak Blue's read-only review reproduced the original hard-link defect. Its follow-up review of the fix was unavailable because the collaboration service reported `agent thread limit reached`. Claude Sonnet source review is NOT_RUN because the local sensitive-input guard rejected the prepared diff before inference; the guard was not bypassed. Fable 5.1 provided an abstract design brainstorm before code inspection.
+- [x] Root review clarified the refusal text to say it protects any input file, and the hard-link regression now checks that message as well as the unchanged source bytes.
+- [ ] Current-head GitHub CI must pass before merge. This is an unreleased source correction; no release or deployment is claimed.
