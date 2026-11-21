@@ -42,10 +42,11 @@ Not done:
 
 - [x] Owner confirmation of spec v0.6: confirmed by the owner on 2026-11-19 ("If it works, yes"; LOU-27, #90). The 15 Codex rounds cover v0.5e only.
 - [x] Show a FAILED step on the app reference screen. Done 2026-11-19 (LOU-27): `spec/reference/index.html` and `spec/reference/hero.html` are v0.6 and show a failed step (Write audit log); spec v0.6 is confirmed by the owner.
-- [ ] Write down the host, adaptor and state boundaries, and what an adaptor must declare (steps, links between them, inputs, runs, logs, actions, and the reason for any it lacks). ADAPTOR-V0 records what the two spikes read; it is not yet a contract for a pipeline someone else wrote.
+- [x] Document the host, adaptor and view boundaries, required declarations, unsupported capabilities, and verification for a new pipeline. See [Connect another pipeline](spec/docs/adaptor/ADAPTOR-V0.md#connect-another-pipeline).
 - [x] Choose the first real pipeline (2026-11-19: Nisi).
 - [x] Choose the install route (2026-11-19: CLI, LOU-29).
 - [ ] Connect one independent, named pipeline and render it, then meet the exit test above. The adaptor and reader-boundary mutants in ADAPTOR-V0 show the guess-a-status rule holds for the two spikes; they are not that exit test.
+- [x] Render a snapshot from a separate named pipeline, [Nisi GitHub Actions CI](https://github.com/louiscalata/nisi/actions/runs/44852159300). The read-only CLI tarball matched all five completed jobs in the public run record. A scratch copy without one declaration and one recorded outcome rendered both rows as UNKNOWN in jsdom. A deliberate status-guess change failed that check, and the source input hashes matched before and after rendering. This pilot was run by the project maintainer's agent, so it does not count toward the three independent installations.
 - [x] Replay a journal from Nisi’s deterministic bundle-restart demo through the read-only CLI. The demo runs without model calls. The tracked fixture and reader result are recorded in [ADAPTOR-V0](spec/docs/adaptor/ADAPTOR-V0.md); regenerate the differential corpus when Nisi’s reader changes.
 - [x] Refresh the [pitch page](spec/docs/pitch/jaryo-pitch.src.html) for spec v0.6 and its FAILED state. The pitch records 598 adaptor checks and 51 renderer checks. Its 15 review rounds apply to v0.5e.
 
