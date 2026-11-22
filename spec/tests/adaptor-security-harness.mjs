@@ -16,8 +16,8 @@ if (mode === "mutations") {
   const add = (name, from, to, file = "adaptor") => mutants.push({ name, from, to, file });
   const addRedact = (name, from, to) => add(name, from, to, "redact");
   add("lose every corrupt boundary", "invalidAt.push(events.length);", "");
-  add("lose malformed JSON boundary", "catch { invalidAt.push(events.length);", "catch {");
-  add("lose non-object boundary", "else { invalidAt.push(events.length);", "else {");
+  add("lose malformed JSON boundary", "catch {\n      invalidAt.push(events.length);", "catch {");
+  add("lose non-object boundary", "else {\n        invalidAt.push(events.length);", "else {");
   add("return no corrupt boundaries", "return { events, warnings, invalidAt };", "return { events, warnings, invalidAt: [] };");
   add("move corrupt boundary forward", "invalidAt.push(events.length);", "invalidAt.push(events.length + 1);");
   add("move corrupt boundary backward", "invalidAt.push(events.length);", "invalidAt.push(events.length - 1);");
