@@ -135,7 +135,11 @@ async function suite(mod) {
   t("a file holding two runs shows only the last, and says so", v.run.id === 2 && st(v, "a") === "UNKNOWN" && st(v, "b") === "OK" && v.warnings.some(w => /2 runs/.test(w)));
   v = buildView(M, L({ event: "run-start", run: 2 }, { step: "a", event: "step-start", run: 2 }, { event: "run-end", run: 1 }), now);
   t("a run-end from a different run does not end this run", v.run.state !== "ended" && v.warnings.some(w => /different run/.test(w)));
-  t("the newest record file is chosen by number, not by text", latestRecordFile(["run-0002.jsonl", "run-0010.jsonl", "run-9.jsonl", "notes.txt"]) === "run-0010.jsonl" && latestRecordFile([]) === null);
+  t("the newest record file is chosen by number, not by text",
+    latestRecordFile(["run-0002.jsonl", "run-0010.jsonl", "run-9.jsonl", "notes.txt"]) === "run-0010.jsonl"
+    && latestRecordFile([]) === null
+    && latestRecordFile(["run-10.jsonl", "run-0010.jsonl"]) === "run-0010.jsonl"
+    && latestRecordFile(["run-0010.jsonl", "run-10.jsonl"]) === "run-10.jsonl");
   // actions
   v = buildView(M, "", now);
   const pause = v.actions.find(a => a.id === "pause");
@@ -324,7 +328,7 @@ const MUTANTS = [
   ["merge every run in a file", `const events = at >= 0 ? all.slice(at) : all;`, `const events = all;`],
   ["accept a run-end from another run", `(started === null || e.run === undefined || started.run === undefined || e.run === started.run)`, `true`],
   ["drop retry from the review list", `export const REVIEW_ACTIONS = ["run", "retry", "deploy", "delete", "overwrite"];`, `export const REVIEW_ACTIONS = ["run", "deploy", "delete", "overwrite"];`],
-  ["sort record files as text", `.sort((a, b) => a[1] - b[1])`, `.sort((a, b) => (a[0] < b[0] ? -1 : 1))`],
+  ["choose record files as text", `if (value >= number) {`, `if (latest === null || file >= latest) {`],
   ["uncapped tail", `.slice(-TAIL_LINES).map(x => String(x).slice(0, TAIL_CHARS))`, `.map(x => String(x))`],
   ["a duplicate id keeps its state", `if (dup.has(s.id)) { state = "UNKNOWN"; reason = "manifest declares this id more than once"; }`, `if (false) { }`],
 ];
