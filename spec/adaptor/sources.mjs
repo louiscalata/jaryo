@@ -1,20 +1,13 @@
 // The adapter layer between front ends (today adaptor/jaryo-cli.mjs; later, if wanted, an MCP or MCP-Apps host)
 // and the read-only adaptors. A front end calls connect() and renders the view; it never reads a pipeline itself.
 // This file only reads files.
-import fs from "node:fs"; import path from "node:path";
+import fs from "node:fs";
 import { readJournalFile, buildJournalView } from "./nisi-journal-adaptor.mjs";
-import { buildView, latestRecordFile } from "./jaryo-adaptor.mjs";
+import { loadRecord } from "./jaryo-adaptor.mjs";
 
 function loadNisi(manifest, target, now) {
   const input = readJournalFile(target);
   return { view: buildJournalView(manifest, input, now), inputPaths: [target] };
-}
-
-function loadRecord(manifest, target, now) {
-  const latest = latestRecordFile(fs.readdirSync(target));
-  const recordPath = latest ? path.join(target, latest) : null;
-  const text = recordPath ? fs.readFileSync(recordPath, "utf8") : "";
-  return { view: buildView(manifest, text, now), inputPaths: recordPath ? [recordPath] : [] };
 }
 
 export const SOURCES = Object.freeze({

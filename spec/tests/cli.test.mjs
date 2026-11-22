@@ -56,6 +56,43 @@ ok(r.status === 0, "record kind exits 0");
 const expected = buildView(JSON.parse(fs.readFileSync(recordManifest, "utf8")), fs.readFileSync(path.join(recordDir, latestRecordFile(fs.readdirSync(recordDir))), "utf8"));
 ok(JSON.stringify(JSON.parse(r.stdout).steps) === JSON.stringify(expected.steps), "record states match adaptor");
 
+{
+  const runs = path.join(tmp, "numbered runs");
+  fs.mkdirSync(runs);
+  const folder = path.join(runs, "run-3.jsonl");
+  fs.mkdirSync(folder);
+  const adaptor = path.join(root, "adaptor", "jaryo-adaptor.mjs");
+  const commands = [
+    [cli, "connect", runs, "--manifest", recordManifest, "--kind", "record", "--json"],
+    [adaptor, recordManifest, runs],
+  ];
+  const check = (id, message) => {
+    for (const args of commands) {
+      const result = spawnSync(process.execPath, args, { encoding: "utf8" });
+      ok(result.status === 0 && (JSON.parse(result.stdout).run?.id ?? null) === id, `${path.basename(args[0])}: ${message}`);
+    }
+  };
+  check(null, "directories alone give an empty run");
+
+  fs.writeFileSync(path.join(runs, "run-1.jsonl"), '{"event":"run-start","run":"regular"}\n');
+  check("regular", "an older file wins over a numbered directory");
+
+  const linkedFile = path.join(tmp, "linked run.jsonl");
+  fs.writeFileSync(linkedFile, '{"event":"run-start","run":"linked"}\n');
+  fs.symlinkSync(linkedFile, path.join(runs, "run-2.jsonl"), "file");
+  fs.symlinkSync(folder, path.join(runs, "run-4.jsonl"), "dir");
+  check("linked", "a file alias wins over a directory alias");
+
+  fs.symlinkSync(path.join(tmp, "absent.jsonl"), path.join(runs, "run-5.jsonl"), "file");
+  for (const args of commands) {
+    const result = spawnSync(process.execPath, args, { encoding: "utf8" });
+    ok(result.status !== 0 && result.stdout === "" && result.stderr.includes("ENOENT"), `${path.basename(args[0])}: a selected dangling alias still fails`);
+  }
+
+  const result = spawnSync(process.execPath, [adaptor, recordManifest, path.join(tmp, "missing runs")], { encoding: "utf8" });
+  ok(result.status === 0 && JSON.parse(result.stdout).run === null, "standalone adaptor keeps the missing optional directory behavior");
+}
+
 r = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--kind", "nope"], { encoding: "utf8" });
 ok(r.status === 2 && !/^\s*at /m.test(r.stderr), "unknown kind no stack");
 r = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", path.join(tmp, "missing-manifest.json"), "--kind", "toString"], { encoding: "utf8" });
