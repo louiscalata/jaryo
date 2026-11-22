@@ -107,7 +107,7 @@ redaction before tail selection, empty output, and ordinary text. The earlier
 70-case suite passed 20 and failed 50 against the pre-change sample adaptor.
 The existing adaptor entry point imports the focused suite.
 
-`tests/adaptor-security-harness.mjs`: all 48 distinct behavioral mutants are
+`tests/adaptor-security-harness.mjs`: all 51 distinct behavioral mutants are
 caught by named assertions after successful imports; import errors, syntax
 errors and non-assertion failures do not count as kills. The seeded stream
 differential checks 8,192 hostile records against a separate state model, 8,192

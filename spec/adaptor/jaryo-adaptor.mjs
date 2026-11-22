@@ -61,7 +61,8 @@ export function buildView(manifest, recordText, now = Date.now()) {
     throw new TypeError("now must be a finite number within the JavaScript Date range");
   const warnings = [];
   const man = normalise(manifest, warnings);
-  const rec = readRecord(recordText); warnings.push(...rec.warnings);
+  const rec = readRecord(recordText);
+  for (const warning of rec.warnings) warnings.push(warning);
   const all = rec.events;
 
   let at = -1;
@@ -109,7 +110,8 @@ export function buildView(manifest, recordText, now = Date.now()) {
   }
   if (accepted !== all.length - start) warnings.push("events in the record belong to a different run and were ignored");
   if (!started && hasStep) warnings.push("record has step events but no run-start; the run state is unknown");
-  const invalidAt = rec.invalidAt.reduce((last, i) => i > at ? Math.max(last, i) : last, -1);
+  const lastInvalid = rec.invalidAt.at(-1) ?? -1;
+  const invalidAt = lastInvalid > at ? lastInvalid : -1;
 
   if (lastTs !== null && lastTs > now + SKEW_MS) { warnings.push("record has a timestamp in the future; liveness cannot be judged"); lastTs = null; }
   const runOpen = !!started && !ended;
