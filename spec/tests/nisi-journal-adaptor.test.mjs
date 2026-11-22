@@ -231,6 +231,17 @@ export async function suite(mod) {
   t("journal: two runs show only the last, and say so", v.run?.id === "r2" && st(v, "a") === "UNKNOWN" && st(v, "b") === "OK" && v.warnings.some(w => /2 runs/.test(w)));
   v = buildJournalView(M, J([{ stage: "a" }, { stage: "ghost" }, { stage: "__proto__" }]), now);
   t("journal: an undeclared stage is listed, UNKNOWN and unnamed", v.undeclared.length === 2 && v.undeclared.every(u => u.state === "UNKNOWN" && u.name === null) && v.review.counts.unknown === 4);
+  v = buildJournalView(M, J([
+    { stage: "older", runId: "older" },
+    { stage: "z" },
+    { stage: "ghost" },
+    { stage: "z", state: "FAILED" },
+    { stage: "revocations", state: "REVOKED", revokes: "e2" },
+    { id: "e2", stage: "duplicate", runId: "ignored" },
+  ], { after: [ent(7, { stage: "after", runId: "ignored-after-footer" })] }), now);
+  t("journal: admitted run count and first appearance order of undeclared stages are preserved",
+    v.run?.id === "r1" && v.warnings.includes('journal holds 2 runs; only the last ("r1") is shown')
+    && v.undeclared.map(row => row.logId).join() === "z,ghost" && v.review.counts.unknown === 5);
   v = buildJournalView({ id: "p", steps: [{ id: "a" }, { id: "a" }] }, J([{ stage: "a" }]), now);
   t("journal: a duplicate manifest id stays UNKNOWN", v.steps.every(s => s.state === "UNKNOWN" && /more than once/.test(s.reason)));
   // the same document as buildView, so the page and render.test apply unchanged
