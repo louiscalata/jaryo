@@ -45,6 +45,20 @@ async function suite(mod) {
   t("ok/failed/blocked are copied from the record", st(v, "a") === "OK" && st(v, "b") === "FAILED" && st(v, "c") === "BLOCKED");
   t("a blocked step keeps the record's reason", v.steps[2].reason === "needs b (failed)");
   t("counts match the rows", v.review.counts.failed === 1 && v.review.counts.blocked === 1 && v.review.counts.unknown === 0 && v.review.counts.total === 3);
+  const reviewView = buildView({ ...M, steps: [
+    { id: "reused", consequential: true }, { id: "approved" },
+    { id: "pending", consequential: true }, { id: "reused", consequential: true },
+    { id: "failed" }, { id: "waiting" }, { id: "running" }, { id: "absent" },
+  ] }, Lfix(new Date(now).toISOString(),
+    { event: "run-start" }, { step: "approved", status: "ok" }, { step: "pending", status: "review" },
+    { step: "failed", status: "failed" }, { step: "waiting", status: "blocked" },
+    { step: "running", event: "step-start" }, { step: "unlisted", status: "ok" }), now);
+  t("review summary counts duplicate rows and preserves consequential IDs in declaration order",
+    reviewView.steps.map(step => step.state).join() === "UNKNOWN,OK,REVIEW,UNKNOWN,FAILED,BLOCKED,RUNNING,UNKNOWN"
+    && JSON.stringify(reviewView.review) === JSON.stringify({
+      consequentialSteps: ["reused", "pending", "reused"],
+      counts: { total: 8, blocked: 1, failed: 1, unknown: 4, review: 1 },
+    }));
   // A failed result keeps the cause available in the row, even without output or a recorded reason.
   t("a failed result without a reason uses the spec wording and its recorded exit", v.steps[1].reason === "This step ran and failed: exit 1. See its last output.");
   for (const [reason, exit, expected] of [

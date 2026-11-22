@@ -166,8 +166,15 @@ export function buildView(manifest, recordText, now = Date.now()) {
     return { id: s.id, name: s.name, needs: s.needs, next: [], state, reason, consequential: s.consequential, lastRun };
   });
   const declared = new Map();
+  const consequentialSteps = [];
+  const counts = { total: steps.length, blocked: 0, failed: 0, unknown: 0, review: 0 };
   for (const s of steps) {
     if (!declared.has(s.id)) declared.set(s.id, s);
+    if (s.consequential) consequentialSteps.push(s.id);
+    if (s.state === "BLOCKED") counts.blocked++;
+    else if (s.state === "FAILED") counts.failed++;
+    else if (s.state === "UNKNOWN") counts.unknown++;
+    else if (s.state === "REVIEW") counts.review++;
   }
   for (const s of steps) {
     for (const d of s.needs) {
@@ -178,20 +185,19 @@ export function buildView(manifest, recordText, now = Date.now()) {
 
   const undeclared = [...byStep.keys()].filter(k => !declared.has(k)).map(k => ({
     logId: k, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the run record mentions it" }));
+  counts.unknown += undeclared.length;
 
   const actions = KNOWN_ACTIONS.map(a => man.actions.includes(a)
     ? { id: a, available: true, review: REVIEW_ACTIONS.includes(a) }
     : { id: a, available: false, reason: `n/a: manifest does not declare ${a}` });
 
-  const counts = { total: steps.length, blocked: steps.filter(s => s.state === "BLOCKED").length, failed: steps.filter(s => s.state === "FAILED").length,
-    unknown: steps.filter(s => s.state === "UNKNOWN").length + undeclared.length, review: steps.filter(s => s.state === "REVIEW").length };
   const run = started ? { id: started.run ?? null, startedAt: typeof started.ts === "string" ? started.ts : null, endedAt: ended && typeof ended.ts === "string" ? ended.ts : null, state: ended ? "ended" : live ? "running" : "unknown" }
     : (hasStep ? { id: null, startedAt: null, endedAt: null, state: "unknown" } : null);
   return {
     schema: "jaryo-view/0", generatedAt: new Date(now).toISOString(), lastEventAt: lastTs !== null ? new Date(lastTs).toISOString() : null,
     pipeline: { id: man.id, name: man.name }, run,
     capabilities: { declared: man.actions, eventStream: man.events, heartbeat: man.heartbeat }, actions, steps, undeclared,
-    review: { consequentialSteps: steps.filter(s => s.consequential).map(s => s.id), counts }, warnings,
+    review: { consequentialSteps, counts }, warnings,
   };
 }
 
