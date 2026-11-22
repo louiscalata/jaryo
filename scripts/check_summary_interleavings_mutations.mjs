@@ -225,7 +225,7 @@ const mutations = [
   ],
   [
     "mapsEqual-ignores-values",
-    "if (a[aKeys[i]] !== b[bKeys[i]]) return false;",
+    "if (a[key] !== b[key]) return false;",
     ""
   ],
   [
