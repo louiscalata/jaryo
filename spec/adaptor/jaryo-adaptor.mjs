@@ -147,10 +147,18 @@ export function buildView(manifest, recordText, now = Date.now()) {
     }
     return { id: s.id, name: s.name, needs: s.needs, next: [], state, reason, consequential: s.consequential, lastRun };
   });
-  for (const s of steps) for (const d of s.needs) { const p = steps.find(x => x.id === d); if (p) p.next.push(s.id); }
+  const declared = new Map();
+  for (const s of steps) {
+    if (!declared.has(s.id)) declared.set(s.id, s);
+  }
+  for (const s of steps) {
+    for (const d of s.needs) {
+      const p = declared.get(d);
+      if (p) p.next.push(s.id);
+    }
+  }
 
-  const declaredIds = new Set(man.steps.map(s => s.id));
-  const undeclared = [...byStep.keys()].filter(k => !declaredIds.has(k)).map(k => ({
+  const undeclared = [...byStep.keys()].filter(k => !declared.has(k)).map(k => ({
     logId: k, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the run record mentions it" }));
 
   const actions = KNOWN_ACTIONS.map(a => man.actions.includes(a)
