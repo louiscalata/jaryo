@@ -182,14 +182,19 @@ export function buildView(manifest, recordText, now = Date.now()) {
   };
 }
 
+const RECORD_FILE = /^run-(\d+)\.jsonl$/;
+
+function recordNumber(file) {
+  const match = RECORD_FILE.exec(file);
+  return match === null ? null : BigInt(match[1]);
+}
+
 export function latestRecordFile(files) {
-  const re = /^run-(\d+)\.jsonl$/;
   let latest = null;
   let number = -1n;
   files.forEach(file => {
-    const match = re.exec(file);
-    if (!match) return;
-    const value = BigInt(match[1]);
+    const value = recordNumber(file);
+    if (value === null) return;
     if (value >= number) {
       latest = file;
       number = value;
@@ -199,14 +204,21 @@ export function latestRecordFile(files) {
 }
 
 export function loadRecord(manifest, target, now) {
-  const files = fs.readdirSync(target);
-  for (let latest = latestRecordFile(files); latest !== null; latest = latestRecordFile(files)) {
-    const recordPath = path.join(target, latest);
-    if (fs.statSync(recordPath).isFile()) {
-      const text = fs.readFileSync(recordPath, "utf8");
-      return { view: buildView(manifest, text, now), inputPaths: [recordPath] };
-    }
-    files.splice(files.indexOf(latest), 1);
+  const records = [];
+  for (const file of fs.readdirSync(target)) {
+    const number = recordNumber(file);
+    if (number !== null) records.push({ file, number });
+  }
+  records.sort((left, right) => {
+    if (left.number < right.number) return -1;
+    if (left.number > right.number) return 1;
+    return 0;
+  });
+  for (let index = records.length - 1; index >= 0; index--) {
+    const recordPath = path.join(target, records[index].file);
+    if (!fs.statSync(recordPath).isFile()) continue;
+    const text = fs.readFileSync(recordPath, "utf8");
+    return { view: buildView(manifest, text, now), inputPaths: [recordPath] };
   }
   return { view: buildView(manifest, "", now), inputPaths: [] };
 }

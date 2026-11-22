@@ -173,6 +173,37 @@ const real = await import(pathToFileURL(adaptorPath));
 let failed = 0, count = 0;
 for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAIL", r.name); if (!r.pass) failed++; }
 
+
+{
+  const runs = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-numbered-runs-"));
+  const bigint = globalThis.BigInt;
+  let conversions = 0;
+  try {
+    for (let number = 2; number <= 32; number++) fs.mkdirSync(path.join(runs, `run-${number}.jsonl`));
+    for (const file of ["run-1.jsonl", "run-01.jsonl"]) {
+      fs.writeFileSync(path.join(runs, file), JSON.stringify({ event: "run-start", run: file }) + "\n");
+    }
+    fs.symlinkSync(path.join(runs, "missing.jsonl"), path.join(runs, "run-0.jsonl"), "file");
+    const files = fs.readdirSync(runs);
+    const expected = files.filter(file => file === "run-1.jsonl" || file === "run-01.jsonl").at(-1);
+    globalThis.BigInt = value => { conversions++; return bigint(value); };
+    const actual = real.loadRecord(M, runs, T0);
+    const checks = [
+      [actual.view.run?.id === expected && actual.inputPaths[0] === path.join(runs, expected),
+        "numbered directories preserve the last listing tie and leave a lower dangling alias uninspected"],
+      [conversions <= files.length, "numbered directories do not cause repeated filename-to-BigInt conversion"],
+    ];
+    for (const [pass, name] of checks) {
+      count++;
+      console.log(pass ? "PASS" : "FAIL", name);
+      if (!pass) failed++;
+    }
+  } finally {
+    globalThis.BigInt = bigint;
+    fs.rmSync(runs, { recursive: true });
+  }
+}
+
 // Large valid records must not exceed the engine's spread-argument limit while finding timestamps.
 {
   const timestamp = new Date(T0 + 1000).toISOString();
