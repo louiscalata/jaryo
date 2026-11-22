@@ -158,4 +158,4 @@ ok(fs.readFileSync(outHtml, "utf8") === renderViewPage(view), "renderViewPage ma
     "a hard link to the selected record-directory JSONL input is refused and both paths stay unchanged");
 }
 console.log(`${n - failed}/${n} passed`);
-process.exit(failed ? 1 : 0);
+process.exitCode = failed ? 1 : 0;

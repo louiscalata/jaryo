@@ -142,4 +142,4 @@ if (!process.argv.includes("--path-copy-child")) {
   if (child.status !== 0) console.error(child.stdout, child.stderr);
 }
 console.log(`${n - failed}/${n} passed`);
-process.exit(failed ? 1 : 0);
+process.exitCode = failed ? 1 : 0;
