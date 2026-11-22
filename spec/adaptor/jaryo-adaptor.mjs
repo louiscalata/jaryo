@@ -155,7 +155,11 @@ export function buildView(manifest, recordText, now = Date.now()) {
       let tail = [];
       if (Array.isArray(record.tail)) tail = redactTail(record.tail).slice(-TAIL_LINES).map(x => String(x).slice(0, TAIL_CHARS));
       else if (record.tail !== undefined) warnings.push(`step ${s.id}: tail is not a list, ignored`);
-      lastRun = { ms: typeof record.ms === "number" ? record.ms : null, exit: typeof record.exit === "number" ? record.exit : null, tail };
+      lastRun = {
+        ms: Number.isFinite(record.ms) ? record.ms : null,
+        exit: Number.isFinite(record.exit) ? record.exit : null,
+        tail,
+      };
     }
     return { id: s.id, name: s.name, needs: s.needs, next: [], state, reason, consequential: s.consequential, lastRun };
   });

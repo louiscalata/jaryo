@@ -37,8 +37,17 @@ async function suite(mod) {
     const failedView = buildView(M, L({ event: "run-start" }, { step: "a", status: "failed", reason, exit }, { event: "run-end" }), now);
     t(`a failed result retains an explicit reason or uses only its recorded exit (${String(reason)}, ${String(exit)})`, failedView.steps[0].state === "FAILED" && failedView.steps[0].reason === expected);
   }
-  const infiniteExit = buildView(M, '{"step":"a","status":"failed","exit":1e400}', now);
+  const infiniteExit = buildView(M, '{"step":"a","status":"failed","exit":1e400,"ms":-1e400,"tail":["observed output"]}', now);
   t("a failed result with an unrepresentable exit does not invent an exit code", infiniteExit.steps[0].reason === "This step ran and failed. See its last output.");
+  const unrepresentable = infiniteExit.steps[0].lastRun;
+  t("overflowed measurements appear as null with failed state and output preserved", infiniteExit.steps[0].state === "FAILED"
+    && unrepresentable.ms === null && unrepresentable.exit === null && unrepresentable.tail.join() === "observed output");
+  const contradiction = buildView(M, '{"step":"a","status":"ok","exit":-1e400,"ms":2.5}', now).steps[0];
+  t("an overflowed exit still contradicts a successful result", contradiction.state === "UNKNOWN"
+    && contradiction.reason === "record contradicts itself: status ok with exit -Infinity"
+    && contradiction.lastRun.exit === null && contradiction.lastRun.ms === 2.5);
+  const finite = buildView(M, '{"step":"a","status":"failed","exit":-7,"ms":1e308}', now).steps[0].lastRun;
+  t("finite elapsed time and exit values are copied exactly", finite.ms === 1e308 && finite.exit === -7);
   // A caller-supplied clock is validated before timestamps are formatted or liveness is judged.
   for (const bad of [NaN, Infinity, -Infinity, 8640000000000001, -8640000000000001, 1e100, "0", null, true]) {
     let err = null; try { buildView(M, "", bad); } catch (e) { err = e; }
