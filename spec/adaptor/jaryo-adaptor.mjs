@@ -65,8 +65,14 @@ export function buildView(manifest, recordText, now = Date.now()) {
   const all = rec.events;
 
   // Scope to the last run in the file.
-  let at = -1; all.forEach((e, i) => { if (e.event === "run-start") at = i; });
-  const runStarts = all.filter(e => e.event === "run-start").length;
+  let at = -1;
+  let runStarts = 0;
+  all.forEach((event, index) => {
+    if (event.event === "run-start") {
+      at = index;
+      runStarts++;
+    }
+  });
   if (runStarts > 1) warnings.push(`record holds ${runStarts} runs; only the last is shown`);
   const events = at >= 0 ? all.slice(at) : all;
   const started = at >= 0 ? all[at] : null;
