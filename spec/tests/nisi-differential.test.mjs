@@ -118,7 +118,7 @@ for (const r of await suite(real, true)) { count++; console.log(r.pass ? "PASS" 
     ["ignore revocations", `else if (revokedBy.has(e.id)) {`, `else if (false) {`],
     ["trust a future timestamp", `else if (future) { state = "UNKNOWN"; reason = "journal says RUNNING, but a journal timestamp is in the future"; }`, ``],
     ["let a QUEUED entry be RUNNING", `else if (e.state === "RUNNING") {`, `else if (e.state === "RUNNING" || e.state === "QUEUED") {`],
-    ["show RUNNING for an entry that is not a valid Nisi entry", `else if (!nisiEntry(e) || !held.has(e.id)) {`, `else if (false) {`],
+    ["show RUNNING for an entry that is not a valid Nisi entry", `else if (!nisiEntry(e) || !(held ??= readerEntries(text)).has(e.id)) {`, `else if (false) {`],
   ];
   for (const [name, from, to] of MUTANTS) {
     count++;

@@ -185,7 +185,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
     return refuse(`journal projectId ${quote(projectId)} is not the manifest id ${quote(base.pipeline.id)}; every step is UNKNOWN`, "journal belongs to a different project");
   }
 
-  const held = readerEntries(text);
+  let held;
   const entries = [], ids = new Set();
   let footer = null, entryLines = 0, bad = 0, firstBad = null, other = 0, repeated = 0, afterFooter = 0;
   for (let n = first + 1; n < lines.length; n++) {
@@ -240,7 +240,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
       else if (beatTtl === null) { state = "UNKNOWN"; reason = "journal says RUNNING, but the journal header has no valid heartbeatTtlMs"; }
       // Nisi: an entry expires ttlMs after its createdAt, whatever its heartbeat says.
       else if (now >= made + e.ttlMs) { state = "UNKNOWN"; reason = `journal says RUNNING, but the entry expired ${e.ttlMs / 1000} s after it was created`; }
-      else if (!nisiEntry(e) || !held.has(e.id)) { state = "UNKNOWN"; reason = "journal says RUNNING, but the entry is not a valid Nisi journal entry held by its reader"; }
+      else if (!nisiEntry(e) || !(held ??= readerEntries(text)).has(e.id)) { state = "UNKNOWN"; reason = "journal says RUNNING, but the entry is not a valid Nisi journal entry held by its reader"; }
       else {
         // Fresh only inside both heartbeat windows, by Jaryo's clock: the manifest's staleAfterMs and the journal's
         // own heartbeatTtlMs. The header can only shorten the window, so it can only turn RUNNING into UNKNOWN.

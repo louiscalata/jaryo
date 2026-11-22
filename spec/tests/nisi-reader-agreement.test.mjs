@@ -201,7 +201,7 @@ const MUTANTS = [
   ["trim a legacy prefix despite trailing lines", `n + 1 === lines.length && !trailing`, `!trailing`],
   ["trim a legacy prefix despite unterminated trailing text", `&& !trailing;`, `;`],
   ["ignore header clock skew", `let future = nisiTime(header.now) && header.now > now + SKEW_MS;`, `let future = false;`],
-  ["ignore the reader-held entry gate", `!nisiEntry(e) || !held.has(e.id)`, `!nisiEntry(e)`],
+  ["ignore the reader-held entry gate", `!nisiEntry(e) || !(held ??= readerEntries(text)).has(e.id)`, `!nisiEntry(e)`],
 ];
 if (!failed) {
   const src = fs.readFileSync(adaptorPath, "utf8"), dir = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-reader-mut-"));
