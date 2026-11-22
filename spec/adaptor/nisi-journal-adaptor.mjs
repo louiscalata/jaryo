@@ -70,8 +70,11 @@ function redactionPaths(list) {
     if (typeof p !== "string" || !p.startsWith("payload.") || p.length < 9) return null;
     const a = p.split(".");
     if (a.some(k => !/^(?:[A-Za-z_][A-Za-z0-9_]*|0|[1-9][0-9]*)$/.test(k) || NISI_FORBIDDEN_KEYS.has(k))) return null;
-    if (paths.some(b => a.slice(0, Math.min(a.length, b.length)).every((k, i) => k === b[i]))) return null;
     paths.push(a);
+  }
+  const sorted = list.map(path => path + ".").sort();
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i].startsWith(sorted[i - 1])) return null;
   }
   return paths;
 }
