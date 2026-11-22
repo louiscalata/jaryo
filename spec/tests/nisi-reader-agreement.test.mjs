@@ -161,7 +161,7 @@ const MUTANTS = [
   ["accept paths outside payload", `!p.startsWith("payload.")`, `false`],
   ["accept invalid redaction segments", `!/^(?:[A-Za-z_][A-Za-z0-9_]*|0|[1-9][0-9]*)$/.test(k)`, `false`],
   ["accept forbidden redaction segments", `|| NISI_FORBIDDEN_KEYS.has(k))) return null;`, `)) return null;`],
-  ["accept overlapping redaction paths", `if (paths.some(b => a.slice(0, Math.min(a.length, b.length)).every((k, i) => k === b[i]))) return null;`, ``],
+  ["accept overlapping redaction paths", `if (sorted[i].startsWith(sorted[i - 1])) return null;`, ``],
   ["retain an unterminated final entry", `lines.pop(); // Nisi drops an unterminated final line.`, `if (!trailing) lines.pop();`],
   ["ignore exact envelope keys", `!exact(v, ["type", "seq", "previousHash", "record", "hash"])`, `false`],
   ["ignore envelope type", `v.type !== "entry"`, `false`],
