@@ -198,6 +198,19 @@ export function latestRecordFile(files) {
   return latest;
 }
 
+export function loadRecord(manifest, target, now) {
+  const files = fs.readdirSync(target);
+  for (let latest = latestRecordFile(files); latest !== null; latest = latestRecordFile(files)) {
+    const recordPath = path.join(target, latest);
+    if (fs.statSync(recordPath).isFile()) {
+      const text = fs.readFileSync(recordPath, "utf8");
+      return { view: buildView(manifest, text, now), inputPaths: [recordPath] };
+    }
+    files.splice(files.indexOf(latest), 1);
+  }
+  return { view: buildView(manifest, "", now), inputPaths: [] };
+}
+
 // Run as a CLI only when this file is the main module. Compare file URLs of the real path, so a path with a space,
 // a symlinked directory (macOS /tmp, /var) or a Windows drive path still matches.
 const isMain = () => { try { return !!process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; } };
@@ -205,7 +218,6 @@ if (isMain()) {
   const [manifestPath, runsDir] = process.argv.slice(2);
   if (!manifestPath) { console.error("usage: jaryo-adaptor.mjs <manifest.json> [runs-dir]"); process.exit(2); }
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-  let text = "";
-  if (runsDir && fs.existsSync(runsDir)) { const f = latestRecordFile(fs.readdirSync(runsDir)); if (f) text = fs.readFileSync(path.join(runsDir, f), "utf8"); }
-  process.stdout.write(JSON.stringify(buildView(manifest, text), null, 2) + "\n");
+  const view = runsDir && fs.existsSync(runsDir) ? loadRecord(manifest, runsDir).view : buildView(manifest, "");
+  process.stdout.write(JSON.stringify(view, null, 2) + "\n");
 }
