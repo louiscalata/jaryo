@@ -395,4 +395,4 @@ count += differential.count; failed += differential.failed;
 const security = await import(pathToFileURL(path.join(root, "tests/adaptor-security.test.mjs")));
 for (const r of security.suite(real)) { count++; console.log(r.pass ? "PASS" : "FAIL", r.name); if (!r.pass) failed++; }
 console.log(`${count - failed}/${count} passed`);
-process.exit(failed ? 1 : 0);
+process.exitCode = failed ? 1 : 0;

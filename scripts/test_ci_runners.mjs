@@ -6,6 +6,7 @@
 //   with a timeout and the same smoke commands and widths;
 // - every script path the workflow runs exists.
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -118,6 +119,39 @@ test("every script the workflow runs exists", () => {
   }
   assert.ok(count > 0, "found no script references");
   assert.deepEqual(missing, []);
+});
+
+test("Node warning policy reaches every Node test step and its children", () => {
+  const declaration = /^ {10}NODE_OPTIONS: &warnings-as-errors '([^']+)'$/m;
+  const alias = /^ {10}NODE_OPTIONS: \*warnings-as-errors$/m;
+  let nodeSteps = 0;
+  for (const job of jobs.values()) {
+    for (const step of steps(job)) {
+      if (!/\bnode\s+(?:--check\s+)?[\w./-]+\.m?js\b/.test(step.body)) continue;
+      assert.ok(declaration.test(step.body) || alias.test(step.body), `${job.id} runs Node without the warning policy`);
+      nodeSteps++;
+    }
+  }
+  assert.ok(nodeSteps > 0);
+
+  const options = declaration.exec(text)?.[1];
+  assert.ok(options);
+  const env = { ...process.env, NODE_OPTIONS: options.replace("${{ toJSON(github.workspace) }}", JSON.stringify(root)) };
+  const run = source => spawnSync(process.execPath, ["-e", source], { env, cwd: path.join(root, "spec"), encoding: "utf8" });
+  assert.equal(run("").status, 0);
+  for (const type of ["Warning", "DeprecationWarning"]) {
+    const source = `process.emitWarning("warning policy control", ${JSON.stringify(type)})`;
+    const result = run(source);
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /warning policy control/);
+  }
+  const nested = run(`
+    const { spawnSync } = require("node:child_process");
+    const result = spawnSync(process.execPath, ["-e", 'process.emitWarning("child warning policy control")'], { stdio: "inherit" });
+    process.exitCode = result.status;
+  `);
+  assert.equal(nested.status, 1, nested.stderr);
+  assert.match(nested.stderr, /child warning policy control/);
 });
 
 // Self-test of the parser on fixtures, so a parser bug cannot make the routing checks pass vacuously.

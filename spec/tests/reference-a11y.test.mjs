@@ -39,4 +39,4 @@ const unnamedRole = d => [...d.querySelectorAll("span[aria-label],pre[aria-label
   ok(d.getElementById("copied").getAttribute("aria-live") === "polite", "hero: the copy confirmation is a live region");
 }
 console.log(`${n - failed}/${n} passed`);
-process.exit(failed ? 1 : 0);
+process.exitCode = failed ? 1 : 0;

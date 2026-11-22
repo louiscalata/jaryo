@@ -29,6 +29,7 @@ jobs:
         run: npm install --prefix "$RUNNER_TEMP/jaryo-jsdom" --ignore-scripts --no-audit --no-fund jsdom@26.1.0
       - name: Lab checks
         env:
+          NODE_OPTIONS: &warnings-as-errors '--require=${{ toJSON(github.workspace) }}/scripts/warnings-as-errors.cjs'
           JARYO_JSDOM_PATH: ${{ runner.temp }}/jaryo-jsdom/node_modules/jsdom
         run: |
           python3 scripts/validate_lab.py
@@ -50,6 +51,7 @@ jobs:
       - name: Spec checks
         working-directory: spec
         env:
+          NODE_OPTIONS: *warnings-as-errors
           JSDOM: ${{ runner.temp }}/jaryo-jsdom/node_modules/jsdom
         run: |
           node pipeline/check-tokens.mjs
@@ -177,6 +179,8 @@ jobs:
           ln -sfn "$tmp/node_modules" node_modules
           retry 420 "$tmp/node_modules/.bin/playwright" install --with-deps firefox webkit
       - name: Smoke on Firefox and WebKit
+        env:
+          NODE_OPTIONS: *warnings-as-errors
         run: |
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-firefox.json --browser=firefox
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" /tmp/smoke-webkit.json --browser=webkit
@@ -207,6 +211,8 @@ jobs:
           fi
       - name: Forced-colors emulation smoke
         if: runner.os != 'Windows'
+        env:
+          NODE_OPTIONS: *warnings-as-errors
         run: node scripts/browser/forced-colors-smoke.mjs "$PWD" /tmp/forced-colors-emulation.json
 
   chromium:
@@ -223,6 +229,8 @@ jobs:
           ln -sfn "$tmp/node_modules" node_modules
           "$tmp/node_modules/.bin/playwright" install --with-deps chromium
       - name: Chromium smoke and axe
+        env:
+          NODE_OPTIONS: *warnings-as-errors
         run: |
           SMOKE_WIDTHS=1280,375,260 node scripts/browser/smoke.mjs "$PWD" "$RUNNER_TEMP/smoke-chromium.json" --browser=chromium
           node scripts/browser/axe-ci.mjs "$PWD" "$RUNNER_TEMP/axe-ci.json"

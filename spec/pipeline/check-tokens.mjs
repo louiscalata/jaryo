@@ -21,4 +21,4 @@ for (const f of ['reference', 'adaptor'].flatMap(htmlFiles).sort()) {
   if (!ok) bad++;
   console.log(`${ok ? 'PASS' : 'FAIL'} ${f}: ${hexes.length} hex literals${stray.length ? '; not in tokens: ' + stray.join(',') : ''}${funcs.length ? '; color functions: ' + funcs.join(',') : ''}${names.length ? '; named colors: ' + names.join(',') : ''}`);
 }
-process.exit(bad ? 1 : 0);
+process.exitCode = bad ? 1 : 0;

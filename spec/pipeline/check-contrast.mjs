@@ -15,4 +15,4 @@ const PAIRS = [
 ];
 let bad = 0;
 for (const [n, f, b, min] of PAIRS) { const r = ratio(f, b); const pass = r >= min; if (!pass) bad++; console.log(`${pass ? "PASS" : "FAIL"} ${n}: ${r.toFixed(2)}:1 (min ${min})`); }
-process.exit(bad ? 1 : 0);
+process.exitCode = bad ? 1 : 0;
