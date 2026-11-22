@@ -114,7 +114,6 @@ function importMerge(prior, incomingMap, incomingCatalog) {
   assert.doesNotMatch(html, /<label class="btn" for="import-file">/);
   assert.match(js, /refreshChoiceSurfaces/);
   assert.match(js, /schemaVersion:\s*1/);
-  assert.ok(js.includes(".replace(/'/g, \"&#39;\")"));
 }
 
 // esc() is used in attributes and text. A single quote must not survive raw.
@@ -129,6 +128,7 @@ function importMerge(prior, incomingMap, incomingCatalog) {
   assert.equal(esc("a'b"), "a&#39;b");
   assert.equal(esc("a&b<c>d\"e'f"), "a&amp;b&lt;c&gt;d&quot;e&#39;f");
   assert.equal(esc("it's"), "it&#39;s");
+  assert.equal(esc("&lt;&amp;&#39;"), "&amp;lt;&amp;amp;&amp;#39;");
   console.log("esc-quotes: PASS");
 }
 

@@ -295,12 +295,8 @@
   }
 
   function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    const entities = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+    return String(s == null ? "" : s).replace(/[&<>"']/g, (character) => entities[character]);
   }
 
   /* ---------- Distinct SVG / HTML previews (structure differs per ID) ---------- */
