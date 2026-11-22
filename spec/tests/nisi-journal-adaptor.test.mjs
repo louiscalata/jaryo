@@ -59,6 +59,24 @@ export async function suite(mod) {
   t("journal: SUCCEEDED is OK and FAILED is FAILED", st(v, "a") === "OK" && st(v, "b") === "FAILED");
   t("journal: a declared step with no entry is UNKNOWN, not inferred", st(v, "c") === "UNKNOWN" && /no journal entry/.test(why(v, "c")));
   t("journal: counts match the rows", v.review.counts.failed === 1 && v.review.counts.unknown === 1 && v.review.counts.total === 3 && v.review.consequentialSteps.join() === "c");
+  const parse = JSON.parse;
+  for (const [name, entries, expected, passes] of [
+    ["terminal entries require only display parsing",
+      [{ stage: "a", state: "SUCCEEDED" }, { stage: "b", state: "FAILED" }], ["OK", "FAILED"], 1],
+    ["eligible running rows share a single strict reader check",
+      [{ stage: "a", state: "RUNNING", heartbeatAt: T0 }, { stage: "b", state: "RUNNING", heartbeatAt: T0 }], ["RUNNING", "RUNNING"], 2],
+  ]) {
+    const input = J(entries);
+    const lines = input.trimEnd().split("\n").length;
+    let parsed = 0, view;
+    try {
+      JSON.parse = value => { parsed++; return parse(value); };
+      view = buildJournalView(M, input, now);
+    } finally {
+      JSON.parse = parse;
+    }
+    t(`journal: ${name}`, parsed <= passes * lines && st(view, "a") === expected[0] && st(view, "b") === expected[1]);
+  }
   // the synthetic Nisi sample (a copy of nisi fixtures/sample-data/journal.jsonl)
   const sample = fs.readFileSync(samplePath, "utf8");
   v = buildJournalView(SAMPLE_M, sample, now);
