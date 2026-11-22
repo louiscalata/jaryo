@@ -325,13 +325,13 @@ const mutations = [
   ],
   [
     "summary-count-zero",
-    "const n = acceptedChoiceCount();\n    let extra",
+    "const n = payload.acceptedCount;\n    let extra",
     "const n = 0;\n    let extra"
   ],
   [
     "summary-count-one-less",
-    "const n = acceptedChoiceCount();\n    let extra",
-    "const n = acceptedChoiceCount() - 1;\n    let extra"
+    "const n = payload.acceptedCount;\n    let extra",
+    "const n = payload.acceptedCount - 1;\n    let extra"
   ],
   [
     "summary-no-rows",
