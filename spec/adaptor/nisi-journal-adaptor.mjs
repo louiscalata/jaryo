@@ -79,14 +79,16 @@ function redactionPaths(list) {
   return paths;
 }
 function alreadyRedacted(e, paths) {
-  for (const a of paths) {
-    let cur = e;
-    for (const k of a.slice(0, -1)) {
-      if (!cur || typeof cur !== "object" || !Object.hasOwn(cur, k) || Array.isArray(cur) && !/^(0|[1-9][0-9]*)$/.test(k)) { cur = null; break; }
-      cur = cur[k];
+  for (const path of paths) {
+    let value = e;
+    let i = 0;
+    for (; i < path.length; i++) {
+      const key = path[i];
+      if (!value || typeof value !== "object" || !Object.hasOwn(value, key)
+        || Array.isArray(value) && !/^(0|[1-9][0-9]*)$/.test(key)) break;
+      value = value[key];
     }
-    const k = a.at(-1);
-    if (cur && typeof cur === "object" && Object.hasOwn(cur, k) && (!Array.isArray(cur) || /^(0|[1-9][0-9]*)$/.test(k)) && cur[k] !== "[REDACTED]") return false;
+    if (i === path.length && value !== "[REDACTED]") return false;
   }
   return true;
 }
