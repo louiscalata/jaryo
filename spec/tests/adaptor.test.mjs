@@ -18,6 +18,28 @@ async function suite(mod) {
   const st = (v, id) => v.steps.find(s => s.id === id).state;
   const now = T0 + 20 * 1000;
   let v;
+  const record = ["[]", '{"event":"run-start"}', '{"step":"a","status":"failed"}', "{", "7",
+    '{"step":"b","status":"ok"}'].join("\n");
+  const push = Array.prototype.push;
+  let warningOperands = 0;
+  try {
+    Array.prototype.push = function (...values) {
+      if (values.some(value => typeof value === "string" && value.startsWith("line "))) {
+        warningOperands = Math.max(warningOperands, values.length);
+      }
+      return push.apply(this, values);
+    };
+    v = buildView({ ...M, declares: { ...M.declares, actions: "" } }, record, now);
+  } finally {
+    Array.prototype.push = push;
+  }
+  t("record warnings are appended in source order without a variadic push",
+    warningOperands <= 1 && JSON.stringify(v.warnings) === JSON.stringify([
+      "manifest: declares.actions is not a list; no actions declared",
+      "line 1: not an object; earlier step evidence is untrusted",
+      "line 4: not valid JSON; earlier step evidence is untrusted",
+      "line 5: not an object; earlier step evidence is untrusted",
+    ]) && st(v, "a") === "UNKNOWN" && st(v, "b") === "OK");
   // copied statuses
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }, { step: "b", status: "failed", exit: 1 }, { step: "c", status: "blocked", reason: "needs b (failed)" }, { event: "run-end" }), now);
   t("ok/failed/blocked are copied from the record", st(v, "a") === "OK" && st(v, "b") === "FAILED" && st(v, "c") === "BLOCKED");

@@ -21,9 +21,9 @@ if (mode === "mutations") {
   add("return no corrupt boundaries", "return { events, warnings, invalidAt };", "return { events, warnings, invalidAt: [] };");
   add("move corrupt boundary forward", "invalidAt.push(events.length);", "invalidAt.push(events.length + 1);");
   add("move corrupt boundary backward", "invalidAt.push(events.length);", "invalidAt.push(events.length - 1);");
-  add("disable corrupt authority barrier", "const invalidAt = rec.invalidAt.reduce((last, i) => i > at ? Math.max(last, i) : last, -1);", "const invalidAt = -1;");
-  add("keep earliest instead of latest barrier", "i > at ? Math.max(last, i) : last", "i > at ? (last < 0 ? i : Math.min(last, i)) : last");
-  add("apply old corruption to missing step in new run", "i > at ? Math.max(last, i) : last", "Math.max(last, i)");
+  add("disable corrupt authority barrier", "const invalidAt = lastInvalid > at ? lastInvalid : -1;", "const invalidAt = -1;");
+  add("keep earliest instead of latest barrier", "const lastInvalid = rec.invalidAt.at(-1) ?? -1;", "const lastInvalid = rec.invalidAt.find(i => i > at) ?? -1;");
+  add("apply old corruption to missing step in new run", "const invalidAt = lastInvalid > at ? lastInvalid : -1;", "const invalidAt = lastInvalid;");
   add("invalidate immediate recovery", "Math.max(fi, si) < invalidAt", "Math.max(fi, si) <= invalidAt");
   add("trust superseded corrupt evidence", "Math.max(fi, si) < invalidAt", "false");
   add("require both a result and start to recover", "Math.max(fi, si) < invalidAt", "Math.min(fi, si) < invalidAt");
