@@ -865,7 +865,7 @@
     $("#summary-body").innerHTML = rows;
     const payload = exportPayload();
     $("#export-box").textContent = JSON.stringify(payload, null, 2);
-    const n = acceptedChoiceCount();
+    const n = payload.acceptedCount;
     let extra = "";
     const rejectedEntries = persistenceRejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
     if (rejectedEntries) {
