@@ -186,7 +186,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   }
 
   let held;
-  const entries = [], ids = new Set();
+  const entries = [], ids = new Set(), runs = new Set();
   let footer = null, entryLines = 0, bad = 0, firstBad = null, other = 0, repeated = 0, afterFooter = 0;
   for (let n = first + 1; n < lines.length; n++) {
     const raw = lines[n]; if (!raw.trim()) continue;
@@ -198,7 +198,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
     if (!e || !isId(e.id) || !isId(e.runId) || !isId(e.stage)) { bad++; if (firstBad === null) firstBad = n + 1; continue; }
     if (e.projectId !== projectId) { other++; continue; }
     if (ids.has(e.id)) { repeated++; continue; }
-    ids.add(e.id); entries.push(e);
+    ids.add(e.id); runs.add(e.runId); entries.push(e);
   }
   if (bad) warnings.push(`${bad} line${bad === 1 ? " is" : "s are"} not ${bad === 1 ? "a readable journal entry" : "readable journal entries"} and ${bad === 1 ? "was" : "were"} ignored (first: line ${firstBad})`);
   if (other) warnings.push(`${other} entr${other === 1 ? "y is" : "ies are"} for another project and ${other === 1 ? "was" : "were"} ignored`);
@@ -208,10 +208,9 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   else if (footer.count !== entryLines) warnings.push(`journal footer count ${quote(footer.count)} does not match its ${entryLines} entry lines`);
 
   // Scope to the run of the last entry.
-  const runs = [...new Set(entries.map(e => e.runId))];
   const runId = entries.length ? entries[entries.length - 1].runId : null;
-  if (runs.length > 1) warnings.push(`journal holds ${runs.length} runs; only the last (${quote(runId)}) is shown`);
-  const revokedBy = new Map(), latest = new Map(), stages = [];
+  if (runs.size > 1) warnings.push(`journal holds ${runs.size} runs; only the last (${quote(runId)}) is shown`);
+  const revokedBy = new Map(), latest = new Map();
   let future = nisiTime(header.now) && header.now > now + SKEW_MS;
   let earliestCreated = null, lastTs = null;
   for (const e of entries) {
@@ -224,7 +223,6 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
     if (heartbeat !== null) lastTs = Math.max(lastTs ?? heartbeat, heartbeat);
     if (e.state === "REVOKED") { if (isId(e.revokes)) revokedBy.set(e.revokes, e.id); }
     if (e.state === "REVOKED") continue;
-    if (!latest.has(e.stage)) stages.push(e.stage);
     latest.set(e.stage, e);
   }
   if (lastTs !== null && lastTs > now + SKEW_MS) future = true;
@@ -260,8 +258,12 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   });
 
   const declared = new Set(base.steps.map(s => s.id));
-  const undeclared = stages.filter(k => !declared.has(k)).map(k => ({
-    logId: k, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the journal mentions it" }));
+  const undeclared = [];
+  for (const stage of latest.keys()) {
+    if (!declared.has(stage)) undeclared.push({
+      logId: stage, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the journal mentions it",
+    });
+  }
   const startedAt = !future && earliestCreated !== null ? new Date(earliestCreated).toJSON() : null;
   const run = runId === null ? null : { id: runId, startedAt, endedAt: null, state: steps.some(s => s.state === "RUNNING") ? "running" : "unknown" };
   return finish(steps, undeclared, run, future ? null : lastTs);
