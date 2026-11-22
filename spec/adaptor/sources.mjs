@@ -33,7 +33,7 @@ export const SOURCES = Object.freeze({
 export function connectWithInputs({ kind, manifestPath, target, now = Date.now() }) {
   if (!manifestPath) throw new Error("missing manifest");
   if (!target) throw new Error("missing target");
-  const src = SOURCES[kind];
+  const src = Object.getOwnPropertyDescriptor(SOURCES, kind)?.value;
   if (!src) throw new Error(`unknown kind: ${kind}`);
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const loaded = src.loadWithInputs(manifest, target, now);

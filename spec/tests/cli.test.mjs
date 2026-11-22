@@ -58,6 +58,8 @@ ok(JSON.stringify(JSON.parse(r.stdout).steps) === JSON.stringify(expected.steps)
 
 r = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--kind", "nope"], { encoding: "utf8" });
 ok(r.status === 2 && !/^\s*at /m.test(r.stderr), "unknown kind no stack");
+r = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", path.join(tmp, "missing-manifest.json"), "--kind", "toString"], { encoding: "utf8" });
+ok(r.status === 2 && r.stdout === "" && r.stderr === "unknown kind: toString\n", "an unregistered inherited kind is refused before reading the manifest");
 r = spawnSync(process.execPath, [cli, "connect", journal], { encoding: "utf8" });
 ok(r.status === 2, "missing manifest exits 2");
 
