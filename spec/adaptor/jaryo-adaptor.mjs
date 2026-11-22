@@ -29,11 +29,26 @@ function readHeartbeat(decl, warnings) {
 export function readRecord(text) {
   const events = [], warnings = [], invalidAt = [];
   const body = String(text || "").replace(/^﻿/, "");
-  body.split("\n").forEach((line, i) => {
-    if (!line.trim()) return;
-    try { const o = JSON.parse(line); if (o && typeof o === "object" && !Array.isArray(o)) events.push(o); else { invalidAt.push(events.length); warnings.push(`line ${i + 1}: not an object; earlier step evidence is untrusted`); } }
-    catch { invalidAt.push(events.length); warnings.push(`line ${i + 1}: not valid JSON; earlier step evidence is untrusted`); }
-  });
+  let start = 0;
+  for (let lineNumber = 1; start < body.length; lineNumber++) {
+    const newline = body.indexOf("\n", start);
+    const end = newline === -1 ? body.length : newline;
+    const line = body.slice(start, end);
+    start = end + 1;
+    if (!line.trim()) continue;
+    try {
+      const event = JSON.parse(line);
+      if (event && typeof event === "object" && !Array.isArray(event)) {
+        events.push(event);
+      } else {
+        invalidAt.push(events.length);
+        warnings.push(`line ${lineNumber}: not an object; earlier step evidence is untrusted`);
+      }
+    } catch {
+      invalidAt.push(events.length);
+      warnings.push(`line ${lineNumber}: not valid JSON; earlier step evidence is untrusted`);
+    }
+  }
   return { events, warnings, invalidAt };
 }
 
