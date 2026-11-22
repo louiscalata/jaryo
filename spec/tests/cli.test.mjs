@@ -34,6 +34,19 @@ ok(r.stdout.includes("OK       fixed-run"), "summary has fixed-run");
 ok(r.stdout.includes("UNKNOWN  tests"), "summary has tests unknown");
 ok(r.stdout.includes("unauthenticated"), "summary mentions unauthenticated");
 
+for (const [option, error] of [["--kind", "missing kind"], ["--out", "missing output path"]]) {
+  for (const flags of [[], ["--json"]]) {
+    const result = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, ...flags, option], { encoding: "utf8" });
+    ok(result.status === 2 && result.stdout === "" && result.stderr === `${error}\n`,
+      `${option} requires a value when requesting ${flags.length ? "JSON" : "a summary"}`);
+  }
+}
+
+const emptyOptions = spawnSync(process.execPath,
+  [cli, "connect", journal, "--manifest", manifest, "--kind", "", "--out", ""], { encoding: "utf8" });
+ok(emptyOptions.status === 0 && emptyOptions.stderr === "" && emptyOptions.stdout === r.stdout,
+  "explicit empty option values keep the existing summary behavior");
+
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-"));
 const out = path.join(tmp, "view.html");
 r = spawnSync(process.execPath, [cli, "connect", journal, "--manifest", manifest, "--out", out], { encoding: "utf8" });
