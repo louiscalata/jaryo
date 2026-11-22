@@ -64,7 +64,6 @@ export function buildView(manifest, recordText, now = Date.now()) {
   const rec = readRecord(recordText); warnings.push(...rec.warnings);
   const all = rec.events;
 
-  // Scope to the last run in the file.
   let at = -1;
   let runStarts = 0;
   all.forEach((event, index) => {
@@ -74,17 +73,26 @@ export function buildView(manifest, recordText, now = Date.now()) {
     }
   });
   if (runStarts > 1) warnings.push(`record holds ${runStarts} runs; only the last is shown`);
-  const events = at >= 0 ? all.slice(at) : all;
   const started = at >= 0 ? all[at] : null;
-  const belongsToRun = e => (started === null || e.run === undefined || started.run === undefined || e.run === started.run);
-  const current = events.filter(belongsToRun);
-  if (current.length !== events.length) warnings.push("events in the record belong to a different run and were ignored");
+  const start = Math.max(0, at);
+  const current = [];
+  const byStep = new Map();
+  for (let index = start; index < all.length; index++) {
+    const event = all[index];
+    if (started !== null && event.run !== undefined && started.run !== undefined && event.run !== started.run) continue;
+    current.push(event);
+    if (typeof event.step === "string") {
+      const entries = byStep.get(event.step) || [];
+      entries.push([index, event]);
+      byStep.set(event.step, entries);
+    }
+  }
+  if (current.length !== all.length - start) warnings.push("events in the record belong to a different run and were ignored");
   const ended = current.find(e => e.event === "run-end") || null;
   if (!started && current.some(e => e.step)) warnings.push("record has step events but no run-start; the run state is unknown");
   // An unreadable line may hide a restart. Keep original event coordinates:
   // filtering foreign events must not move evidence across this boundary.
   const invalidAt = rec.invalidAt.reduce((last, i) => i > at ? Math.max(last, i) : last, -1);
-  const positions = new Map(all.map((e, i) => [e, i]));
 
   // Timestamps: valid strings only; a timestamp ahead of now is not trusted.
   const stampOf = e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN);
@@ -100,9 +108,6 @@ export function buildView(manifest, recordText, now = Date.now()) {
   const dup = new Set(); const seen = new Set();
   for (const s of man.steps) { if (seen.has(s.id)) dup.add(s.id); seen.add(s.id); }
   if (dup.size) warnings.push(`manifest declares ${[...dup].join(", ")} more than once`);
-
-  const byStep = new Map();
-  current.forEach(e => { if (typeof e.step === "string") { const a = byStep.get(e.step) || []; a.push([positions.get(e), e]); byStep.set(e.step, a); } });
 
   const steps = man.steps.map(s => {
     const evs = byStep.get(s.id) || [];
