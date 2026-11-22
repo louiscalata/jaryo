@@ -1047,7 +1047,8 @@
 
   function choose(optId) {
     const famId = optId.slice(0, 3);
-    if (!DATA || !familyById(famId) || !familyById(famId).options.some((o) => o.id === optId)) {
+    const family = DATA && familyById(famId);
+    if (!family || !family.options.some((o) => o.id === optId)) {
       toast("Ignored invalid option id.");
       return;
     }
