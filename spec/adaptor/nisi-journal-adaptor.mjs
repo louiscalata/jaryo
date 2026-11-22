@@ -147,8 +147,13 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   const source = { format: JOURNAL_SCHEMA, authenticated: false, chainChecked: false, projectId: null };
   const keep = s => (s.reason === DUP_REASON ? s.reason : null);
   const finish = (steps, undeclared, run, lastTs) => {
-    const counts = { total: steps.length, blocked: steps.filter(s => s.state === "BLOCKED").length, failed: steps.filter(s => s.state === "FAILED").length,
-      unknown: steps.filter(s => s.state === "UNKNOWN").length + undeclared.length, review: steps.filter(s => s.state === "REVIEW").length };
+    const counts = { total: steps.length, blocked: 0, failed: 0, unknown: undeclared.length, review: 0 };
+    for (const { state } of steps) {
+      if (state === "BLOCKED") counts.blocked++;
+      else if (state === "FAILED") counts.failed++;
+      else if (state === "UNKNOWN") counts.unknown++;
+      else if (state === "REVIEW") counts.review++;
+    }
     return { schema: base.schema, generatedAt: base.generatedAt, lastEventAt: lastTs !== null ? new Date(lastTs).toJSON() : null,
       pipeline: base.pipeline, run, capabilities: base.capabilities, actions: base.actions, steps, undeclared,
       review: { consequentialSteps: base.review.consequentialSteps, counts }, warnings, source };
