@@ -180,11 +180,11 @@ export function buildView(manifest, recordText, now = Date.now()) {
 export function latestRecordFile(files) {
   const re = /^run-(\d+)\.jsonl$/;
   let latest = null;
-  let number = -1;
+  let number = -1n;
   files.forEach(file => {
     const match = re.exec(file);
     if (!match) return;
-    const value = parseInt(match[1], 10);
+    const value = BigInt(match[1]);
     if (value >= number) {
       latest = file;
       number = value;
