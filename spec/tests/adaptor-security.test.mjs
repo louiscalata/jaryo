@@ -176,6 +176,9 @@ export function suite({ buildView, readRecord }) {
   test("ordinary token-check filenames are not credential assignments", () => {
     assert.deepEqual(tailView(["pipeline/check-tokens.mjs: OK"]), ["pipeline/check-tokens.mjs: OK"]);
   });
+  test("assignment-shaped status text can be masked while adjacent output stays visible", () => {
+    assert.deepEqual(tailView(["pipeline/check-tokens: OK", "validation finished"]), ["pipeline/check-tokens: [REDACTED]", "validation finished"]);
+  });
   test("empty output remains empty instead of becoming a blank line", () => {
     assert.deepEqual(tailView([]), []); assert.deepEqual(tailView([""]), [""]);
   });

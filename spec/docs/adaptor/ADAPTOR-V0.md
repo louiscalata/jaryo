@@ -84,14 +84,14 @@ Output tails are redacted before selecting the last six lines and capping each
 at 500 characters. The patterns cover Bearer/Basic authorization, credential
 assignments (including quoted values with escapes), URL user/password pairs,
 common provider-token forms and multiline private-key blocks, including an
-unterminated block. Empty output remains empty. Ordinary output, including
-token-check filenames, stays visible. This filtering does not guarantee removal
-of arbitrary secrets in prose or unfamiliar encodings. Raw JSONL files are not
-rewritten and still require private custody. The rule applies to sample-record
-output; the separate Nisi reader's authority and clock rules are unchanged.
+unterminated block. Empty output remains empty. The filter can mask ordinary
+status text when a line resembles a credential assignment. Secrets written in
+ordinary prose or unfamiliar encodings may remain visible. Raw JSONL files
+remain intact and require private custody. This rule applies to sample-record
+output. The separate Nisi reader follows its own authority and clock rules.
 
 ## What is tested
-`tests/adaptor.test.mjs`: the combined entry point passes 587/587 checks, including the sample-record adaptor and runner, the Nisi journal and reader checks, corpus replay and 70 focused security checks. Existing heartbeat, caller-clock, explicit FAILED-reason and runner cases remain covered.
+`tests/adaptor.test.mjs`: the combined entry point passes 602/602 checks, including the sample-record adaptor and runner, the Nisi journal and reader checks, corpus replay and 76 focused security checks. Existing heartbeat, caller-clock, explicit FAILED-reason and runner cases remain covered.
 
 `tests/nisi-journal-adaptor.test.mjs`: 360/360 checks through the existing CI entry point. Journal coverage contributes 134 checks, including the synthetic sample fixture, CLI, bounded file reads, copied states, heartbeat boundaries and 26 mutants. Its liveness fixtures use canonical text, real hashes and a header clock at or after creation. A header more than 60 s ahead prevents RUNNING.
 
@@ -101,11 +101,11 @@ output; the separate Nisi reader's authority and clock rules are unchanged.
 
 `tests/render.test.mjs`: 51/51 checks, needs `JSDOM`. A hostile view document (script close tags, an img with an onerror handler, markup, U+2028, comment openers in names, ids, reasons and output) must not create an element or a script; wrong or incomplete documents are refused, not half-rendered; an old snapshot never shows RUNNING; the page says it is read-only; a FAILED row and a BLOCKED row are styled apart. Captured credentials must be absent from both generated HTML and the rendered inspector, while ordinary output remains visible. The checks also run from a copied path containing special characters.
 
-`tests/adaptor-security.test.mjs`: 70/70 checks for corruption boundaries and
+`tests/adaptor-security.test.mjs`: 76/76 checks for corruption boundaries and
 per-step recovery, foreign-run exclusion, existing per-step heartbeat rules,
-redaction before tail selection, empty output and ordinary text. Against the
-pre-change sample adaptor, 20/70 pass and 50 fail. The focused suite is imported
-by the existing adaptor entry point.
+redaction before tail selection, empty output, and ordinary text. The earlier
+70-case suite passed 20 and failed 50 against the pre-change sample adaptor.
+The existing adaptor entry point imports the focused suite.
 
 `tests/adaptor-security-harness.mjs`: all 48 distinct behavioral mutants are
 caught by named assertions after successful imports; import errors, syntax
