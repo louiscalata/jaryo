@@ -107,14 +107,26 @@
     if ("catalogVersion" in detail) envelopeCatalogVersion = detail.catalogVersion;
     const event = next;
     const count = Object.keys(choices).length;
-    if (next === "normalized" || next === "saved" || next === "imported") {
-      // A catalog-version diagnostic alone describes no stored entry: an empty
-      // envelope from another catalog (what Reset used to write) is missing.
-      const entryRejects = persistenceRejects.filter((r) => r.key !== "(catalogVersion)");
-      if (!count && !entryRejects.length) persistenceRejects = [];
-      next = persistenceRejects.some((r) => r.reason === "catalog-mismatch") && count ? "catalog-mismatch"
-        : entryRejects.length ? (count || next !== "normalized" ? "partial" : "malformed")
-        : count ? "valid" : "missing";
+    const inferStatus = next === "normalized" || next === "saved" || next === "imported";
+    const reportRejects = detail.reportRejects;
+    let rejectedEntries = 0;
+    if (inferStatus || reportRejects) {
+      let hasEntryRejects = false;
+      let catalogMismatch = false;
+      for (const rejection of persistenceRejects) {
+        const key = rejection.key;
+        if (key !== "(catalogVersion)") {
+          hasEntryRejects = true;
+          if (key !== "(root)") rejectedEntries += 1;
+        }
+        catalogMismatch ||= inferStatus && rejection.reason === "catalog-mismatch";
+      }
+      if (inferStatus) {
+        if (!count && !hasEntryRejects) persistenceRejects = [];
+        next = catalogMismatch && count ? "catalog-mismatch"
+          : hasEntryRejects ? (count || next !== "normalized" ? "partial" : "malformed")
+          : count ? "valid" : "missing";
+      }
     }
     const view = persistenceView[next];
     if (!view) throw new Error("Unknown persistence state: " + next);
@@ -144,8 +156,7 @@
     if (detail.source === "conflict-clear") words = "Another tab cleared saved selections before this save. This tab did not write." + keptOnScreen;
     if (detail.source === "conflict-warn") words = "Another tab wrote selections this tab could not read. This tab did not write. A save here would overwrite that tab.";
     if (detail.keepMessage) words = storageMsg;
-    const rejectedEntries = persistenceRejects.filter((r) => r.key !== "(root)" && r.key !== "(catalogVersion)").length;
-    if (detail.reportRejects && rejectedEntries) words += ` Rejected ${rejectedEntries} invalid stored entr${rejectedEntries === 1 ? "y" : "ies"} (status=${view.value}).`;
+    if (reportRejects && rejectedEntries) words += ` Rejected ${rejectedEntries} invalid stored entr${rejectedEntries === 1 ? "y" : "ies"} (status=${view.value}).`;
     storageMsg = words;
     if (event === "normalized" && !persistenceRejects.length) recoveryRaw = null;
     const banner = $("#storage-banner");
