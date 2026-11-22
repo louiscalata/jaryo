@@ -54,6 +54,21 @@ export async function suite(mod) {
     let result = null; try { result = buildJournalView(M, "", valid); } catch {}
     t(`journal: a valid now (${valid}) keeps its Date representation`, result?.generatedAt === new Date(valid).toISOString());
   }
+  const dateLimit = 8640000000000000;
+  const limitIso = "+275760-09-13T00:00:00.000Z";
+  for (const [name, entries, start, latest, states] of [
+    ["keeps representable dates at the Date limit", [{ createdAt: dateLimit }], limitIso, limitIso, ["OK", "UNKNOWN", "UNKNOWN"]],
+    ["keeps terminal evidence with unrepresentable dates", [{ createdAt: dateLimit + 1 }], null, null, ["OK", "UNKNOWN", "UNKNOWN"]],
+    ["keeps a representable start when the latest date is unrepresentable",
+      [{ createdAt: dateLimit }, { stage: "b", createdAt: dateLimit + 1, state: "FAILED" }], limitIso, null, ["OK", "FAILED", "UNKNOWN"]],
+    ["keeps reader-held liveness within skew with unrepresentable dates",
+      [{ createdAt: dateLimit + 1, heartbeatAt: dateLimit + 1, state: "RUNNING" }], null, null, ["RUNNING", "UNKNOWN", "UNKNOWN"]],
+  ]) {
+    let result;
+    try { result = buildJournalView(M, J(entries), dateLimit); } catch {}
+    t(`journal: ${name}`, result?.run?.startedAt === start && result?.lastEventAt === latest
+      && result.steps.map(step => step.state).join() === states.join());
+  }
   // copied statuses
   v = buildJournalView(M, J([{ stage: "a", state: "SUCCEEDED" }, { stage: "b", state: "FAILED" }]), now);
   t("journal: SUCCEEDED is OK and FAILED is FAILED", st(v, "a") === "OK" && st(v, "b") === "FAILED");

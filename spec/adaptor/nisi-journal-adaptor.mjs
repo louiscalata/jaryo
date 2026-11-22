@@ -149,7 +149,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   const finish = (steps, undeclared, run, lastTs) => {
     const counts = { total: steps.length, blocked: steps.filter(s => s.state === "BLOCKED").length, failed: steps.filter(s => s.state === "FAILED").length,
       unknown: steps.filter(s => s.state === "UNKNOWN").length + undeclared.length, review: steps.filter(s => s.state === "REVIEW").length };
-    return { schema: base.schema, generatedAt: base.generatedAt, lastEventAt: lastTs !== null ? new Date(lastTs).toISOString() : null,
+    return { schema: base.schema, generatedAt: base.generatedAt, lastEventAt: lastTs !== null ? new Date(lastTs).toJSON() : null,
       pipeline: base.pipeline, run, capabilities: base.capabilities, actions: base.actions, steps, undeclared,
       review: { consequentialSteps: base.review.consequentialSteps, counts }, warnings, source };
   };
@@ -257,7 +257,7 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   const declared = new Set(base.steps.map(s => s.id));
   const undeclared = stages.filter(k => !declared.has(k)).map(k => ({
     logId: k, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the journal mentions it" }));
-  const startedAt = !future && created.length ? new Date(Math.min(...created)).toISOString() : null;
+  const startedAt = !future && created.length ? new Date(Math.min(...created)).toJSON() : null;
   const run = runId === null ? null : { id: runId, startedAt, endedAt: null, state: steps.some(s => s.state === "RUNNING") ? "running" : "unknown" };
   return finish(steps, undeclared, run, lastTs);
 }
