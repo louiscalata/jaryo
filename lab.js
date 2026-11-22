@@ -122,8 +122,6 @@
         catalogMismatch ||= inferStatus && rejection.reason === "catalog-mismatch";
       }
       if (inferStatus) {
-        // A catalog-version diagnostic alone describes no stored entry: an empty
-        // envelope from another catalog (what Reset used to write) is missing.
         if (!count && !hasEntryRejects) persistenceRejects = [];
         next = catalogMismatch && count ? "catalog-mismatch"
           : hasEntryRejects ? (count || next !== "normalized" ? "partial" : "malformed")
