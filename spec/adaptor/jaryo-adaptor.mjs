@@ -171,8 +171,18 @@ export function buildView(manifest, recordText, now = Date.now()) {
 
 export function latestRecordFile(files) {
   const re = /^run-(\d+)\.jsonl$/;
-  const list = files.map(f => [f, re.exec(f)]).filter(([, m]) => m).map(([f, m]) => [f, parseInt(m[1], 10)]).sort((a, b) => a[1] - b[1]);
-  return list.length ? list[list.length - 1][0] : null;
+  let latest = null;
+  let number = -1;
+  files.forEach(file => {
+    const match = re.exec(file);
+    if (!match) return;
+    const value = parseInt(match[1], 10);
+    if (value >= number) {
+      latest = file;
+      number = value;
+    }
+  });
+  return latest;
 }
 
 // Run as a CLI only when this file is the main module. Compare file URLs of the real path, so a path with a space,
