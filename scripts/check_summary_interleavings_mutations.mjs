@@ -360,8 +360,8 @@ const mutations = [
   ],
   [
     "choose-reject-valid-options",
-    "!familyById(famId).options.some((o) => o.id === optId)",
-    "familyById(famId).options.some((o) => o.id === optId)"
+    "!family.options.some((o) => o.id === optId)",
+    "family.options.some((o) => o.id === optId)"
   ],
   [
     "choose-empty-pending",
