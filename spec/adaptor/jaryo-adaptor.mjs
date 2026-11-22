@@ -75,32 +75,44 @@ export function buildView(manifest, recordText, now = Date.now()) {
   if (runStarts > 1) warnings.push(`record holds ${runStarts} runs; only the last is shown`);
   const started = at >= 0 ? all[at] : null;
   const start = Math.max(0, at);
-  const current = [];
   const byStep = new Map();
+  let accepted = 0;
+  let ended = null;
+  let hasStep = false;
+  let lastTs = null;
   for (let index = start; index < all.length; index++) {
     const event = all[index];
     if (started !== null && event.run !== undefined && started.run !== undefined && event.run !== started.run) continue;
-    current.push(event);
-    if (typeof event.step === "string") {
-      const entries = byStep.get(event.step) || [];
-      entries.push([index, event]);
-      byStep.set(event.step, entries);
+    accepted++;
+    if (ended === null && event.event === "run-end") ended = event;
+    if (event.step) hasStep = true;
+    const parsed = typeof event.ts === "string" ? Date.parse(event.ts) : NaN;
+    const stamp = Number.isFinite(parsed) ? parsed : null;
+    if (stamp !== null && (lastTs === null || stamp > lastTs)) lastTs = stamp;
+    if (typeof event.step !== "string") continue;
+
+    let evidence = byStep.get(event.step);
+    if (evidence === undefined) {
+      evidence = { fi: -1, si: -1, final: null, beat: null };
+      byStep.set(event.step, evidence);
+    }
+    if (event.status !== undefined && event.status !== null && event.status !== "") {
+      evidence.fi = index;
+      evidence.final = event;
+    }
+    if (event.event === "step-start") {
+      evidence.si = index;
+      evidence.beat = stamp;
+    } else if (event.event === "heartbeat" && evidence.si >= 0 && stamp !== null && (evidence.beat === null || stamp > evidence.beat)) {
+      evidence.beat = stamp;
     }
   }
-  if (current.length !== all.length - start) warnings.push("events in the record belong to a different run and were ignored");
-  const ended = current.find(e => e.event === "run-end") || null;
-  if (!started && current.some(e => e.step)) warnings.push("record has step events but no run-start; the run state is unknown");
-  // An unreadable line may hide a restart. Keep original event coordinates:
-  // filtering foreign events must not move evidence across this boundary.
+  if (accepted !== all.length - start) warnings.push("events in the record belong to a different run and were ignored");
+  if (!started && hasStep) warnings.push("record has step events but no run-start; the run state is unknown");
   const invalidAt = rec.invalidAt.reduce((last, i) => i > at ? Math.max(last, i) : last, -1);
 
-  // Timestamps: valid strings only; a timestamp ahead of now is not trusted.
-  const stampOf = e => (typeof e.ts === "string" ? Date.parse(e.ts) : NaN);
-  const stamps = current.map(stampOf).filter(Number.isFinite);
-  let lastTs = stamps.reduce((latest, ts) => latest === null || ts > latest ? ts : latest, null);
   if (lastTs !== null && lastTs > now + SKEW_MS) { warnings.push("record has a timestamp in the future; liveness cannot be judged"); lastTs = null; }
   const runOpen = !!started && !ended;
-  // Liveness is judged only against the window the manifest declares. No declared heartbeat: never RUNNING.
   const hb = man.heartbeat;
   const fresh = ts => hb !== null && ts !== null && now - ts <= hb.staleAfterMs;
   const live = runOpen && lastTs !== null && fresh(lastTs);
@@ -110,9 +122,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   if (dup.size) warnings.push(`manifest declares ${[...dup].join(", ")} more than once`);
 
   const steps = man.steps.map(s => {
-    const evs = byStep.get(s.id) || [];
-    let fi = -1, si = -1, final = null;
-    for (const [i, e] of evs) { if (e.status !== undefined && e.status !== null && e.status !== "") { fi = i; final = e; } if (e.event === "step-start") si = i; }
+    const { fi = -1, si = -1, final = null, beat = null } = byStep.get(s.id) || {};
     let state, reason = null, record = null;
     if (dup.has(s.id)) { state = "UNKNOWN"; reason = "manifest declares this id more than once"; }
     else if (Math.max(fi, si) < invalidAt) { state = "UNKNOWN"; reason = "an invalid record line may hide a later step event"; }
@@ -129,9 +139,6 @@ export function buildView(manifest, recordText, now = Date.now()) {
         record = final;
       } else { state = "UNKNOWN"; reason = `record has an unrecognised status "${String(final.status).slice(0, 24)}"`; record = final; }
     } else if (si >= 0) {
-      // This step's own newest sign of life: its latest step-start or a heartbeat after it.
-      const beats = evs.filter(([i, e]) => i >= si && (e.event === "step-start" || e.event === "heartbeat")).map(([, e]) => stampOf(e)).filter(Number.isFinite);
-      const beat = lastTs !== null ? beats.reduce((latest, ts) => latest === null || ts > latest ? ts : latest, null) : null;
       if (live && fresh(beat)) { state = "RUNNING"; reason = fi >= 0 ? "started again after an earlier result" : null; }
       else {
         state = "UNKNOWN";
@@ -173,7 +180,7 @@ export function buildView(manifest, recordText, now = Date.now()) {
   const counts = { total: steps.length, blocked: steps.filter(s => s.state === "BLOCKED").length, failed: steps.filter(s => s.state === "FAILED").length,
     unknown: steps.filter(s => s.state === "UNKNOWN").length + undeclared.length, review: steps.filter(s => s.state === "REVIEW").length };
   const run = started ? { id: started.run ?? null, startedAt: typeof started.ts === "string" ? started.ts : null, endedAt: ended && typeof ended.ts === "string" ? ended.ts : null, state: ended ? "ended" : live ? "running" : "unknown" }
-    : (current.some(e => e.step) ? { id: null, startedAt: null, endedAt: null, state: "unknown" } : null);
+    : (hasStep ? { id: null, startedAt: null, endedAt: null, state: "unknown" } : null);
   return {
     schema: "jaryo-view/0", generatedAt: new Date(now).toISOString(), lastEventAt: lastTs !== null ? new Date(lastTs).toISOString() : null,
     pipeline: { id: man.id, name: man.name }, run,
