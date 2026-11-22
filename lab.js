@@ -1312,12 +1312,11 @@
   }
 
   function mapsEqual(a, b) {
-    const aKeys = Object.keys(a || {}).sort();
-    const bKeys = Object.keys(b || {}).sort();
-    if (aKeys.length !== bKeys.length) return false;
-    for (let i = 0; i < aKeys.length; i++) {
-      if (aKeys[i] !== bKeys[i]) return false;
-      if (a[aKeys[i]] !== b[bKeys[i]]) return false;
+    const aKeys = Object.keys(a || {});
+    if (aKeys.length !== Object.keys(b || {}).length) return false;
+    for (const key of aKeys) {
+      if (!Object.prototype.propertyIsEnumerable.call(b, key)) return false;
+      if (a[key] !== b[key]) return false;
     }
     return true;
   }
