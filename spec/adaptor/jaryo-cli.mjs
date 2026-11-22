@@ -56,6 +56,8 @@ export function main(argv) {
     const target = args._[1];
     if (!target) return err("missing target");
     if (!args.manifest) return err("missing manifest");
+    if (Object.hasOwn(args, "kind") && args.kind === undefined) return err("missing kind");
+    if (Object.hasOwn(args, "out") && args.out === undefined) return err("missing output path");
     let kind = args.kind;
     let statTarget = null;
     try { statTarget = fs.statSync(target); } catch { return err("missing target"); }
