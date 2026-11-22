@@ -137,7 +137,9 @@ test("Node warning policy reaches every Node test step and its children", () => 
   const options = declaration.exec(text)?.[1];
   assert.ok(options);
   const env = { ...process.env, NODE_OPTIONS: options.replace("${{ toJSON(github.workspace) }}", JSON.stringify(root)) };
-  const run = source => spawnSync(process.execPath, ["-e", source], { env, cwd: path.join(root, "spec"), encoding: "utf8" });
+  const run = (source, ...args) => spawnSync(process.execPath, [...args, "-e", source], {
+    env, cwd: path.join(root, "spec"), encoding: "utf8",
+  });
   assert.equal(run("").status, 0);
   for (const type of ["Warning", "DeprecationWarning"]) {
     const source = `process.emitWarning("warning policy control", ${JSON.stringify(type)})`;
@@ -152,6 +154,11 @@ test("Node warning policy reaches every Node test step and its children", () => 
   `);
   assert.equal(nested.status, 1, nested.stderr);
   assert.match(nested.stderr, /child warning policy control/);
+
+  const startup = run("", "--experimental-loader=data:text/javascript,");
+  assert.equal(startup.status, 1, "Node startup warning must be fatal");
+  assert.match(startup.stderr, /ExperimentalWarning/);
+  assert.match(startup.stderr, /--experimental-loader/);
 });
 
 // Self-test of the parser on fixtures, so a parser bug cannot make the routing checks pass vacuously.
