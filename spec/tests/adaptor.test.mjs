@@ -104,6 +104,12 @@ async function suite(mod) {
   t("a step started again after a result no longer shows the old result", st(v, "a") === "RUNNING" && /again/.test(v.steps[0].reason));
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }, { step: "a", event: "step-start" }), T0 + 10 * 60000);
   t("restarted and stale: UNKNOWN, with the superseded result noted", st(v, "a") === "UNKNOWN" && /superseded/.test(v.steps[0].reason));
+  v = buildView(M, rec([0, { event: "run-start" }], [800000, { step: "a", event: "step-start" }],
+    [900000, { step: "a", event: "heartbeat" }], [950000, { step: "a", event: "step-start", ts: "invalid" }]), T0 + 960000);
+  t("a restart with an invalid timestamp cannot use a heartbeat from before it", st(v, "a") === "UNKNOWN");
+  v = buildView(M, rec([0, { event: "run-start" }], [800000, { step: "a", event: "step-start" }],
+    [900000, { step: "a", event: "heartbeat" }], [810000, { step: "a", event: "heartbeat" }]), T0 + 960000);
+  t("out-of-order heartbeat timestamps use the newest valid time, not the last line", st(v, "a") === "RUNNING");
   // review
   v = buildView(M, L({ event: "run-start" }, { step: "c", status: "review", reason: "paid" }, { event: "run-end" }), now);
   t("a consequential step recorded as review is REVIEW and listed as consequential", st(v, "c") === "REVIEW" && v.review.consequentialSteps.includes("c"));
@@ -208,17 +214,28 @@ for (const r of await suite(real)) { count++; console.log(r.pass ? "PASS" : "FAI
 {
   const timestamp = new Date(T0 + 1000).toISOString();
   const heartbeat = JSON.stringify({ step: "a", event: "heartbeat", run: 1, ts: timestamp });
-  const records = [
+  const lines = [
     JSON.stringify({ event: "run-start", run: 1, ts: timestamp }),
     JSON.stringify({ step: "a", event: "step-start", run: 1, ts: timestamp }),
     ...Array(150000).fill(heartbeat),
-  ].join("\n");
-  let largeView = null;
-  try { largeView = real.buildView(M, records, T0 + 2000); } catch {}
-  count++;
-  const pass = largeView?.steps[0]?.state === "RUNNING";
-  console.log(pass ? "PASS" : "FAIL", "adaptor: a valid large heartbeat record remains readable");
-  if (!pass) failed++;
+  ];
+  const dateParse = Date.parse;
+  let parsed = 0;
+  let largeView;
+  try {
+    Date.parse = value => { parsed++; return dateParse(value); };
+    largeView = real.buildView(M, lines.join("\n"), T0 + 2000);
+  } finally {
+    Date.parse = dateParse;
+  }
+  for (const [pass, name] of [
+    [largeView.steps[0].state === "RUNNING", "adaptor: a valid large heartbeat record remains readable"],
+    [parsed <= lines.length, "adaptor: selected event timestamps are parsed at most once per event"],
+  ]) {
+    count++;
+    console.log(pass ? "PASS" : "FAIL", name);
+    if (!pass) failed++;
+  }
 }
 
 // Runner: real child processes against a temporary manifest.
