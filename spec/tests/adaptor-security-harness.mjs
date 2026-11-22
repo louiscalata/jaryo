@@ -28,21 +28,54 @@ if (mode === "mutations") {
   add("trust superseded corrupt evidence", "Math.max(fi, si) < invalidAt", "false");
   add("require both a result and start to recover", "Math.max(fi, si) < invalidAt", "Math.min(fi, si) < invalidAt");
   add("preserve output from invalid evidence", 'reason = "an invalid record line may hide a later step event";', 'reason = "an invalid record line may hide a later step event"; record = final;');
-  add("compress event coordinates after filtering", "entries.push([index, event]);", "entries.push([current.length - 1, event]);");
   const foreign = "started !== null && event.run !== undefined && started.run !== undefined && event.run !== started.run";
   const skip = `if (${foreign}) continue;`;
+  const acceptEvent = `${skip}
+    accepted++;`;
+  const runEnd = 'if (ended === null && event.event === "run-end") ended = event;';
+  const stepPresent = "if (event.step) hasStep = true;";
+  const parseTimestamp = `const parsed = typeof event.ts === "string" ? Date.parse(event.ts) : NaN;
+    const stamp = Number.isFinite(parsed) ? parsed : null;`;
+  const updateRunTimestamp = "if (stamp !== null && (lastTs === null || stamp > lastTs)) lastTs = stamp;";
+  const eventIndex = `for (let index = start; index < all.length; index++) {
+    const event = all[index];`;
+  const runEvidence = `${acceptEvent}
+    ${runEnd}
+    ${stepPresent}
+    ${parseTimestamp}
+    ${updateRunTimestamp}`;
+  add("compress event coordinates after filtering", `${eventIndex}
+    ${acceptEvent}`,
+    `${eventIndex.replaceAll("index", "position")}
+    ${skip}
+    const index = accepted++;`);
   add("apply all foreign events", skip, "");
   add("reject every current event", skip, "continue;");
   add("coerce run ID types", "event.run !== started.run", "String(event.run) !== String(started.run)");
   add("reject legacy event IDs", "event.run !== undefined && ", "");
   add("reject legacy start IDs", "started.run !== undefined && ", "");
   add("bind results to the wrong run", "event.run !== started.run", "event.run !== 1");
-  add("let foreign timestamps refresh run", "const stamps = current.map(stampOf)", "const stamps = all.slice(start).map(stampOf)");
-  add("let foreign results enter step index", `${skip}\n    current.push(event);`, `if (!(${foreign})) current.push(event);`);
-  add("let foreign end close run", 'const ended = current.find(e => e.event === "run-end")', 'const ended = all.slice(start).find(e => e.event === "run-end")');
+  add("let foreign timestamps refresh run", runEvidence,
+    `${parseTimestamp}
+    ${updateRunTimestamp}
+    ${acceptEvent}
+    ${runEnd}
+    ${stepPresent}`);
+  add("let foreign results enter step index", runEvidence, `${parseTimestamp}
+    if (!(${foreign})) {
+      accepted++;
+      ${runEnd}
+      ${stepPresent}
+      ${updateRunTimestamp}
+    }`);
+  add("let foreign end close run", `${acceptEvent}
+    ${runEnd}`, `${runEnd}
+    ${acceptEvent}`);
   add("filter only run-end events", skip, `if (event.event === "run-end" && ${foreign}) continue;`);
   add("borrow another step's heartbeat", "if (live && fresh(beat))", "if (live)");
-  add("borrow previous attempt's heartbeat", 'i >= si && (e.event === "step-start" || e.event === "heartbeat")', '(e.event === "step-start" || e.event === "heartbeat")');
+  add("borrow previous attempt's heartbeat", `evidence.beat = stamp;
+    } else if (event.event === "heartbeat" && evidence.si >= 0 &&`, `if (stamp !== null && (evidence.beat === null || stamp > evidence.beat)) evidence.beat = stamp;
+    } else if (event.event === "heartbeat" &&`);
   add("invent undeclared heartbeat", "hb !== null && ts !== null && now - ts <= hb.staleAfterMs", "ts !== null && now - ts <= (hb ? hb.staleAfterMs : 120000)");
   add("trust future timestamps", "lastTs !== null && lastTs > now + SKEW_MS", "false");
   add("reject exact stale boundary", "now - ts <= hb.staleAfterMs", "now - ts < hb.staleAfterMs");
