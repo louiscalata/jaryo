@@ -212,18 +212,23 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   const runId = entries.length ? entries[entries.length - 1].runId : null;
   if (runs.length > 1) warnings.push(`journal holds ${runs.length} runs; only the last (${quote(runId)}) is shown`);
   const revokedBy = new Map(), latest = new Map(), stages = [];
-  let future = nisiTime(header.now) && header.now > now + SKEW_MS; const created = [], times = [];
+  let future = nisiTime(header.now) && header.now > now + SKEW_MS;
+  let earliestCreated = null, lastTs = null;
   for (const e of entries) {
     if (e.runId !== runId) continue;
-    for (const x of [e.createdAt, e.heartbeatAt]) { const s = stamp(x); if (s !== null) { if (s > now + SKEW_MS) future = true; times.push(s); } }
-    if (stamp(e.createdAt) !== null) created.push(e.createdAt);
+    const created = stamp(e.createdAt), heartbeat = stamp(e.heartbeatAt);
+    if (created !== null) {
+      earliestCreated = Math.min(earliestCreated ?? created, created);
+      lastTs = Math.max(lastTs ?? created, created);
+    }
+    if (heartbeat !== null) lastTs = Math.max(lastTs ?? heartbeat, heartbeat);
     if (e.state === "REVOKED") { if (isId(e.revokes)) revokedBy.set(e.revokes, e.id); }
     if (e.state === "REVOKED") continue;
     if (!latest.has(e.stage)) stages.push(e.stage);
     latest.set(e.stage, e);
   }
+  if (lastTs !== null && lastTs > now + SKEW_MS) future = true;
   if (future) warnings.push("journal has a timestamp in the future; liveness cannot be judged");
-  const lastTs = !future && times.length ? Math.max(...times) : null;
 
   const steps = base.steps.map(s => {
     let state = "UNKNOWN", reason;
@@ -257,9 +262,9 @@ export function buildJournalView(manifest, input, now = Date.now(), { maxBytes =
   const declared = new Set(base.steps.map(s => s.id));
   const undeclared = stages.filter(k => !declared.has(k)).map(k => ({
     logId: k, name: null, state: "UNKNOWN", reason: "not declared by the pipeline's manifest; the journal mentions it" }));
-  const startedAt = !future && created.length ? new Date(Math.min(...created)).toJSON() : null;
+  const startedAt = !future && earliestCreated !== null ? new Date(earliestCreated).toJSON() : null;
   const run = runId === null ? null : { id: runId, startedAt, endedAt: null, state: steps.some(s => s.state === "RUNNING") ? "running" : "unknown" };
-  return finish(steps, undeclared, run, lastTs);
+  return finish(steps, undeclared, run, future ? null : lastTs);
 }
 
 // Reads at most maxBytes + 1 bytes from one descriptor, so an over-limit file is refused by buildJournalView

@@ -239,6 +239,24 @@ export async function suite(mod) {
   t("journal: actions and capabilities come from the manifest as buildView reads it", JSON.stringify(v.actions) === JSON.stringify(base.actions) && JSON.stringify(v.capabilities) === JSON.stringify(base.capabilities));
   t("journal: step rows have buildView's fields, with no last output", v.steps.every((s, i) => JSON.stringify(Object.keys(s)) === JSON.stringify(Object.keys(base.steps[i])) && s.lastRun === null) && v.steps[0].next[0] === "b");
   t("journal: the view says when it was generated and when the journal last moved", v.generatedAt === new Date(now).toISOString() && v.lastEventAt === new Date(T0).toISOString());
+  const timestampInput = J([
+    { stage: "a", createdAt: T0 + 300, heartbeatAt: T0 + 200 },
+    { stage: "b", createdAt: T0 + 100, heartbeatAt: T0 + 50 },
+    { stage: "c", createdAt: T0 + 200, heartbeatAt: T0 + 100 },
+  ]);
+  const { min, max } = Math;
+  let minArguments = 0, maxArguments = 0;
+  try {
+    Math.min = (...times) => { minArguments = max(minArguments, times.length); return min(...times); };
+    Math.max = (...times) => { maxArguments = max(maxArguments, times.length); return max(...times); };
+    v = buildJournalView(M, timestampInput, now);
+  } finally {
+    Math.min = min;
+    Math.max = max;
+  }
+  t("journal: timestamp extrema use at most two arguments regardless of entry count",
+    minArguments <= 2 && maxArguments <= 2 && v.run?.startedAt === new Date(T0 + 100).toISOString()
+    && v.lastEventAt === new Date(T0 + 300).toISOString());
   // bounded file read
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jaryo-nj-"));
   const fbig = path.join(tmp, "big.jsonl"); fs.writeFileSync(fbig, big);
