@@ -75,7 +75,8 @@ export async function suite(mod) {
     } finally {
       JSON.parse = parse;
     }
-    t(`journal: ${name}`, parsed <= passes * lines && st(view, "a") === expected[0] && st(view, "b") === expected[1]);
+    const parseCountMatches = parsed >= lines && parsed <= passes * lines;
+    t(`journal: ${name}`, parseCountMatches && st(view, "a") === expected[0] && st(view, "b") === expected[1]);
   }
   // the synthetic Nisi sample (a copy of nisi fixtures/sample-data/journal.jsonl)
   const sample = fs.readFileSync(samplePath, "utf8");
