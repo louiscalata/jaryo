@@ -35,7 +35,7 @@ class CheckAssetsTests(unittest.TestCase):
             (sibling / "escaped.css").write_text("/* outside */\n", encoding="utf-8")
 
             result = subprocess.run(
-                [sys.executable, "-I", str(repo / "scripts" / "check_assets.py")],
+                [sys.executable, "-I", "-W", "error", str(repo / "scripts" / "check_assets.py")],
                 capture_output=True,
                 text=True,
                 check=False,

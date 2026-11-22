@@ -99,7 +99,7 @@ A `# noqa: CODE` always carries a reason: `# noqa: BLE001 - thread boundary, log
 | target-version | `py39` |
 | extra rules | `PTH` (pathlib), `EXE` (shebangs); `EXE001` ignored because the scripts are run as `python3 scripts/<name>.py` |
 | excluded paths | everything that is not a `.py` file (`include = ["*.py"]`), so Ruff never rewrites Python code blocks in Markdown; `spec/docs/spec/JARYO-INTERFACE-SPEC.md` and `lab-import-fixtures/README.md` are hash-pinned |
-| per-file ignores | `scripts/validate_lab.py`: `E401`, `I001`, `PTH123`, until its own repair change |
+| per-file ignores | `scripts/validate_lab.py`: `E401`, `I001`, pending its import cleanup and the review of its optional catalog lookup outside the repository |
 | hashed Python | none: `MANIFEST.txt` names `validate_lab.py` without a hash, and `spec/HASHES.txt` pins no Python file |
 
 Run before pushing:
