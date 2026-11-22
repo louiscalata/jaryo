@@ -35,10 +35,12 @@ ids85 = [o["id"] for o in opts85]
 if len(ids85) != len(set(ids85)):
     fail("duplicate curated-85 IDs")
 
-f17 = {o["id"]: o for o in json.load(open(LAB / "data/f17-color-systems-v2.json"))["options"]}
+with (LAB / "data/f17-color-systems-v2.json").open() as catalog_file:
+    f17 = {o["id"]: o for o in json.load(catalog_file)["options"]}
 opt_path = ROOT / "options.json"
 if opt_path.exists():
-    catalog = {o["id"]: o for o in json.load(open(opt_path))}
+    with opt_path.open() as catalog_file:
+        catalog = {o["id"]: o for o in json.load(catalog_file)}
     for oid in ids85:
         if oid.startswith("F17"):
             if oid not in f17:

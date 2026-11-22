@@ -23,7 +23,4 @@ ignore = ["EXE001"]
 max-complexity = 15
 
 [lint.per-file-ignores]
-# validate_lab.py is left for its own repair change (ROOT points outside the repository, a
-# behaviour fix that needs a failing test first). Until then its import line and bare open()
-# calls are listed here instead of being rewritten by the style change.
-"scripts/validate_lab.py" = ["E401", "I001", "PTH123"]
+"scripts/validate_lab.py" = ["E401", "I001"]
