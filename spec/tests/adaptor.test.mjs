@@ -146,6 +146,14 @@ async function suite(mod) {
     && latestRecordFile([]) === null
     && latestRecordFile(["run-10.jsonl", "run-0010.jsonl"]) === "run-0010.jsonl"
     && latestRecordFile(["run-0010.jsonl", "run-10.jsonl"]) === "run-10.jsonl");
+  const newest = "run-09007199254740993.jsonl";
+  const older = "run-9007199254740992.jsonl";
+  const sameNumber = "run-9007199254740993.jsonl";
+  t("record numbers above the safe integer range compare exactly",
+    latestRecordFile([newest, older]) === newest
+    && latestRecordFile([older, newest]) === newest
+    && latestRecordFile([newest, sameNumber]) === sameNumber
+    && latestRecordFile([sameNumber, newest]) === newest);
   // actions
   v = buildView(M, "", now);
   const pause = v.actions.find(a => a.id === "pause");
