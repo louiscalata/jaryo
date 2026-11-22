@@ -124,8 +124,14 @@ async function suite(mod) {
   t("a malformed manifest gives no steps, no actions, warnings, and does not throw", v.steps.length === 0 && v.warnings.length === 2 && v.actions.every(a => !a.available));
   v = buildView({ id: "p", steps: [{ id: "a", needs: "b" }, { name: "no id" }, null] }, "", now);
   t("steps without an id are ignored; a bad needs list becomes empty", v.steps.length === 1 && v.steps[0].needs.length === 0 && v.warnings.length >= 2);
-  v = buildView({ id: "p", steps: [{ id: "a" }, { id: "a" }] }, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }), now);
-  t("a duplicate manifest id makes both rows UNKNOWN and warns", v.steps.every(s => s.state === "UNKNOWN") && v.warnings.some(w => /more than once/.test(w)));
+  v = buildView({ id: "p", steps: [{ id: "a" }, { id: "a" }, { id: "b", needs: ["a", "missing", "a"] }] },
+    L({ event: "run-start" }, { step: "a", status: "ok", exit: 0 }), now);
+  t("duplicate manifest ids warn, stay UNKNOWN, and link to the first matching row",
+    v.steps.slice(0, 2).every(s => s.state === "UNKNOWN")
+    && v.warnings.some(w => /more than once/.test(w))
+    && v.steps[0].next.join(",") === "b,b"
+    && v.steps[1].next.length === 0
+    && v.steps[2].next.length === 0);
   v = buildView(M, L({ event: "run-start" }, { step: "__proto__", status: "ok" }, { step: "constructor", status: "ok" }), now);
   t("prototype-style ids are ordinary undeclared ids", v.undeclared.length === 2);
   v = buildView(M, L({ event: "run-start" }, { step: "a", status: "ok", exit: 0, tail: Array.from({ length: 50 }, (_, i) => "x".repeat(2000) + i) }), now);
