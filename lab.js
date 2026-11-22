@@ -668,31 +668,31 @@
     const nav = $("#family-nav");
     const catalog = $("#catalog-count");
     if (catalog) catalog.textContent = catalogPhrase();
-    const btn = (f) =>
-      `<button type="button" class="navbtn" data-fam="${f.id}" title="${f.id} · ${esc(f.title)}" aria-current="${f.id === activeFamily ? "true" : "false"}"><span class="fid">${f.id}</span><span class="ftitle"><span class="sep"> · </span>${esc(f.title)}</span></button>`;
     const count = (arr) => arr.reduce((n, f) => n + f.options.length, 0);
     // Monochrome F01–F16 and F17 are the curated 85. Optional means F18 and F19 only.
     const mono = DATA.families.filter((f) => /^F(0[1-9]|1[0-6])$/.test(f.id));
     const color = DATA.families.filter((f) => f.id === "F17");
     const legacy = DATA.families.filter((f) => f.id === "F18");
     const red = DATA.families.filter((f) => f.id === "F19");
-    const html =
-      `<p class="navgroup" id="ng-mono">Monochrome set · ${count(mono)} options</p>` +
-      mono.map(btn).join("") +
-      (color.length ? `<p class="navgroup navgroup-color" id="ng-color">Color batch · ${count(color)} options</p>` + color.map(btn).join("") : "") +
-      (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">Legacy studies · ${count(legacy)} options · optional</p>` + legacy.map(btn).join("") : "") +
-      (red.length ? `<p class="navgroup navgroup-red" id="ng-red">Red interactive UI · ${count(red)} options · optional</p>` + red.map(btn).join("") : "");
+    const monoLabel = `Monochrome set · ${count(mono)} options`;
+    const colorLabel = color.length ? `Color batch · ${count(color)} options` : "";
+    const legacyLabel = legacy.length ? `Legacy studies · ${count(legacy)} options · optional` : "";
+    const redLabel = red.length ? `Red interactive UI · ${count(red)} options · optional` : "";
     // index.html already contains this list so the first paint does not jump the grammar demo.
     const painted = [...nav.querySelectorAll(".navbtn")].map((el) => `${el.dataset.fam}|${el.getAttribute("aria-current")}|${el.getAttribute("title")}`).join("\n");
     const groups = [...nav.querySelectorAll(".navgroup")].map((el) => el.textContent).join("\n");
     const expected = DATA.families.map((f) => `${f.id}|${f.id === activeFamily ? "true" : "false"}|${f.id} · ${f.title}`).join("\n");
-    const expectedGroups = [
-      `Monochrome set · ${count(mono)} options`,
-      color.length ? `Color batch · ${count(color)} options` : "",
-      legacy.length ? `Legacy studies · ${count(legacy)} options · optional` : "",
-      red.length ? `Red interactive UI · ${count(red)} options · optional` : "",
-    ].filter(Boolean).join("\n");
-    if (painted !== expected || groups !== expectedGroups) nav.innerHTML = html;
+    const expectedGroups = [monoLabel, colorLabel, legacyLabel, redLabel].filter(Boolean).join("\n");
+    if (painted !== expected || groups !== expectedGroups) {
+      const btn = (f) =>
+        `<button type="button" class="navbtn" data-fam="${f.id}" title="${f.id} · ${esc(f.title)}" aria-current="${f.id === activeFamily ? "true" : "false"}"><span class="fid">${f.id}</span><span class="ftitle"><span class="sep"> · </span>${esc(f.title)}</span></button>`;
+      nav.innerHTML =
+        `<p class="navgroup" id="ng-mono">${monoLabel}</p>` +
+        mono.map(btn).join("") +
+        (color.length ? `<p class="navgroup navgroup-color" id="ng-color">${colorLabel}</p>` + color.map(btn).join("") : "") +
+        (legacy.length ? `<p class="navgroup navgroup-legacy" id="ng-legacy">${legacyLabel}</p>` + legacy.map(btn).join("") : "") +
+        (red.length ? `<p class="navgroup navgroup-red" id="ng-red">${redLabel}</p>` + red.map(btn).join("") : "");
+    }
   }
 
   function renderCompare() {
